@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="UpdateDSP.Views.DialogDemo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
+             xmlns:smtx="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML"
+             xmlns:viewmodels="clr-namespace:UpdateDSP.ViewModels"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type=viewmodels:DialogViewModel, IsDesignTimeCreatable=True}"
+             mc:Ignorable="d">
+    <smtx:XamlDisplay UniqueKey="DialogDemo">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <UniformGrid Margin="10" rubyer:PanelHelper.Spacing="10">
+                <GroupBox Width="250"
+                          Height="250"
+                          Header="1#对话框-DialogContainer">
+                    <rubyer:DialogContainer Identifier="Dialog1">
+                        <rubyer:DialogContainer.Resources>
+                            <Style BasedOn="{StaticResource RubyerDialogCard}" TargetType="rubyer:DialogCard">
+                                <Setter Property="BorderBrush" Value="{StaticResource Error}" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="IsEscKeyToClose" Value="True" />
+                                <Setter Property="IsShowCloseButton" Value="False" />
+                                <Setter Property="rubyer:HeaderHelper.FontSize" Value="22" />
+                                <Setter Property="rubyer:HeaderHelper.FontWeight" Value="Bold" />
+                                <Setter Property="rubyer:HeaderHelper.Background" Value="{DynamicResource Accent}" />
+                                <Setter Property="rubyer:HeaderHelper.Foreground" Value="{DynamicResource WhiteForeground}" />
+                            </Style>
+                        </rubyer:DialogContainer.Resources>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock TextWrapping="Wrap">
+                                设置 DialogCard 样式，
+                                点击背景或 Esc 关闭
+                            </TextBlock>
+                            <Button Margin="10" Command="{Binding OpenDialog1Command}">打开</Button>
+                        </StackPanel>
+                    </rubyer:DialogContainer>
+                </GroupBox>
+
+                <GroupBox Width="250"
+                          Height="250"
+                          Header="2#对话框-DialogContainer">
+                    <rubyer:DialogContainer Background="{DynamicResource Primary}" BeforeOpen="Dialog2_BeforeOpen"
+                                            Foreground="{DynamicResource WhiteForeground}" AfterClose="Dialog2_AfterClose"
+                                            Identifier="Dialog2">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    TextBlock.Foreground="{DynamicResource DefaultForeground}">
+                            <TextBlock Text="打开多个弹窗" TextWrapping="Wrap" />
+                            <Button Margin="10"
+                                    Command="{Binding OpenDialog2Command}"
+                                    Content="打开" />
+                        </StackPanel>
+                    </rubyer:DialogContainer>
+                </GroupBox>
+
+                <GroupBox Width="250"
+                          Height="250"
+                          Header="4#对话框-DialogContainer">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock TextWrapping="Wrap">
+                                对话框绑定 View Model，返回结果
+                            </TextBlock>
+                            <Button Margin="10" Command="{Binding OpenDialog4Command}">打开</Button>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Grid.Row="1"
+                          Grid.Column="1"
+                          Width="250"
+                          Height="250"
+                          Header="5#对话框-DialogContainer">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock TextWrapping="Wrap">
+                                显示加载中对话框
+                            </TextBlock>
+                            <Button Margin="10" Command="{Binding OpenDialog5Command}">Loading</Button>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+            </UniformGrid>
+        </ScrollViewer>
+    </smtx:XamlDisplay>
+</UserControl>

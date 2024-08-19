@@ -1,0 +1,203 @@
+﻿<UserControl x:Class="UpdateDSP.Views.ButtonDemo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:UpdateDSP.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
+             xmlns:smtx="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <system:Double x:Key="ControlCornerRadius">0</system:Double>
+        <system:Double x:Key="ContainerCornerRadius">5</system:Double>
+    </UserControl.Resources>
+    <smtx:XamlDisplay UniqueKey="ButtonDemo">
+        <ScrollViewer>
+            <Grid Margin="10"
+                  rubyer:GridHelper.RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto"
+                  rubyer:PanelHelper.Spacing="10">
+                <controls:ControlDisplay Title="Default Button">
+                    <StackPanel Margin="5"
+                                rubyer:PanelHelper.Spacing="10"
+                                Orientation="Horizontal">
+                        <Button x:Name="defaultButton"
+                                Content="默认按钮"
+                                IsDefault="True"
+                                ToolTip="hello rubyer" />
+                        <Button Style="{DynamicResource SecondaryButton}" Content="次级按钮" />
+                        <Button Style="{DynamicResource LightButton}" Content="亮色按钮" />
+                        <Button Style="{DynamicResource DarkButton}" Content="暗色按钮" />
+                        <Button Style="{DynamicResource AccentButton}" Content="强调按钮" />
+                        <Button Style="{DynamicResource InfoButton}" Content="消息按钮" />
+                        <Button Style="{DynamicResource SuccessButton}" Content="成功按钮" />
+                        <Button Style="{DynamicResource WarningButton}" Content="警告按钮" />
+                        <Button Style="{DynamicResource ErrorButton}" Content="错误按钮" />
+                    </StackPanel>
+                </controls:ControlDisplay>
+
+                <controls:ControlDisplay Title="Round Button"
+                                         Grid.Row="1"
+                                         Description="通过 ButtonHelper.Shape=&quot;Round&quot; 设置圆角按钮，圆角半径自动适应按钮高度">
+                    <StackPanel Margin="5"
+                                rubyer:PanelHelper.Spacing="10"
+                                Orientation="Horizontal">
+                        <Button rubyer:ButtonHelper.Shape="Round" Content="默认按钮" />
+                        <Button Style="{StaticResource LightButton}"
+                                rubyer:ButtonHelper.Shape="Round"
+                                Content="亮色按钮" />
+                        <Button Style="{StaticResource DarkButton}"
+                                rubyer:ButtonHelper.Shape="Round"
+                                Content="暗色按钮" />
+                        <Button Style="{StaticResource AccentButton}"
+                                rubyer:ButtonHelper.Shape="Round"
+                                Content="强调按钮" />
+                    </StackPanel>
+                </controls:ControlDisplay>
+
+                <controls:ControlDisplay Title="Circle Button"
+                                         Grid.Row="2"
+                                         Description="通过 ButtonHelper.Shape=&quot;Circle&quot; 圆型按钮，圆角半径自动适应按钮高度 &#x000A;">
+                    <StackPanel Margin="5" Orientation="Horizontal">
+                        <Button Style="{StaticResource AccentButton}"
+                                Margin="10 0"
+                                rubyer:ButtonHelper.Shape="Circle"
+                                Content="赞" />
+                        <Button Margin="10 0"
+                                rubyer:ButtonHelper.Shape="Circle"
+                                FontSize="20">
+                            <rubyer:Icon Type="QqFill" />
+                        </Button>
+                        <Button Margin="10 0"
+                                rubyer:ButtonHelper.Shape="Circle"
+                                Background="Green"
+                                FontSize="30">
+                            <rubyer:Icon Type="WechatFill" />
+                        </Button>
+                        <Button Margin="10 0"
+                                rubyer:ButtonHelper.Shape="Circle"
+                                Background="Gray"
+                                FontSize="50">
+                            <rubyer:Icon Type="GithubFill" />
+                        </Button>
+                    </StackPanel>
+                </controls:ControlDisplay>
+
+                <controls:ControlDisplay Title="Text Button"
+                                         Grid.Row="3"
+                                         Description="TextButton Style">
+                    <StackPanel rubyer:PanelHelper.Spacing="10" Orientation="Horizontal">
+                        <Button Style="{StaticResource TextButton}"
+                                VerticalAlignment="Center"
+                                Content="默认按钮" />
+                        <Button Style="{DynamicResource TextAccentButton}"
+                                VerticalAlignment="Center"
+                                rubyer:ButtonHelper.Shape="Round"
+                                rubyer:ControlHelper.FocusedBrush="{DynamicResource Accent}"
+                                Content="强调按钮" />
+                        <Button Style="{DynamicResource TextButton}"
+                                VerticalAlignment="Center"
+                                rubyer:ControlHelper.FocusedBrush="Pink"
+                                Foreground="Pink">
+                            <rubyer:Icon Type="TvFill" />
+                        </Button>
+                        <Button Style="{DynamicResource TextSuccessButton}"
+                                Padding="5"
+                                rubyer:ButtonHelper.Shape="Circle"
+                                rubyer:ControlHelper.FocusedBrush="{StaticResource Success}">
+                            <rubyer:Icon Width="30"
+                                         Height="30"
+                                         Type="ThumbUpFill" />
+                        </Button>
+                    </StackPanel>
+                </controls:ControlDisplay>
+
+                <controls:ControlDisplay Title="Outline Button"
+                                         Grid.Row="4"
+                                         Description="OutlineButton Style">
+                    <StackPanel Margin="5"
+                                rubyer:PanelHelper.Spacing="10"
+                                Orientation="Horizontal">
+                        <Button Style="{StaticResource OutlineButton}" Content="默认按钮" />
+                        <Button Style="{DynamicResource OutlineAccentButton}"
+                                rubyer:ButtonHelper.Shape="Round"
+                                Content="强调按钮" />
+                        <Button Style="{StaticResource OutlineButton}" rubyer:ButtonHelper.Shape="Circle">
+                            <rubyer:Icon Type="MicrosoftFill" />
+                        </Button>
+                    </StackPanel>
+                </controls:ControlDisplay>
+
+                <controls:ControlDisplay Title="Icon Button"
+                                         Grid.Row="5"
+                                         Description="通过 ButtonHelper.IconType 设置图标">
+                    <StackPanel Margin="5"
+                                rubyer:PanelHelper.Spacing="20"
+                                Orientation="Horizontal">
+                        <Button Width="100"
+                                rubyer:ButtonHelper.IconType="EditLine"
+                                Content="编辑" />
+
+                        <Button Style="{StaticResource SuccessButton}"
+                                Width="100"
+                                rubyer:ButtonHelper.IconType="SaveLine"
+                                Content="保存" />
+                    </StackPanel>
+                </controls:ControlDisplay>
+
+                <controls:ControlDisplay Title="Loading Button"
+                                         Grid.Row="6"
+                                         Description="通过 ButtonHelper.Loading 控制加载中显示&#x000A;通过 ButtonHelper.LoadingContent 设置加载中显示内容">
+                    <StackPanel Margin="5" Orientation="Horizontal">
+                        <Button x:Name="loadingButton"
+                                Width="100"
+                                Margin="10 0"
+                                rubyer:ButtonHelper.IconType="Hand"
+                                rubyer:ButtonHelper.Loading="False"
+                                rubyer:ButtonHelper.LoadingContent="加载中"
+                                Click="Button_Click"
+                                Content="点我" />
+                        <Button Style="{DynamicResource AccentButton}"
+                                Margin="10 0"
+                                rubyer:ButtonHelper.Loading="True"
+                                rubyer:ButtonHelper.LoadingContent="强调按钮"
+                                rubyer:ButtonHelper.Shape="Round"
+                                Content="强调按钮" />
+                        <Button Margin="10 0"
+                                rubyer:ButtonHelper.Loading="True"
+                                rubyer:ButtonHelper.Shape="Circle" />
+                        <Button Style="{StaticResource TextDarkButton}"
+                                Margin="10 0"
+                                rubyer:ButtonHelper.Loading="True"
+                                rubyer:ButtonHelper.Shape="Circle" />
+                    </StackPanel>
+                </controls:ControlDisplay>
+
+                <controls:ControlDisplay Title="Shadow Button"
+                                         Grid.Row="7"
+                                         Description="通过 ButtonHelper.ShowShadow 设置是否显示按钮阴影">
+                    <Grid Margin="5"
+                          rubyer:GridHelper.ColumnDefinitions="Auto, Auto, Auto, Auto"
+                          rubyer:PanelHelper.Spacing="15">
+                        <Button rubyer:ButtonHelper.ShowShadow="True" Content="默认按钮" />
+                        <Button Style="{DynamicResource AccentButton}"
+                                Grid.Column="1"
+                                rubyer:ButtonHelper.Shape="Round"
+                                rubyer:ButtonHelper.ShowShadow="True"
+                                Content="强调按钮" />
+                        <Button Style="{StaticResource SuccessButton}"
+                                Grid.Column="2"
+                                rubyer:ButtonHelper.Shape="Circle"
+                                rubyer:ButtonHelper.ShowShadow="True">
+                            <rubyer:Icon Type="SearchLine" />
+                        </Button>
+                        <Button Grid.Column="3"
+                                rubyer:ButtonHelper.ShowShadow="True"
+                                Content="不可用"
+                                IsEnabled="False" />
+                    </Grid>
+                </controls:ControlDisplay>
+            </Grid>
+        </ScrollViewer>
+    </smtx:XamlDisplay>
+</UserControl>

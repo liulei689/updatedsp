@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFrameworks>net472</TargetFrameworks>
+		<UseWPF>true</UseWPF>
+		<ApplicationIcon>rubyer.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Authors>Ensin</Authors>
+		<Version>2.9.3</Version>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Style\**" />
+		<EmbeddedResource Remove="Style\**" />
+		<None Remove="Style\**" />
+		<Page Remove="Style\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\img1.jpg" />
+	  <None Remove="Assets\img2.jpg" />
+	  <None Remove="Assets\img3.jpg" />
+	  <None Remove="Assets\img4.jpg" />
+	  <None Remove="city.json" />
+	  <None Remove="weather.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+		<PackageReference Include="Rubyer" Version="2.15.19" />
+		<PackageReference Include="ShowMeTheXAML" Version="2.0.0" />
+		<PackageReference Include="ShowMeTheXAML.AvalonEdit" Version="2.0.0" />
+		<PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
+		<PackageReference Include="VirtualizingWrapPanel" Version="1.5.7" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+		<Reference Include="System.ComponentModel.DataAnnotations" />
+		<PackageReference Include="System.Text.Json" Version="9.0.0-preview.7.24405.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Assets\ali.jpg">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Assets\img1.jpg" />
+		<Resource Include="Assets\img2.jpg" />
+		<Resource Include="Assets\img3.jpg" />
+		<Resource Include="Assets\img4.jpg" />
+		<Resource Include="Assets\wechat.jpg">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="city.json">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="rubyer.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="weather.json">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="Views\About.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+	</PropertyGroup>
+</Project>
