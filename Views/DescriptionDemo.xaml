@@ -14,10 +14,12 @@
                   rubyer:GridHelper.RowDefinitions="Auto, Auto"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Top">
                 <GroupBox Grid.Row="0" Header="操作区域" >
-                    <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto">
+                    <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
                         <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="5">
-                            <TextBlock Style="{StaticResource Head4TextBlock}" Text="打开串口:"  />
+                            <TextBlock Style="{StaticResource Head4TextBlock}" Text="    串口号:"  />
                             <ComboBox Width="250" Margin="20 0" />
+                            <TextBlock Style="{StaticResource Head4TextBlock}" Text="    波特率:"  />
+                            <ComboBox Width="100" Margin="20 0" />
                             <ToggleButton Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="True">
                                 <StackPanel Orientation="Horizontal">
                                     <rubyer:Icon Type="WifiOffFill" />
@@ -30,8 +32,11 @@
                                     </StackPanel>
                                 </rubyer:ToggleButtonHelper.CheckedContent>
                             </ToggleButton>
+                            <rubyer:Loading Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="False"/>
+                            <rubyer:Loading Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
+
                         </StackPanel>
-                        <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto, Auto, *" Margin="5">
+                        <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
                             <TextBlock  Grid.Column="0" Style="{StaticResource Head4TextBlock}" Text="打开固件:" />
                             <Button Grid.Column="1" Foreground="#FB8C00" Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
                             <TextBox Grid.Column="2"  IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
@@ -41,47 +46,135 @@
                                     </Button>
                                 </rubyer:InputBoxHelper.PostContent>
                             </TextBox>
+                         
                         </Grid>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <TextBlock   Style="{StaticResource Head4TextBlock}" Text="     通道ID:"  />
+                            <ComboBox Width="70" Margin="20 0" />
+                            <rubyer:Popover  Title="小提示" DockPanel.Dock="Top" Placement="Top" PopoverContent="先点击开始按钮后，再重启设备，等待升级完成" TriggerMode="Hover">
+                                <Button Content="开始固件升级" />
+                            </rubyer:Popover>
+                            <ProgressBar rubyer:ProgressBarHelper.ShowPercent="True" Width="600" Margin="5" VerticalAlignment="Stretch" rubyer:ProgressBarHelper.Thickness="13" Value="11" />
+                        </StackPanel>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Row="1" Header="带边框 - BorderDescription">
-                    <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto, Auto, Auto">
-                        <TextBlock Grid.Row="0" Style="{StaticResource Head4TextBlock}" Text="DescriptionItem 方式:" />
+                <GroupBox Grid.Row="2" Header="固件信息">
+                    <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto, Auto, Auto,*">
                         <rubyer:Description Style="{StaticResource BorderDescription}"
-                                            Grid.Row="1"
+                                            Grid.Row="0"
                                             Margin="10"
-                                            Columns="{Binding CurrentColumn}">
-                            <rubyer:DescriptionItem Content="Columns" Description="列数" />
-                            <rubyer:DescriptionItem Content="HorizontalDescriptionAlignment" Description="水平对齐" />
-                            <rubyer:DescriptionItem Content="VerticalDescriptionAlignment" Description="垂直对齐" />
-                            <rubyer:DescriptionItem Content="DescriptionFontSize" Description="字体大小" />
-                            <rubyer:DescriptionItem Description="其他">
-                                <rubyer:DescriptionItem.Content>
-                                    <TextBlock TextWrapping="Wrap">DescriptionFontWeight, DescriptionBackground, DescriptionForeground, DisplayDescriptionPath, DescriptionStringFormat</TextBlock>
+                                            Columns="3">
+                            <rubyer:DescriptionItem  Description="版本号" >
+                            <rubyer:DescriptionItem.Content>
+                                    <rubyer:Tag Margin="2" Background="{DynamicResource DefaultForeground}" Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
+                                        <rubyer:Tag.Header>
+                                            <TextBlock TextWrapping="Wrap">DSP</TextBlock>
+                                        </rubyer:Tag.Header>
+                                        <TextBlock TextWrapping="Wrap">V0.0.0.0</TextBlock>
+                                    </rubyer:Tag>
                                 </rubyer:DescriptionItem.Content>
                             </rubyer:DescriptionItem>
-                        </rubyer:Description>
+                            <rubyer:DescriptionItem Content="" Description="校验A" />
+                            <rubyer:DescriptionItem Content="" Description="校验B" />
+                            <rubyer:DescriptionItem Content="111111111" Description="长度" />
+                            <rubyer:DescriptionItem Content="111111111" Description="SN号" />
 
-                        <TextBlock Style="{StaticResource Head4TextBlock}"
-                                   Grid.Row="2"
-                                   Text="DescriptionItem 方式:" />
+                            <rubyer:DescriptionItem Content="DescriptionFontSize" Description="标识" />
+                            <rubyer:DescriptionItem Content="111111111" Description="长度" />
+                            <rubyer:DescriptionItem Content="111111111" Description="SN号" />
+                            <rubyer:DescriptionItem Content="111111111" Description="长度" />
+                            <rubyer:DescriptionItem Content="111111111" Description="SN号" />
+
+                            <rubyer:DescriptionItem Content="DescriptionFontSize" Description="标识" />
+                            <rubyer:DescriptionItem Content="DescriptionFontSize" Description="标识" />
+
+                        </rubyer:Description>
+                        <TextBlock    Grid.Row="1" Style="{StaticResource Head4TextBlock}" Text="数据" />
 
                         <rubyer:Description Style="{StaticResource BorderDescription}"
-                                            Grid.Row="3"
-                                            Margin="10"
-                                            HorizontalAlignment="Center"
-                                            HorizontalContentAlignment="Center"
-                                            Background="{DynamicResource Light}"
-                                            BorderThickness="3"
-                                            Columns="{Binding CurrentColumn}"
-                                            DescriptionBackground="{DynamicResource Dark}"
-                                            DescriptionFontSize="14"
-                                            DescriptionFontWeight="Bold"
-                                            DescriptionForeground="{DynamicResource WhiteForeground}"
-                                            DisplayDescriptionPath="Description"
-                                            DisplayMemberPath="Content"
-                                            HorizontalDescriptionAlignment="Center"
-                                            ItemsSource="{Binding Models}" />
+                      Grid.Row="2"
+                      Margin="10"
+                      Columns="1" Width="700" HorizontalAlignment="Left">
+                            <rubyer:DescriptionItem Content="00 00 00 00 00 00 00 00" Description="校验A" />
+                            <rubyer:DescriptionItem Content="" Description="校验B" />
+                            <rubyer:DescriptionItem Content="" Description="校验A" />
+                            <rubyer:DescriptionItem Content="" Description="校验B" />
+                        
+                        </rubyer:Description>
+                        <TextBlock    Grid.Row="3" Style="{StaticResource Head4TextBlock}" Text="数据:" />
+
+                        <rubyer:Description Style="{StaticResource BorderDescription}"
+                          Grid.Row="4" Width="700" HorizontalAlignment="Left"
+                          Margin="10"
+                          Columns="1">
+
+                            <rubyer:DescriptionItem Content="" Description="校验A" />
+                            <rubyer:DescriptionItem Content="" Description="校验B" />
+                     
+
+                        </rubyer:Description>
+                        <Grid Margin="700,0,0,0" Grid.Row="2" Grid.RowSpan="3" >
+                            <rubyer:CircularPanel Height="200"
+                                          Padding="5"
+                                          Background="{StaticResource DefaultBackground}"
+                                          BorderBrush="{StaticResource DefaultForeground}"
+                                          BorderThickness="2"
+                                          Effect="{StaticResource AllDirectionEffect3}"
+                                          StartAngle="-60"
+                                          TextBlock.FontSize="24">
+                                <TextBlock Text="1" />
+                                <TextBlock Text="2" />
+                                <TextBlock Text="3" />
+                                <TextBlock Text="4" />
+                                <TextBlock Text="5" />
+                                <TextBlock Text="6" />
+                                <TextBlock Text="7" />
+                                <TextBlock Text="8" />
+                                <TextBlock Text="9" />
+                                <TextBlock Text="10" />
+                                <TextBlock Text="11" />
+                                <TextBlock Text="12" />
+                            </rubyer:CircularPanel>
+
+                            <!--  时针  -->
+                            <Rectangle Width="4"
+                               Height="60"
+                               Fill="{StaticResource DefaultForeground}"
+                               RenderTransformOrigin="0.5,0.5">
+                                <Rectangle.RenderTransform>
+                                    <TransformGroup>
+                                        <TranslateTransform Y="-30" />
+                                        <RotateTransform x:Name="hour" Angle="0" />
+                                    </TransformGroup>
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <!--  分针  -->
+                            <Rectangle Width="3"
+                               Height="80"
+                               Fill="{StaticResource DefaultForeground}"
+                               RenderTransformOrigin="0.5,0.5">
+                                <Rectangle.RenderTransform>
+                                    <TransformGroup>
+                                        <TranslateTransform Y="-40" />
+                                        <RotateTransform x:Name="minutes" Angle="0" />
+                                    </TransformGroup>
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <!--  秒针  -->
+                            <Rectangle Width="2"
+                               Height="100"
+                               Fill="{StaticResource Accent}"
+                               RenderTransformOrigin="0,0.5">
+                                <Rectangle.RenderTransform>
+                                    <TransformGroup>
+                                        <TranslateTransform Y="-50" />
+                                        <RotateTransform x:Name="second" Angle="0" />
+                                    </TransformGroup>
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                        </Grid>
                     </Grid>
                 </GroupBox>
         

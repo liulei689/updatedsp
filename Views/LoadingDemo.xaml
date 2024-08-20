@@ -29,7 +29,7 @@
                 </GroupBox>
                 <GroupBox Grid.Row="1" Header="波形加载中-WaveLoading">
                     <StackPanel Margin="10" Orientation="Horizontal">
-                        <rubyer:Loading Style="{StaticResource WaveLoading}" Margin="10" />
+                        <rubyer:Loading Style="{StaticResource WaveLoading}" Margin="10" FontSize="10" Content="接受中..."/>
                         <rubyer:Loading Style="{StaticResource WaveLoading}"
                                         Margin="10"
                                         Diameter="30"

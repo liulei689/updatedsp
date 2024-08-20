@@ -77,7 +77,7 @@
                                         <Setter Property="Height" Value="30" />
                                     </Style>
                                 </StackPanel.Resources>
-                                <rubyer:Card Background="{DynamicResource Primary}" />
+                                <rubyer:Card Background="{DynamicResource Primary}"/>
                                 <rubyer:Card Background="{DynamicResource Accent}" />
                                 <rubyer:Card Background="{DynamicResource Light}" />
                                 <rubyer:Card Background="{DynamicResource Dark}" />

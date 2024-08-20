@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace UpdateDSP.Views
 {
@@ -27,9 +28,19 @@ namespace UpdateDSP.Views
             InitializeComponent();
 
             this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            var now = DateTime.Now;
+            hour.Angle = (now.Hour - 12) / 12.0 * 360;
+            minutes.Angle = now.Minute / 60.0 * 360;
+            second.Angle = now.Second / 60.0 * 360;
         }
 
-   
 
         private void TextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
