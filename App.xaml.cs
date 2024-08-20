@@ -57,9 +57,7 @@ namespace UpdateDSP
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<IconViewModel>();
             services.AddSingleton<ListViewModel>();
-            services.AddSingleton<DataGridViewModel>();
             services.AddSingleton<TabControlViewModel>();
-            services.AddSingleton<PageBarViewModel>();
             services.AddSingleton<MessageBoxViewModel>();
             services.AddSingleton<DialogViewModel>();
             services.AddSingleton<StepBarViewModel>();
@@ -69,14 +67,11 @@ namespace UpdateDSP
             services.AddSingleton<PasswordBoxViewModel>();
             services.AddSingleton<NumericBoxViewModel>();
             services.AddSingleton<ComboBoxViewModel>();
-            services.AddSingleton<RenamerViewModel>();
             services.AddSingleton<DateTimePickerViewModel>();
             services.AddSingleton<GroupBoxViewModel>();
             services.AddSingleton<ExpanderViewModel>();
             services.AddSingleton<ListBoxViewModel>();
-            services.AddSingleton<TreeViewViewModel>();
             services.AddSingleton<FlipViewViewModel>();
-            services.AddSingleton<TreeDataGridViewModel>();
             services.AddTransient<Dialog2ViewModel>();
 
             services.AddSingleton<WechatViewModel>();

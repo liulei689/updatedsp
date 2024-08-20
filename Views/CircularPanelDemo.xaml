@@ -30,14 +30,14 @@
                 </rubyer:CircularPanel>
 
                 <Grid>
-                    <rubyer:CircularPanel Height="200"
+                    <rubyer:CircularPanel Height="100"
                                           Padding="5"
                                           Background="{StaticResource DefaultBackground}"
                                           BorderBrush="{StaticResource DefaultForeground}"
                                           BorderThickness="2"
                                           Effect="{StaticResource AllDirectionEffect3}"
-                                          StartAngle="-60"
-                                          TextBlock.FontSize="24">
+                                          StartAngle="-10"
+                                          TextBlock.FontSize="12">
                         <TextBlock Text="1" />
                         <TextBlock Text="2" />
                         <TextBlock Text="3" />
@@ -54,12 +54,12 @@
 
                     <!--  时针  -->
                     <Rectangle Width="4"
-                               Height="60"
+                               Height="30"
                                Fill="{StaticResource DefaultForeground}"
                                RenderTransformOrigin="0.5,0.5">
                         <Rectangle.RenderTransform>
                             <TransformGroup>
-                                <TranslateTransform Y="-30" />
+                                <TranslateTransform Y="-15" />
                                 <RotateTransform x:Name="hour" Angle="0" />
                             </TransformGroup>
                         </Rectangle.RenderTransform>
@@ -67,12 +67,12 @@
 
                     <!--  分针  -->
                     <Rectangle Width="3"
-                               Height="80"
+                               Height="40"
                                Fill="{StaticResource DefaultForeground}"
                                RenderTransformOrigin="0.5,0.5">
                         <Rectangle.RenderTransform>
                             <TransformGroup>
-                                <TranslateTransform Y="-40" />
+                                <TranslateTransform Y="-20" />
                                 <RotateTransform x:Name="minutes" Angle="0" />
                             </TransformGroup>
                         </Rectangle.RenderTransform>
@@ -80,12 +80,12 @@
 
                     <!--  秒针  -->
                     <Rectangle Width="2"
-                               Height="100"
+                               Height="50"
                                Fill="{StaticResource Accent}"
                                RenderTransformOrigin="0,0.5">
                         <Rectangle.RenderTransform>
                             <TransformGroup>
-                                <TranslateTransform Y="-50" />
+                                <TranslateTransform Y="-25" />
                                 <RotateTransform x:Name="second" Angle="0" />
                             </TransformGroup>
                         </Rectangle.RenderTransform>
