@@ -28,9 +28,9 @@ namespace UpdateDSP.Views
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
-            Hyperlink link = sender as Hyperlink;
-            string url = link.NavigateUri.AbsoluteUri;
-            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+            //Hyperlink link = sender as Hyperlink;
+            //string url = link.NavigateUri.AbsoluteUri;
+            //Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
     }
 }

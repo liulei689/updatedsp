@@ -40,6 +40,7 @@ namespace UpdateDSP.ViewModels
 
             ViewItems =
             [
+                new("通用在线升级程序", "首页", new UpdateDspNormal(), IconType.ListCheck2),
                 new("Overview", "总览", new Overview(), IconType.Home2Line),
                 new("Button", "按钮", new ButtonDemo(), IconType.CheckboxBlankFill),
                 new("DropDownButton", "下拉按钮", new DropDownButtonDemo(), IconType.ArrowDownCircleLine),
@@ -71,7 +72,6 @@ namespace UpdateDSP.ViewModels
                 new("BadgeTag", "标记标签", new BadgeTagDemo(), IconType.NotificationBadgeLine),
                 new("Loading", "加载中", new LoadingDemo(), IconType.Loader2Fill),
                 new("StepBar", "步骤条", new StepBarDemo(), IconType.ListOrdered),
-                new("Description", "描述列表", new DescriptionDemo(), IconType.ListCheck2),
                 new("HamburgerMenu", "汉堡包", new HamburgerMenuDemo(), IconType.MenuUnfoldLine),
                 new("FlipView", "滑动视图", new FlipViewDemo(), IconType.ImageLine),
             ];

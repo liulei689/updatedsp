@@ -18,15 +18,22 @@ using System.Windows.Shapes;
 namespace UpdateDSP.Views
 {
     /// <summary>
-    /// DescriptionDemo.xaml 的交互逻辑
+    /// UpdateDspNormal.xaml 的交互逻辑
     /// </summary>
-    public partial class DescriptionDemo : UserControl
+    public partial class UpdateDspNormal : UserControl
     {
-        public DescriptionDemo()
+        public UpdateDspNormal()
         {
             InitializeComponent();
 
             this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
+        }
+
+   
+
+        private void TextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

@@ -228,12 +228,12 @@
                                       Margin="10 0"
                                       IsChecked="True">
                             <StackPanel Orientation="Horizontal">
-                                <rubyer:Icon Type="WifiOffFill" />
+                                <rubyer:Icon Type="WifiOffFill"  />
                                 <TextBlock Margin="5 0 0 0" Text="Wifi" />
                             </StackPanel>
                             <rubyer:ToggleButtonHelper.CheckedContent>
                                 <StackPanel Orientation="Horizontal">
-                                    <rubyer:Icon Type="WifiFill" />
+                                    <rubyer:Icon Type="WifiFill"  Foreground="{StaticResource Success}"/>
                                     <TextBlock Margin="5 0 0 0" Text="Wifi" />
                                 </StackPanel>
                             </rubyer:ToggleButtonHelper.CheckedContent>
@@ -241,7 +241,7 @@
 
                         <ToggleButton Width="100"
                                       Margin="10 0"
-                                      rubyer:ControlHelper.FocusedBrush="{StaticResource Success}"
+                                     
                                       rubyer:ToggleButtonHelper.CheckedContent="ON"
                                       Background="{StaticResource Error}"
                                       Content="OFF"
