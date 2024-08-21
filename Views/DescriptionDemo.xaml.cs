@@ -142,7 +142,7 @@ namespace UpdateDSP.Views
                         comlist.IsEnabled = true;
                         botelv.IsEnabled = true;
 
-                       // RecDataDeal.Abort();
+                        //RecDataDeal.Abort();
                     }
                 }
                 else
@@ -248,7 +248,7 @@ namespace UpdateDSP.Views
                                     // DLE+STX+<data stream>+CHECKA+CHECKB+DLE+ETX
                                     if (reclist.Count >= 7 && reclist.Count <= 2048)
                                     {
-                                       // DisDataToDlg(reclist, reclist.Count);
+                                        DisDataToDlg(reclist, reclist.Count);
                                         // 将数据内部DLE DLE转换为DLE
                                         for (int j = 2; j < reclist.Count - 2; j++)
                                         {
@@ -338,18 +338,21 @@ namespace UpdateDSP.Views
                             //TxDisplay.Select(RxDisplay.TextLength, 0);
                             //TxDisplay.ScrollToCaret();
                             // 下发第一包数据
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                Message.Success("握手成功，开始发送第一包数据");
-                                Message.Success("MCU擦除FLASH成功，开始下发数据");
-                            });
+                            AddTextToLog("握手成功，开始发送第一包数据");
+                            AddTextToLog("MCU擦除FLASH成功，开始下发数据");
+                            //Application.Current.Dispatcher.Invoke(() =>
+                            //{
+                            //    Message.Success("握手成功，开始发送第一包数据");
+                            //    Message.Success("MCU擦除FLASH成功，开始下发数据");
+                            //});
                             SendPackBinData(BinPackOrder);
                             ProgState = PROGSTATE_UPDATE_LOAD;
                         }
                         else
                         {
                             str = GetCommAckResult(DataBuf[3]);
-                            str += "，退出固件升级。\r\n";
+                            str += "，退出固件升级";
+                            AddTextToLog(str);
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 Message.Success(str);
@@ -368,19 +371,19 @@ namespace UpdateDSP.Views
                         break;
                     }
                     // 获得包序号
-                    str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。\r\n", BinPackOrder + 1, BinPackNum, DataBuf[3]);
+                    str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
                     //TxDisplay.AppendText(str);
                     //TxDisplay.Focus();
                     //TxDisplay.Select(RxDisplay.TextLength, 0);
                     //TxDisplay.ScrollToCaret();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Message.Success(str);
+                        AddTextToLog(str);
                     });
                     if (DataBuf[3] != 0)
                     {
                         str = GetCommAckResult(DataBuf[3]);
-                        str += "，退出固件升级。\r\n";
+                        str += "，退出固件升级。";
                         //TxDisplay.AppendText(str);
                         //TxDisplay.Focus();
                         //TxDisplay.Select(RxDisplay.TextLength, 0);
@@ -388,7 +391,7 @@ namespace UpdateDSP.Views
                         //UpdateStop();
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            Message.Success(str);
+                            AddTextToLog(str);
                         });
                         break;
                     }
@@ -409,21 +412,21 @@ namespace UpdateDSP.Views
                         break;
                     }
 
-                    str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。\r\n", BinPackOrder + 1, BinPackNum, DataBuf[3]);
+                    str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
                     //TxDisplay.AppendText(str);
                     //TxDisplay.Focus();
                     //TxDisplay.Select(RxDisplay.TextLength, 0);
                     //TxDisplay.ScrollToCaret();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Message.Success(str);
+                        AddTextToLog(str);
                     });
                     if (DataBuf[3] == 5)
                     {
                         //progressBar1.Value = progressBar1.Maximum;
                     }
                     str = GetCommAckResult(DataBuf[3]);
-                    str += "，退出固件升级。\r\n";
+                    str += "，退出固件升级。";
                     //TxDisplay.AppendText(str);
                     //TxDisplay.Focus();
                     //TxDisplay.Select(RxDisplay.TextLength, 0);
@@ -432,7 +435,7 @@ namespace UpdateDSP.Views
                     //UpdateStop();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Message.Success(str);
+                        AddTextToLog(str);
                     });
                     ProgState = PROGSTATE_UPDATE_IDEL;
                     break;
@@ -583,6 +586,70 @@ namespace UpdateDSP.Views
                     fs.Close();
                 }
             }
+            // 初始化CheckA和CheckB和代码长度
+            BinFileData[0] = 0;
+            BinFileData[1] = 0;
+            BinFileData[2] = 0;
+            BinFileData[3] = 0;
+            BinFileData[4] = (byte)(BinFileLen >> 24);
+            BinFileData[5] = (byte)(BinFileLen >> 16);
+            BinFileData[6] = (byte)(BinFileLen >> 8);
+            BinFileData[7] = (byte)(BinFileLen >> 0);
+
+            // 加入校验码
+            for (int i = 0; i < BinFileLen; i++)
+            {
+                Bin_CheckA += BinFileData[i];
+                Bin_CheckB += Bin_CheckA;
+            }
+            BinFileData[0] = (byte)(Bin_CheckA >> 8);
+            BinFileData[1] = (byte)(Bin_CheckA >> 0);
+            BinFileData[2] = (byte)(Bin_CheckB >> 8);
+            BinFileData[3] = (byte)(Bin_CheckB >> 0);
+        //    // 显示文件信息
+        //    IDC_EDIT_CHECKA.Text = Bin_CheckA.ToString("X4");
+        //    IDC_EDIT_CHECKB.Text = Bin_CheckB.ToString("X4");
+        //    IDC_EDIT_CODELENGTH.Text = BinFileLen.ToString();
+        //    // 软件版本号
+        //    IDC_EDIT_SOFTVM.Text = BinFileData[24].ToString("X2");
+        //    IDC_EDIT_SOFTVS.Text = BinFileData[25].ToString("X2");
+        //    // 软件ID
+        //    uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
+        //    IDC_EDIT_SOFTID.Text = g_SoftId.ToString("d");
+        //    // 串码
+        //    byte[] SoftSn = new byte[10];
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        SoftSn[i] = BinFileData[8 + i * 2 + 1];
+        //    }
+        //    IDC_EDIT_SOFTSN.Text = Encoding.ASCII.GetString(SoftSn);
+
+        //    TextBox[] dataid = new TextBox[32]{
+        //IDC_EDIT_DAT0, IDC_EDIT_DAT1, IDC_EDIT_DAT2, IDC_EDIT_DAT3,
+        //IDC_EDIT_DAT4, IDC_EDIT_DAT5, IDC_EDIT_DAT6, IDC_EDIT_DAT7,
+        //IDC_EDIT_DAT8, IDC_EDIT_DAT9, IDC_EDIT_DAT10, IDC_EDIT_DAT11,
+        //IDC_EDIT_DAT12, IDC_EDIT_DAT13, IDC_EDIT_DAT14, IDC_EDIT_DAT15,
+        //IDC_EDIT_DAT16, IDC_EDIT_DAT17, IDC_EDIT_DAT18, IDC_EDIT_DAT19,
+        //IDC_EDIT_DAT20, IDC_EDIT_DAT21, IDC_EDIT_DAT22, IDC_EDIT_DAT23,
+        //IDC_EDIT_DAT24, IDC_EDIT_DAT25, IDC_EDIT_DAT26, IDC_EDIT_DAT27,
+        //IDC_EDIT_DAT28, IDC_EDIT_DAT29, IDC_EDIT_DAT30, IDC_EDIT_DAT31};
+        //    TextBox[] cipherid = new TextBox[16]{
+        //IDC_EDIT_CIPHER0, IDC_EDIT_CIPHER1, IDC_EDIT_CIPHER2, IDC_EDIT_CIPHER3,
+        //IDC_EDIT_CIPHER4, IDC_EDIT_CIPHER5, IDC_EDIT_CIPHER6, IDC_EDIT_CIPHER7,
+        //IDC_EDIT_CIPHER8, IDC_EDIT_CIPHER9, IDC_EDIT_CIPHER10, IDC_EDIT_CIPHER11,
+        //IDC_EDIT_CIPHER12, IDC_EDIT_CIPHER13, IDC_EDIT_CIPHER14, IDC_EDIT_CIPHER15};
+        //    // DATA0～31
+        //    for (int i = 0; i < 32; i++)
+        //    {
+        //        Data[i] = (ushort)((ushort)(BinFileData[62 + i * 2] << 8) + BinFileData[DATA_LOCAL_START + i * 2 + 1]);
+        //        dataid[i].Text = Data[i].ToString("X4");
+        //    }
+        //    // CIPHER0~15
+        //    for (int i = 0; i < 16; i++)
+        //    {
+        //        Ciphers[i] = BinFileData[CIPHER_LOCAL_START + i];
+        //        cipherid[i].Text = Ciphers[i].ToString("X2");
+        //    }
         }
         #endregion
         #region 开始固件升级
@@ -807,24 +874,54 @@ namespace UpdateDSP.Views
         #endregion
         private void AddTextToLog(string text)
         {
-            // 创建一个新的Paragraph来包含文本  
-            Paragraph para = new Paragraph();
-            para.Margin = new Thickness(0); // 设置Margin为0以减少额外的垂直空间  
-            para.Inlines.Add(text ); // 添加换行符以分隔日志项   
-            if (rtbLog.Document.Blocks.Count > 200)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                rtbLog.Document.Blocks.Clear();
-            }
+                // 创建一个新的Paragraph来包含文本  
+                Paragraph para = new Paragraph();
+                para.Margin = new Thickness(0); // 设置Margin为0以减少额外的垂直空间  
+                para.Inlines.Add(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + text); // 添加换行符以分隔日志项   
+                if (rtbLog.Document.Blocks.Count > 200)
+                {
+                    rtbLog.Document.Blocks.Clear();
+                }
 
-            // 将新的Paragraph添加到RichTextBox的Document中  
-            rtbLog.Document.Blocks.Add(para);
+                // 将新的Paragraph添加到RichTextBox的Document中  
+                rtbLog.Document.Blocks.Add(para);
 
-            // 确保滚动到底部  
-            rtbLog.ScrollToEnd();
+                // 确保滚动到底部  
+                rtbLog.ScrollToEnd();
+            });
         }
+        public void DisDataToDlg(List<byte> raw, int datalen)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                string str, strraw;
+                strraw = "";
+                for (int i = 0; i < datalen; i++)
+                {
+                    str = string.Format("{0:X2} ", raw[i]);
+                    strraw += str;
+                }
+                // 创建一个新的Paragraph来包含文本  
+                Paragraph para = new Paragraph();
+                para.Margin = new Thickness(0); // 设置Margin为0以减少额外的垂直空间  
+                para.Inlines.Add(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + strraw); // 添加换行符以分隔日志项   
+                if (txlog.Document.Blocks.Count > 200)
+                {
+                    txlog.Document.Blocks.Clear();
+                }
+
+                // 将新的Paragraph添加到RichTextBox的Document中  
+                txlog.Document.Blocks.Add(para);
+
+                // 确保滚动到底部  
+                txlog.ScrollToEnd();
+            });
+        }
+
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            AddTextToLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "2");
             #region 串口识别
             var ports = await Task.Run(() => Common.Common.SearchPort());
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>)) 

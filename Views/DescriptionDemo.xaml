@@ -58,9 +58,9 @@
                         </StackPanel>
                         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
                             <TextBlock  Text="      状态:"  />
-                            <RichTextBox  Height="100" Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="22 0"  />
+                            <RichTextBox  Height="100" Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  />
                             <TextBlock  Text="     发送:"  />
-                            <RichTextBox  Height="100"  Width="350" x:Name="rtbLog2" VerticalScrollBarVisibility="Auto"  Margin="20 0" />
+                            <RichTextBox  Height="100"  Width="390" x:Name="txlog" VerticalScrollBarVisibility="Auto"  Margin="5 0" />
 
                         </StackPanel>
                     </Grid>
