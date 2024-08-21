@@ -805,8 +805,26 @@ namespace UpdateDSP.Views
             return checksum;
         }
         #endregion
+        private void AddTextToLog(string text)
+        {
+            // 创建一个新的Paragraph来包含文本  
+            Paragraph para = new Paragraph();
+            para.Margin = new Thickness(0); // 设置Margin为0以减少额外的垂直空间  
+            para.Inlines.Add(text ); // 添加换行符以分隔日志项   
+            if (rtbLog.Document.Blocks.Count > 200)
+            {
+                rtbLog.Document.Blocks.Clear();
+            }
+
+            // 将新的Paragraph添加到RichTextBox的Document中  
+            rtbLog.Document.Blocks.Add(para);
+
+            // 确保滚动到底部  
+            rtbLog.ScrollToEnd();
+        }
         private async void Timer_Tick(object sender, EventArgs e)
         {
+            AddTextToLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "2");
             #region 串口识别
             var ports = await Task.Run(() => Common.Common.SearchPort());
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>)) 
