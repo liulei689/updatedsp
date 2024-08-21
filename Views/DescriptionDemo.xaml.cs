@@ -94,7 +94,7 @@ namespace UpdateDSP.Views
             //握手定时器
              timerhandshake = new DispatcherTimer();
             timerhandshake.Interval = TimeSpan.FromMilliseconds(200);
-            timerhandshake.IsEnabled = false;
+           // timerhandshake.IsEnabled = false;
             timerhandshake.Tick += timerhandshake_Tick;
            
 
@@ -116,19 +116,16 @@ namespace UpdateDSP.Views
                        
                         if (await MessageBoxR.Warning("正在进行固件升级，关闭串口会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) ==MessageBoxResult.Yes)
                         {
-                            //// 文件加载按钮
-                            //UpdateButton.Text = "Start";
-                            //LoadFileButton.Enabled = true;
+                        
+                   
                             //// 停止固件升级
-                            //UpdateFlag = false;
-                            //UpdateStop();
-                            //TxDisplay.AppendText("固件升级功能强制退出！\r\n");
+                            UpdateFlag = false;
+                            UpdateStop();
+                            AddTextToLog("固件升级功能强制退出！\r\n");
                             ////串口已经处于打开状态
-                            //serialPort2.Close();    //关闭串口
-                            //OpenCloseCom.Text = "Open";
-
-                            //comboBox_ComNum.Enabled = true;
-                            //comboBox_BaundRate.Enabled = true;
+                            serialPort2.Close();    //关闭串口
+                            comlist.IsEnabled = true;
+                            botelv.IsEnabled = true;
 
                             RecDataDeal.Abort();
                         }
@@ -142,7 +139,7 @@ namespace UpdateDSP.Views
                         comlist.IsEnabled = true;
                         botelv.IsEnabled = true;
 
-                        //RecDataDeal.Abort();
+                        RecDataDeal.Abort();
                     }
                 }
                 else
@@ -326,7 +323,7 @@ namespace UpdateDSP.Views
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            timerhandshake.IsEnabled = false;
+                            //timerhandshake.IsEnabled = false;
                             timerhandshake.Stop();
                         });
                        
@@ -361,7 +358,7 @@ namespace UpdateDSP.Views
                             //TxDisplay.Focus();
                             //TxDisplay.Select(RxDisplay.TextLength, 0);
                             //TxDisplay.ScrollToCaret();
-                            //UpdateStop();
+                            UpdateStop();
                         }
                     }
                     break;
@@ -388,7 +385,7 @@ namespace UpdateDSP.Views
                         //TxDisplay.Focus();
                         //TxDisplay.Select(RxDisplay.TextLength, 0);
                         //TxDisplay.ScrollToCaret();
-                        //UpdateStop();
+                        UpdateStop();
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             AddTextToLog(str);
@@ -432,7 +429,7 @@ namespace UpdateDSP.Views
                     //TxDisplay.Select(RxDisplay.TextLength, 0);
                     //TxDisplay.ScrollToCaret();
 
-                    //UpdateStop();
+                    UpdateStop();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         AddTextToLog(str);
@@ -475,7 +472,7 @@ namespace UpdateDSP.Views
                     str = "超出FLASH容量范围";
                     break;
                 case 0x07:
-                    str = "Boot串吗不符错误";
+                    str = "Boot串码不符错误";
                     break;
                 case 0x08:
                     str = "扇区擦除成功";
@@ -576,7 +573,7 @@ namespace UpdateDSP.Views
                     if (BinFileLen < APPHEAD_LENGTH)
                     {
                         UpdateFlag = false;
-                        // UpdateStop();
+                        UpdateStop();
                         Message.Error("程序文件为空，取消固件升级。");
                     }
                     for (int i = 0; i <= BinFileLen; i++)
@@ -729,12 +726,32 @@ namespace UpdateDSP.Views
                     // LoadFileButton.Enabled = true;
                     // 停止固件升级
                     UpdateFlag = false;
-                    //  UpdateStop();
+                     UpdateStop();
                     // TxDisplay.AppendText("固件升级功能强制退出！\r\n");
                     start.Content = "开始固件升级";
                     start.Background = new SolidColorBrush(Colors.Green);
                 }
             }
+        }
+        /// <summary>
+        /// 终止固件升级
+        /// </summary>
+        public void UpdateStop()
+        {
+            BinPackOrder = 0;
+            timerhandshake.Stop();
+            //文件加载按钮
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                start.Content = "开始固件升级";
+                start.Background = new SolidColorBrush(Colors.Green);
+            });
+            // 停止固件更新
+            UpdateFlag = false;
+            Array.Clear(pData, 0, pData.Length);
+            DataLen = 0;
+            BinPackNum = 0;
+            ProgState = PROGSTATE_UPDATE_IDEL;
         }
         /// <summary>
         /// 对数据进行分包,并启动升级
@@ -769,7 +786,7 @@ namespace UpdateDSP.Views
         {
             if (serialPort2.IsOpen == false)
             {
-                timerhandshake.IsEnabled = false;
+                timerhandshake.Stop();
                 return;
             }
             SendPackStart();
