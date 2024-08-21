@@ -20,7 +20,7 @@
                             <ComboBox Name="comlist" Width="300" Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
                             <TextBlock Text="    波特率:"  />
                             <ComboBox Name="botelv" Width="100" Margin="20 0" />
-                            <ToggleButton x:Name="openclosecom" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False">
+                            <ToggleButton x:Name="openclosecom" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False" Click="openclosecom_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <rubyer:Icon Type="WifiOffFill" />
                                     <TextBlock Margin="5 0 0 0" Text="串口未连接" />

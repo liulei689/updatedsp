@@ -121,13 +121,12 @@ namespace UpdateDSP.Views
                     else
                     {
                         ////串口已经处于打开状态
-                        //serialPort2.Close();    //关闭串口
-                        //OpenCloseCom.Text = "Open";
+                        serialPort2.Close();    //关闭串口
 
-                        //comboBox_ComNum.Enabled = true;
-                        //comboBox_BaundRate.Enabled = true;
+                        comlist.IsEnabled = true;
+                        botelv.IsEnabled = true;
 
-                        RecDataDeal.Abort();
+                       // RecDataDeal.Abort();
                     }
                 }
                 else
@@ -162,13 +161,14 @@ namespace UpdateDSP.Views
                 serialPort2.Close();    //关闭串口
                 comlist.IsEnabled = true;
                 botelv.IsEnabled = true;
+                return;
                 //RecDataDeal.Abort();
             }
             openclosecom.IsChecked = serialPort2.IsOpen;
             if(serialPort2.IsOpen)
             Message.Success(comlist.SelectedItem as string+"连接成功！");
             else
-            Message.Error(comlist.SelectedItem as string + "连接失败！");
+            Message.Warning(comlist.SelectedItem as string + "已断开连接！");
 
         }
 
@@ -196,6 +196,11 @@ namespace UpdateDSP.Views
             }
         }
         #endregion
+        private void openclosecom_Click(object sender, RoutedEventArgs e)
+        {
+            OpenCloseCom();
+        }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             #region 串口识别
@@ -224,7 +229,7 @@ namespace UpdateDSP.Views
 
         }
 
-        private async void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private  void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (comlist.SelectedItem != null)
                 OpenCloseCom();
