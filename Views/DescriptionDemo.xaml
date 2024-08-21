@@ -13,14 +13,14 @@
             <Grid Margin="10"
                   rubyer:GridHelper.RowDefinitions="Auto, Auto"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Top">
-                <GroupBox Grid.Row="0" Header="操作区域" >
+                <GroupBox Grid.Row="0" Header="操作区域"  >
                     <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
                         <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="5">
-                            <TextBlock Style="{StaticResource Head4TextBlock}" Text="    串口号:"  />
-                            <ComboBox Width="250" Margin="20 0" />
-                            <TextBlock Style="{StaticResource Head4TextBlock}" Text="    波特率:"  />
-                            <ComboBox Width="100" Margin="20 0" />
-                            <ToggleButton Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="True">
+                            <TextBlock  Text="    串口号:"  />
+                            <ComboBox Name="comlist" Width="300" Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
+                            <TextBlock Text="    波特率:"  />
+                            <ComboBox Name="botelv" Width="100" Margin="20 0" />
+                            <ToggleButton x:Name="openclosecom" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False">
                                 <StackPanel Orientation="Horizontal">
                                     <rubyer:Icon Type="WifiOffFill" />
                                     <TextBlock Margin="5 0 0 0" Text="串口未连接" />
@@ -32,12 +32,12 @@
                                     </StackPanel>
                                 </rubyer:ToggleButtonHelper.CheckedContent>
                             </ToggleButton>
-                            <rubyer:Loading Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="False"/>
-                            <rubyer:Loading Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
+                            <rubyer:Loading Name="rx" Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="False"/>
+                            <rubyer:Loading Name="tx" Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
 
                         </StackPanel>
                         <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
-                            <TextBlock  Grid.Column="0" Style="{StaticResource Head4TextBlock}" Text="打开固件:" />
+                            <TextBlock  Grid.Column="0"  Text="打开固件:" />
                             <Button Grid.Column="1" Foreground="#FB8C00" Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
                             <TextBox Grid.Column="2"  IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
                                 <rubyer:InputBoxHelper.PostContent>
@@ -49,16 +49,16 @@
                          
                         </Grid>
                         <StackPanel Grid.Row="2" Orientation="Horizontal">
-                            <TextBlock   Style="{StaticResource Head4TextBlock}" Text="     通道ID:"  />
+                            <TextBlock  Text="     通道ID:"  />
                             <ComboBox Width="70" Margin="20 0" />
                             <rubyer:Popover  Title="小提示" DockPanel.Dock="Top" Placement="Top" PopoverContent="先点击开始按钮后，再重启设备，等待升级完成" TriggerMode="Hover">
                                 <Button Content="开始固件升级" />
                             </rubyer:Popover>
-                            <ProgressBar rubyer:ProgressBarHelper.ShowPercent="True" Width="600" Margin="5" VerticalAlignment="Stretch" rubyer:ProgressBarHelper.Thickness="13" Value="11" />
+                            <ProgressBar Name="updateprogress" rubyer:ProgressBarHelper.ShowPercent="True" Width="600" Margin="5" VerticalAlignment="Stretch" rubyer:ProgressBarHelper.Thickness="20" Value="0" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Row="2" Header="固件信息">
+                <GroupBox Grid.Row="2" Header="固件信息" >
                     <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto, Auto, Auto,*">
                         <rubyer:Description Style="{StaticResource BorderDescription}"
                                             Grid.Row="0"
@@ -66,7 +66,7 @@
                                             Columns="3">
                             <rubyer:DescriptionItem  Description="版本号" >
                             <rubyer:DescriptionItem.Content>
-                                    <rubyer:Tag Margin="2" Background="{DynamicResource DefaultForeground}" Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
+                                    <rubyer:Tag Margin="2"  Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
                                         <rubyer:Tag.Header>
                                             <TextBlock TextWrapping="Wrap">DSP</TextBlock>
                                         </rubyer:Tag.Header>
@@ -89,7 +89,7 @@
                             <rubyer:DescriptionItem Content="DescriptionFontSize" Description="标识" />
 
                         </rubyer:Description>
-                        <TextBlock    Grid.Row="1" Style="{StaticResource Head4TextBlock}" Text="数据" />
+                        <TextBlock    Grid.Row="1"  Text="数据" />
 
                         <rubyer:Description Style="{StaticResource BorderDescription}"
                       Grid.Row="2"
@@ -101,7 +101,7 @@
                             <rubyer:DescriptionItem Content="" Description="校验B" />
                         
                         </rubyer:Description>
-                        <TextBlock    Grid.Row="3" Style="{StaticResource Head4TextBlock}" Text="数据:" />
+                        <TextBlock    Grid.Row="3" Text="数据:" />
 
                         <rubyer:Description Style="{StaticResource BorderDescription}"
                           Grid.Row="4" Width="700" HorizontalAlignment="Left"
