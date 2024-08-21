@@ -39,9 +39,9 @@
                         <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
                             <TextBlock  Grid.Column="0"  Text="打开固件:" />
                             <Button Grid.Column="1" Foreground="#FB8C00" Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
-                            <TextBox Grid.Column="2"  IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
+                            <TextBox Grid.Column="2" Name="LoadFileName" IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
                                 <rubyer:InputBoxHelper.PostContent>
-                                    <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle">
+                                    <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click">
                                         <rubyer:Icon Type="FolderOpenFill" />
                                     </Button>
                                 </rubyer:InputBoxHelper.PostContent>

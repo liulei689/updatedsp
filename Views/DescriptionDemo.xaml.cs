@@ -18,6 +18,9 @@ using System.Windows.Threading;
 using System.IO.Ports;
 using System.Threading;
 using Rubyer;
+using System.IO;
+using Microsoft.Win32;
+
 
 
 namespace UpdateDSP.Views
@@ -200,7 +203,41 @@ namespace UpdateDSP.Views
         {
             OpenCloseCom();
         }
+        #region 加载固件
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            openFileDialog1.Filter = "二进制文件|*.bin";
+            openFileDialog1.Title = "Load File";
 
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
+                string filepath = openFileDialog1.FileName;//取全路径文件名
+                LoadFileName.Text = filepath;
+                if (!File.Exists(filepath))
+                {
+                    Message.Error("\n\t读取失败！\n错误原因：可能不存在此文件");
+                }
+                else
+                {
+                    FileStream fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
+                    BinFileLen = (int)fs.Length;
+                    if (BinFileLen < APPHEAD_LENGTH)
+                    {
+                        UpdateFlag = false;
+                        // UpdateStop();
+                        Message.Error("程序文件为空，取消固件升级。");
+                    }
+                    for (int i = 0; i <= BinFileLen; i++)
+                    {
+                        BinFileData[i] = (byte)fs.ReadByte();
+                    }
+                    fs.Close();
+                }
+            }
+        }
+        #endregion
         private void Timer_Tick(object sender, EventArgs e)
         {
             #region 串口识别
