@@ -113,11 +113,11 @@ namespace UpdateDSP.Views
                 {
                     if (UpdateFlag == true)
                     {
-                       
-                        if (await MessageBoxR.Warning("正在进行固件升级，关闭串口会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) ==MessageBoxResult.Yes)
+
+                        if (await MessageBoxR.Warning("正在进行固件升级，关闭串口会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
-                        
-                   
+
+
                             //// 停止固件升级
                             UpdateFlag = false;
                             UpdateStop();
@@ -129,7 +129,9 @@ namespace UpdateDSP.Views
 
                             RecDataDeal.Abort();
                         }
-                        else return;
+                        else {
+                            openclosecom.IsChecked = true;
+                                return; }
                     }
                     else
                     {
@@ -298,7 +300,7 @@ namespace UpdateDSP.Views
             }
             Thread.Sleep(500);
         }
-
+        bool issend = false;
         /// <summary>
         /// 对接收数据进行处理
         /// </summary>
@@ -336,12 +338,13 @@ namespace UpdateDSP.Views
                             //TxDisplay.ScrollToCaret();
                             // 下发第一包数据
                             AddTextToLog("握手成功，开始发送第一包数据");
-                            AddTextToLog("MCU擦除FLASH成功，开始下发数据");
+                            AddTextToLog("DSP擦除FLASH中....");
                             //Application.Current.Dispatcher.Invoke(() =>
                             //{
                             //    Message.Success("握手成功，开始发送第一包数据");
                             //    Message.Success("MCU擦除FLASH成功，开始下发数据");
                             //});
+                            issend = true;
                             SendPackBinData(BinPackOrder);
                             ProgState = PROGSTATE_UPDATE_LOAD;
                         }
@@ -367,6 +370,7 @@ namespace UpdateDSP.Views
                     {
                         break;
                     }
+                    issend = false;
                     // 获得包序号
                     str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
                     //TxDisplay.AppendText(str);
@@ -395,12 +399,17 @@ namespace UpdateDSP.Views
                     // 下发下一包数据
                     BinPackOrder = (BinPackOrder + 1) % BinPackNum;
                     // 设置进度条
-                    //setPos(BinPackOrder);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (updateprogress.Value<=updateprogress.Maximum)
+                    updateprogress.Value = pres+BinPackOrder;
+                    });
                     // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
                     if ((BinPackOrder + 1) >= BinPackNum)
                     {
                         ProgState = PROGSTATE_UPDATE_FINAL;
                     }
+
                     SendPackBinData(BinPackOrder);
                     break;
                 case PROGSTATE_UPDATE_FINAL:
@@ -420,7 +429,11 @@ namespace UpdateDSP.Views
                     });
                     if (DataBuf[3] == 5)
                     {
-                        //progressBar1.Value = progressBar1.Maximum;
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            updateprogress.Value = updateprogress.Maximum;
+                            issend = false;
+                        });
                     }
                     str = GetCommAckResult(DataBuf[3]);
                     str += "，退出固件升级。";
@@ -461,6 +474,7 @@ namespace UpdateDSP.Views
                     break;
                 case 0x03:
                     str = "固件数据校验码错误";
+               
                     break;
                 case 0x04:
                     str = "数据包校验失败";
@@ -473,6 +487,7 @@ namespace UpdateDSP.Views
                     break;
                 case 0x07:
                     str = "Boot串码不符错误";
+                 
                     break;
                 case 0x08:
                     str = "扇区擦除成功";
@@ -735,7 +750,8 @@ namespace UpdateDSP.Views
                         //timerhandshake.Enabled = true;
                         //timerTx.Enabled = true;
                         //timerRx.Enabled = true;
-                        //progressBar1.Value = progressBar1.Minimum;
+                        updateprogress.Value = updateprogress.Minimum;
+                        issend = false;
                     }
                 }
                 else
@@ -766,6 +782,7 @@ namespace UpdateDSP.Views
         /// </summary>
         public void UpdateStop()
         {
+            issend = false;
             BinPackOrder = 0;
             timerhandshake.Stop();
             //文件加载按钮
@@ -773,6 +790,7 @@ namespace UpdateDSP.Views
             {
                 start.Content = "开始固件升级";
                 start.Background = new SolidColorBrush(Colors.Green);
+                ButtonHelper.SetLoading(start, false);
             });
             // 停止固件更新
             UpdateFlag = false;
@@ -801,7 +819,7 @@ namespace UpdateDSP.Views
             BinPackNum = DataLen / BINDATA_PACK_LEN;
             // 最后一包数据可以是0长度
             BinPackNum++;
-            //progressBar1.Maximum = BinPackNum;
+            updateprogress.Maximum = BinPackNum;
             return true;
         }
 
@@ -964,7 +982,7 @@ namespace UpdateDSP.Views
                 txlog.ScrollToEnd();
             });
         }
-
+        double pres = 0;
         private async void Timer_Tick(object sender, EventArgs e)
         {
             #region 串口识别
@@ -979,6 +997,18 @@ namespace UpdateDSP.Views
             }
             #endregion
 
+            if (updateprogress.Value < 80 && issend) {
+                updateprogress.Value++;
+                pres = updateprogress.Value;
+                if (updateprogress.Value > 60) 
+                {
+                    AddTextToLog("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
+                    Message.Error("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
+                    UpdateStop();
+               
+                }
+            }
+         
             //var now = DateTime.Now;
             //hour.Angle = (now.Hour - 12) / 12.0 * 360;
             //minutes.Angle = now.Minute / 60.0 * 360;
