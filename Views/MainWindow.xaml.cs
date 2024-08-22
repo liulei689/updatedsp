@@ -53,6 +53,7 @@ namespace UpdateDSP
             contrainerSlider.Value = ((CornerRadius)App.Current.Resources["AllContainerCornerRadius"]).TopLeft;
             ThemeManager.SwitchThemeMode(ThemeMode.System);
             darkMode.IsChecked = ThemeManager.GetIsAppDarkMode();
+            tiitles.IsExpanded = false;
         }
 
         private void controlSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

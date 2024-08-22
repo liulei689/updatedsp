@@ -9,7 +9,7 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:DescriptionViewModel}"
              mc:Ignorable="d">
     <smtx:XamlDisplay UniqueKey="UpdateDspNormal">
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <Grid Margin="10"
                   rubyer:GridHelper.RowDefinitions="Auto, Auto"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Top">
