@@ -65,7 +65,7 @@ namespace UpdateDSP
             }
                 // 上述之外的时间段
 
-                //tiitles.IsExpanded = false;
+                tiitles.IsExpanded = false;
             }
 
             private void controlSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

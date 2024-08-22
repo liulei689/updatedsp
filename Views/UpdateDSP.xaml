@@ -8,136 +8,134 @@
              xmlns:viewmodels="clr-namespace:UpdateDSP.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:DescriptionViewModel}"
              mc:Ignorable="d">
-    <smtx:XamlDisplay UniqueKey="UpdateDspNormal" >
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <Grid Margin="10"
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="10"
                   rubyer:GridHelper.RowDefinitions="Auto, Auto"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Top">
-                <GroupBox Grid.Row="0" Header="操作区域"  >
-                    <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,Auto,*">
-                        <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="5">
-                            <TextBlock  Text="    串口号:"  />
-                            <ComboBox Name="comlist" Width="300" Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
-                            <TextBlock Text="    波特率:"  />
-                            <ComboBox Name="botelv" Width="100" Margin="20 0" />
-                            <ToggleButton x:Name="openclosecom" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False" Click="openclosecom_Click">
+            <GroupBox Grid.Row="0" Header="操作区域"  >
+                <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,Auto,*">
+                    <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="5">
+                        <TextBlock  Text="    串口号:"  />
+                        <ComboBox Name="comlist" Width="300" Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
+                        <TextBlock Text="    波特率:"  />
+                        <ComboBox Name="botelv" Width="100" Margin="20 0" />
+                        <ToggleButton x:Name="openclosecom" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False" Click="openclosecom_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <rubyer:Icon Type="WifiOffFill" />
+                                <TextBlock Margin="5 0 0 0" Text="串口未连接" />
+                            </StackPanel>
+                            <rubyer:ToggleButtonHelper.CheckedContent>
                                 <StackPanel Orientation="Horizontal">
-                                    <rubyer:Icon Type="WifiOffFill" />
-                                    <TextBlock Margin="5 0 0 0" Text="串口未连接" />
+                                    <rubyer:Icon Type="WifiFill" Foreground="{StaticResource Success}" />
+                                    <TextBlock Margin="5 0 0 0" Foreground="{StaticResource Success}" Text="串口已连接" />
                                 </StackPanel>
-                                <rubyer:ToggleButtonHelper.CheckedContent>
-                                    <StackPanel Orientation="Horizontal">
-                                        <rubyer:Icon Type="WifiFill" Foreground="{StaticResource Success}" />
-                                        <TextBlock Margin="5 0 0 0" Foreground="{StaticResource Success}" Text="串口已连接" />
-                                    </StackPanel>
-                                </rubyer:ToggleButtonHelper.CheckedContent>
-                            </ToggleButton>
-                            <rubyer:Loading Name="rx" Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="True"/>
-                            <rubyer:Loading Name="tx" Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
+                            </rubyer:ToggleButtonHelper.CheckedContent>
+                        </ToggleButton>
+                        <rubyer:Loading Name="rx" Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="True"/>
+                        <rubyer:Loading Name="tx" Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
 
-                        </StackPanel>
-                        <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
-                            <TextBlock  Grid.Column="0"  Text="打开固件:" />
-                            <Button Grid.Column="1" Foreground="{StaticResource Primary}"  Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
-                            <TextBox Grid.Column="2" Name="LoadFileName" IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
-                                <rubyer:InputBoxHelper.PostContent>
-                                    <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click">
-                                        <rubyer:Icon Type="FolderOpenFill" />
-                                    </Button>
-                                </rubyer:InputBoxHelper.PostContent>
-                            </TextBox>
-                         
-                        </Grid>
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
-                            <TextBlock  Text="     通道ID:"  />
-                            <ComboBox Name="chanleid" Width="70" Margin="12 0" />
-                            <rubyer:Popover  Title="小提示" DockPanel.Dock="Top" Placement="Top" PopoverContent="先点击开始按钮后，再重启设备，等待升级完成" TriggerMode="Hover">
-                                <Button Name="start"           
+                    </StackPanel>
+                    <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
+                        <TextBlock  Grid.Column="0"  Text="打开固件:" />
+                        <Button Grid.Column="1" Foreground="{StaticResource Primary}"  Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
+                        <TextBox Grid.Column="2" Name="LoadFileName" IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
+                            <rubyer:InputBoxHelper.PostContent>
+                                <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click">
+                                    <rubyer:Icon Type="FolderOpenFill" />
+                                </Button>
+                            </rubyer:InputBoxHelper.PostContent>
+                        </TextBox>
+
+                    </Grid>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
+                        <TextBlock  Text="     通道ID:"  />
+                        <ComboBox Name="chanleid" Width="70" Margin="12 0" />
+                        <rubyer:Popover  Title="小提示" DockPanel.Dock="Top" Placement="Top" PopoverContent="先点击开始按钮后，再重启设备，等待升级完成" TriggerMode="Hover">
+                            <Button Name="start"           
                                         rubyer:ButtonHelper.Loading="False"
                                         rubyer:ButtonHelper.LoadingContent="升级中..."
                                         rubyer:ButtonHelper.Shape="Round"  Content="开始固件升级" Click="Button_Click_1" />
-                            </rubyer:Popover>
+                        </rubyer:Popover>
 
-                            <ProgressBar Name="updateprogress" Foreground="{StaticResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="True"  Margin="6"  VerticalAlignment="Stretch" Width="800" HorizontalAlignment="Stretch" Value="0" >
-                                <ProgressBar.Resources>
-                                    <ResourceDictionary>
-                                        <ResourceDictionary.MergedDictionaries>
-                                            <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
-                                            <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
-                                        </ResourceDictionary.MergedDictionaries>
-                                    </ResourceDictionary>
-                                </ProgressBar.Resources>
-                            </ProgressBar>
-                        </StackPanel>
-                        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
-                            <TextBlock  Text="      状态:"  />
-                            <RichTextBox  Height="100"  Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  />
-                            <TextBlock  Text="     发送:"  />
-                            <RichTextBox  Height="100"   Width="390" x:Name="txlog" VerticalScrollBarVisibility="Auto"  Margin="5 0" />
+                        <ProgressBar Name="updateprogress" Foreground="{StaticResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="True"  Margin="6"  VerticalAlignment="Stretch" Width="800" HorizontalAlignment="Stretch" Value="0" >
+                            <ProgressBar.Resources>
+                                <ResourceDictionary>
+                                    <ResourceDictionary.MergedDictionaries>
+                                        <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
+                                        <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
+                                    </ResourceDictionary.MergedDictionaries>
+                                </ResourceDictionary>
+                            </ProgressBar.Resources>
+                        </ProgressBar>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
+                        <TextBlock  Text="      状态:"  />
+                        <RichTextBox  Height="100"  Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  />
+                        <TextBlock  Text="     发送:"  />
+                        <RichTextBox  Height="100"   Width="390" x:Name="txlog" VerticalScrollBarVisibility="Auto"  Margin="5 0" />
 
-                        </StackPanel>
-                    </Grid>
-                </GroupBox>
-                <GroupBox Grid.Row="2" Header="固件信息" >
-                    <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto, Auto, Auto,*">
-                        <rubyer:Description Style="{StaticResource BorderDescription}"
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Row="2" Header="固件信息" >
+                <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto, Auto, Auto,*">
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
                                             Grid.Row="0"
                                             Margin="10"
                                             
                                             Columns="3">
-                            <rubyer:DescriptionItem  Description="版本号" >
+                        <rubyer:DescriptionItem  Description="版本号" >
                             <rubyer:DescriptionItem.Content>
-                                    <rubyer:Tag Name="version" Margin="2" Visibility="Hidden" Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
-                                        <rubyer:Tag.Header>
-                                            <TextBlock TextWrapping="Wrap">DSP</TextBlock>
-                                        </rubyer:Tag.Header>
-                                        <TextBlock Name="IDC_EDIT_SOFTVM" TextWrapping="Wrap">V0.0.0.0</TextBlock>
-                                    </rubyer:Tag>
-                                </rubyer:DescriptionItem.Content>
-                            </rubyer:DescriptionItem>
-                            <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA" Content="                                   " Description="校验A" />
-                            <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB" Content="" Description="校验B" />
-                            <rubyer:DescriptionItem Name="IDC_EDIT_CODELENGTH" Content="" Description="固件大小" />
-                            <rubyer:DescriptionItem Name="IDC_EDIT_SOFTSN"  Content="" Description="软件串码" />
+                                <rubyer:Tag Name="version" Margin="2" Visibility="Hidden" Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
+                                    <rubyer:Tag.Header>
+                                        <TextBlock TextWrapping="Wrap">DSP</TextBlock>
+                                    </rubyer:Tag.Header>
+                                    <TextBlock Name="IDC_EDIT_SOFTVM" TextWrapping="Wrap">V0.0.0.0</TextBlock>
+                                </rubyer:Tag>
+                            </rubyer:DescriptionItem.Content>
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA" Content="                                   " Description="校验A" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB" Content="" Description="校验B" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CODELENGTH" Content="" Description="固件大小" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_SOFTSN"  Content="" Description="软件串码" />
 
-                            <rubyer:DescriptionItem  Name="IDC_EDIT_SOFTID" Content="" Description="ID" />
-                            <rubyer:DescriptionItem Content="" Description="Flash起始地址" />
-                            <rubyer:DescriptionItem Content="" Description="Flash大小" />
-                            <rubyer:DescriptionItem Content="" Description="应用起始地址" />
-                            <rubyer:DescriptionItem Content="" Description="DevCode" />
+                        <rubyer:DescriptionItem  Name="IDC_EDIT_SOFTID" Content="" Description="ID" />
+                        <rubyer:DescriptionItem Content="" Description="Flash起始地址" />
+                        <rubyer:DescriptionItem Content="" Description="Flash大小" />
+                        <rubyer:DescriptionItem Content="" Description="应用起始地址" />
+                        <rubyer:DescriptionItem Content="" Description="DevCode" />
 
-                           
 
-                        </rubyer:Description>
-                      
-                            <TextBlock    Grid.Row="1"  Text="固件数据信息" />
 
-                        <rubyer:Description Style="{StaticResource BorderDescription}"
+                    </rubyer:Description>
+
+                    <TextBlock    Grid.Row="1"  Text="固件数据信息" />
+
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
                       Grid.Row="2"
                       Margin="10"
                       Columns="2"  HorizontalAlignment="Left">
-                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT0" Content="" Description="0~7字节" />
-                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT8" Content="" Description="8~15字节" />
-                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT16" Content="" Description="16~23字节" />
-                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT24" Content="" Description="24~31字节" />
-                        
-                        </rubyer:Description>
-                        <TextBlock    Grid.Row="3" Text="固件密钥信息" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT0" Content="" Description="0~7字节" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT8" Content="" Description="8~15字节" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT16" Content="" Description="16~23字节" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT24" Content="" Description="24~31字节" />
 
-                        <rubyer:Description Style="{StaticResource BorderDescription}"
+                    </rubyer:Description>
+                    <TextBlock    Grid.Row="3" Text="固件密钥信息" />
+
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
                           Grid.Row="4"  HorizontalAlignment="Left"
                           Margin="10"
                           Columns="2">
 
-                            <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER0" Content="" Description="0~7字节" />
-                            <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER8" Content="" Description="8~15字节" />
-                     
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER0" Content="" Description="0~7字节" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER8" Content="" Description="8~15字节" />
 
-                        </rubyer:Description>
-                    </Grid>
-                </GroupBox>
-        
-            </Grid>
-        </ScrollViewer>
-    </smtx:XamlDisplay>
+
+                    </rubyer:Description>
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+    </ScrollViewer>
 </UserControl>
