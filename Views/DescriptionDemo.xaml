@@ -70,118 +70,57 @@
                         <rubyer:Description Style="{StaticResource BorderDescription}"
                                             Grid.Row="0"
                                             Margin="10"
+                                            
                                             Columns="3">
                             <rubyer:DescriptionItem  Description="版本号" >
                             <rubyer:DescriptionItem.Content>
-                                    <rubyer:Tag Margin="2"  Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
+                                    <rubyer:Tag Name="version" Margin="2" Visibility="Hidden" Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
                                         <rubyer:Tag.Header>
                                             <TextBlock TextWrapping="Wrap">DSP</TextBlock>
                                         </rubyer:Tag.Header>
-                                        <TextBlock TextWrapping="Wrap">V0.0.0.0</TextBlock>
+                                        <TextBlock Name="IDC_EDIT_SOFTVM" TextWrapping="Wrap">V0.0.0.0</TextBlock>
                                     </rubyer:Tag>
                                 </rubyer:DescriptionItem.Content>
                             </rubyer:DescriptionItem>
-                            <rubyer:DescriptionItem Content="" Description="校验A" />
-                            <rubyer:DescriptionItem Content="" Description="校验B" />
-                            <rubyer:DescriptionItem Content="111111111" Description="长度" />
-                            <rubyer:DescriptionItem Content="111111111" Description="SN号" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA" Content="                                   " Description="校验A" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB" Content="" Description="校验B" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_CODELENGTH" Content="" Description="固件大小" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_SOFTSN"  Content="" Description="软件串码" />
 
-                            <rubyer:DescriptionItem Content="DescriptionFontSize" Description="标识" />
-                            <rubyer:DescriptionItem Content="111111111" Description="长度" />
-                            <rubyer:DescriptionItem Content="111111111" Description="SN号" />
-                            <rubyer:DescriptionItem Content="111111111" Description="长度" />
-                            <rubyer:DescriptionItem Content="111111111" Description="SN号" />
+                            <rubyer:DescriptionItem  Name="IDC_EDIT_SOFTID" Content="" Description="ID" />
+                            <rubyer:DescriptionItem Content="" Description="Flash起始地址" />
+                            <rubyer:DescriptionItem Content="" Description="Flash大小" />
+                            <rubyer:DescriptionItem Content="" Description="应用起始地址" />
+                            <rubyer:DescriptionItem Content="" Description="DevCode" />
 
-                            <rubyer:DescriptionItem Content="DescriptionFontSize" Description="标识" />
-                            <rubyer:DescriptionItem Content="DescriptionFontSize" Description="标识" />
+                           
 
                         </rubyer:Description>
-                        <TextBlock    Grid.Row="1"  Text="数据" />
+                      
+                            <TextBlock    Grid.Row="1"  Text="固件数据信息" />
 
                         <rubyer:Description Style="{StaticResource BorderDescription}"
                       Grid.Row="2"
                       Margin="10"
-                      Columns="1" Width="700" HorizontalAlignment="Left">
-                            <rubyer:DescriptionItem Content="00 00 00 00 00 00 00 00" Description="校验A" />
-                            <rubyer:DescriptionItem Content="" Description="校验B" />
-                            <rubyer:DescriptionItem Content="" Description="校验A" />
-                            <rubyer:DescriptionItem Content="" Description="校验B" />
+                      Columns="2"  HorizontalAlignment="Left">
+                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT0" Content="" Description="0~7字节" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT8" Content="" Description="8~15字节" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT16" Content="" Description="16~23字节" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_DAT24" Content="" Description="24~31字节" />
                         
                         </rubyer:Description>
-                        <TextBlock    Grid.Row="3" Text="数据:" />
+                        <TextBlock    Grid.Row="3" Text="固件密钥信息" />
 
                         <rubyer:Description Style="{StaticResource BorderDescription}"
-                          Grid.Row="4" Width="700" HorizontalAlignment="Left"
+                          Grid.Row="4"  HorizontalAlignment="Left"
                           Margin="10"
-                          Columns="1">
+                          Columns="2">
 
-                            <rubyer:DescriptionItem Content="" Description="校验A" />
-                            <rubyer:DescriptionItem Content="" Description="校验B" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER0" Content="" Description="0~7字节" />
+                            <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER8" Content="" Description="8~15字节" />
                      
 
                         </rubyer:Description>
-                        <Grid Margin="700,0,0,0" Grid.Row="2" Grid.RowSpan="3" >
-                            <rubyer:CircularPanel Height="200"
-                                          Padding="5"
-                                          Background="{StaticResource DefaultBackground}"
-                                          BorderBrush="{StaticResource DefaultForeground}"
-                                          BorderThickness="2"
-                                          Effect="{StaticResource AllDirectionEffect3}"
-                                          StartAngle="-60"
-                                          TextBlock.FontSize="24">
-                                <TextBlock Text="1" />
-                                <TextBlock Text="2" />
-                                <TextBlock Text="3" />
-                                <TextBlock Text="4" />
-                                <TextBlock Text="5" />
-                                <TextBlock Text="6" />
-                                <TextBlock Text="7" />
-                                <TextBlock Text="8" />
-                                <TextBlock Text="9" />
-                                <TextBlock Text="10" />
-                                <TextBlock Text="11" />
-                                <TextBlock Text="12" />
-                            </rubyer:CircularPanel>
-
-                            <!--  时针  -->
-                            <Rectangle Width="4"
-                               Height="60"
-                               Fill="{StaticResource DefaultForeground}"
-                               RenderTransformOrigin="0.5,0.5">
-                                <Rectangle.RenderTransform>
-                                    <TransformGroup>
-                                        <TranslateTransform Y="-30" />
-                                        <RotateTransform x:Name="hour" Angle="0" />
-                                    </TransformGroup>
-                                </Rectangle.RenderTransform>
-                            </Rectangle>
-
-                            <!--  分针  -->
-                            <Rectangle Width="3"
-                               Height="80"
-                               Fill="{StaticResource DefaultForeground}"
-                               RenderTransformOrigin="0.5,0.5">
-                                <Rectangle.RenderTransform>
-                                    <TransformGroup>
-                                        <TranslateTransform Y="-40" />
-                                        <RotateTransform x:Name="minutes" Angle="0" />
-                                    </TransformGroup>
-                                </Rectangle.RenderTransform>
-                            </Rectangle>
-
-                            <!--  秒针  -->
-                            <Rectangle Width="2"
-                               Height="100"
-                               Fill="{StaticResource Accent}"
-                               RenderTransformOrigin="0,0.5">
-                                <Rectangle.RenderTransform>
-                                    <TransformGroup>
-                                        <TranslateTransform Y="-50" />
-                                        <RotateTransform x:Name="second" Angle="0" />
-                                    </TransformGroup>
-                                </Rectangle.RenderTransform>
-                            </Rectangle>
-                        </Grid>
                     </Grid>
                 </GroupBox>
         

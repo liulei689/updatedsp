@@ -603,51 +603,77 @@ namespace UpdateDSP.Views
             BinFileData[1] = (byte)(Bin_CheckA >> 0);
             BinFileData[2] = (byte)(Bin_CheckB >> 8);
             BinFileData[3] = (byte)(Bin_CheckB >> 0);
-        //    // 显示文件信息
-        //    IDC_EDIT_CHECKA.Text = Bin_CheckA.ToString("X4");
-        //    IDC_EDIT_CHECKB.Text = Bin_CheckB.ToString("X4");
-        //    IDC_EDIT_CODELENGTH.Text = BinFileLen.ToString();
-        //    // 软件版本号
-        //    IDC_EDIT_SOFTVM.Text = BinFileData[24].ToString("X2");
-        //    IDC_EDIT_SOFTVS.Text = BinFileData[25].ToString("X2");
-        //    // 软件ID
-        //    uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
-        //    IDC_EDIT_SOFTID.Text = g_SoftId.ToString("d");
-        //    // 串码
-        //    byte[] SoftSn = new byte[10];
-        //    for (int i = 0; i < 8; i++)
-        //    {
-        //        SoftSn[i] = BinFileData[8 + i * 2 + 1];
-        //    }
-        //    IDC_EDIT_SOFTSN.Text = Encoding.ASCII.GetString(SoftSn);
+            // 显示文件信息
+            version.Visibility =Visibility.Visible;
+            IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
+            IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
+            IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString()+"KB";
+            // 软件版本号
+            IDC_EDIT_SOFTVM.Text = "V"+BinFileData[24].ToString("X2").Insert(1,".") +"."+BinFileData[25].ToString("X2").Insert(1, ".");
+            // 软件ID
+            uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
+            IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");
+            // 串码
+            byte[] SoftSn = new byte[10];
+            for (int i = 0; i < 8; i++)
+            {
+                SoftSn[i] = BinFileData[8 + i * 2 + 1];
+            }
+            IDC_EDIT_SOFTSN.Content = Encoding.ASCII.GetString(SoftSn);
 
-        //    TextBox[] dataid = new TextBox[32]{
-        //IDC_EDIT_DAT0, IDC_EDIT_DAT1, IDC_EDIT_DAT2, IDC_EDIT_DAT3,
-        //IDC_EDIT_DAT4, IDC_EDIT_DAT5, IDC_EDIT_DAT6, IDC_EDIT_DAT7,
-        //IDC_EDIT_DAT8, IDC_EDIT_DAT9, IDC_EDIT_DAT10, IDC_EDIT_DAT11,
-        //IDC_EDIT_DAT12, IDC_EDIT_DAT13, IDC_EDIT_DAT14, IDC_EDIT_DAT15,
-        //IDC_EDIT_DAT16, IDC_EDIT_DAT17, IDC_EDIT_DAT18, IDC_EDIT_DAT19,
-        //IDC_EDIT_DAT20, IDC_EDIT_DAT21, IDC_EDIT_DAT22, IDC_EDIT_DAT23,
-        //IDC_EDIT_DAT24, IDC_EDIT_DAT25, IDC_EDIT_DAT26, IDC_EDIT_DAT27,
-        //IDC_EDIT_DAT28, IDC_EDIT_DAT29, IDC_EDIT_DAT30, IDC_EDIT_DAT31};
-        //    TextBox[] cipherid = new TextBox[16]{
-        //IDC_EDIT_CIPHER0, IDC_EDIT_CIPHER1, IDC_EDIT_CIPHER2, IDC_EDIT_CIPHER3,
-        //IDC_EDIT_CIPHER4, IDC_EDIT_CIPHER5, IDC_EDIT_CIPHER6, IDC_EDIT_CIPHER7,
-        //IDC_EDIT_CIPHER8, IDC_EDIT_CIPHER9, IDC_EDIT_CIPHER10, IDC_EDIT_CIPHER11,
-        //IDC_EDIT_CIPHER12, IDC_EDIT_CIPHER13, IDC_EDIT_CIPHER14, IDC_EDIT_CIPHER15};
-        //    // DATA0～31
-        //    for (int i = 0; i < 32; i++)
-        //    {
-        //        Data[i] = (ushort)((ushort)(BinFileData[62 + i * 2] << 8) + BinFileData[DATA_LOCAL_START + i * 2 + 1]);
-        //        dataid[i].Text = Data[i].ToString("X4");
-        //    }
-        //    // CIPHER0~15
-        //    for (int i = 0; i < 16; i++)
-        //    {
-        //        Ciphers[i] = BinFileData[CIPHER_LOCAL_START + i];
-        //        cipherid[i].Text = Ciphers[i].ToString("X2");
-        //    }
-        }
+            //    TextBox[] dataid = new TextBox[32]{
+            //IDC_EDIT_DAT0, IDC_EDIT_DAT1, IDC_EDIT_DAT2, IDC_EDIT_DAT3,
+            //IDC_EDIT_DAT4, IDC_EDIT_DAT5, IDC_EDIT_DAT6, IDC_EDIT_DAT7,
+            //IDC_EDIT_DAT8, IDC_EDIT_DAT9, IDC_EDIT_DAT10, IDC_EDIT_DAT11,
+            //IDC_EDIT_DAT12, IDC_EDIT_DAT13, IDC_EDIT_DAT14, IDC_EDIT_DAT15,
+            //IDC_EDIT_DAT16, IDC_EDIT_DAT17, IDC_EDIT_DAT18, IDC_EDIT_DAT19,
+            //IDC_EDIT_DAT20, IDC_EDIT_DAT21, IDC_EDIT_DAT22, IDC_EDIT_DAT23,
+            //IDC_EDIT_DAT24, IDC_EDIT_DAT25, IDC_EDIT_DAT26, IDC_EDIT_DAT27,
+            //IDC_EDIT_DAT28, IDC_EDIT_DAT29, IDC_EDIT_DAT30, IDC_EDIT_DAT31};
+            //    TextBox[] cipherid = new TextBox[16]{
+            //IDC_EDIT_CIPHER0, IDC_EDIT_CIPHER1, IDC_EDIT_CIPHER2, IDC_EDIT_CIPHER3,
+            //IDC_EDIT_CIPHER4, IDC_EDIT_CIPHER5, IDC_EDIT_CIPHER6, IDC_EDIT_CIPHER7,
+            //IDC_EDIT_CIPHER8, IDC_EDIT_CIPHER9, IDC_EDIT_CIPHER10, IDC_EDIT_CIPHER11,
+            //IDC_EDIT_CIPHER12, IDC_EDIT_CIPHER13, IDC_EDIT_CIPHER14, IDC_EDIT_CIPHER15};
+            // DATA0～31
+            var dataid = new string[32];
+            for (int i = 0; i < 32; i++)
+            {
+                Data[i] = (ushort)((ushort)(BinFileData[62 + i * 2] << 8) + BinFileData[DATA_LOCAL_START + i * 2 + 1]);
+                dataid[i] = Data[i].ToString("X4");
+            }
+            IDC_EDIT_DAT0.Content = "";
+            IDC_EDIT_DAT8.Content = "";
+            IDC_EDIT_DAT16.Content ="";
+            IDC_EDIT_DAT24.Content ="";
+            for (int i = 0; i < 32; i++)
+            {
+                if (i >= 0 && i < 8)
+                    IDC_EDIT_DAT0.Content += dataid[i] + " ";
+                if (i >= 8 && i < 16)
+                    IDC_EDIT_DAT8.Content += dataid[i] + " ";
+                if (i >= 16 && i < 24)
+                    IDC_EDIT_DAT16.Content += dataid[i] + " ";
+                if (i >= 24 && i < 32)
+                    IDC_EDIT_DAT24.Content += dataid[i] + " ";
+            }
+            // CIPHER0~15
+            string[] cipherid = new string[16];
+            for (int i = 0; i < 16; i++)
+            {
+                Ciphers[i] = BinFileData[CIPHER_LOCAL_START + i];
+                cipherid[i] = Ciphers[i].ToString("X2");
+            }
+            IDC_EDIT_CIPHER0.Content = "";
+            IDC_EDIT_CIPHER8.Content = "";
+            for (int i = 0; i < 16; i++)
+            {
+                if (i >= 0 && i < 8)
+                    IDC_EDIT_CIPHER0.Content += cipherid[i] + " ";
+                if (i >= 8 && i < 16)
+                    IDC_EDIT_CIPHER8.Content += cipherid[i] + " ";
+            }
+            }
         #endregion
         #region 开始固件升级
         private async void Button_Click_1(object sender, RoutedEventArgs e)
@@ -951,13 +977,13 @@ namespace UpdateDSP.Views
             }
             #endregion
 
-            var now = DateTime.Now;
-            hour.Angle = (now.Hour - 12) / 12.0 * 360;
-            minutes.Angle = now.Minute / 60.0 * 360;
-            second.Angle = now.Second / 60.0 * 360;
-            if (updateprogress.Value > 99)
-                updateprogress.Value = 0;
-            updateprogress.Value += 1;
+            //var now = DateTime.Now;
+            //hour.Angle = (now.Hour - 12) / 12.0 * 360;
+            //minutes.Angle = now.Minute / 60.0 * 360;
+            //second.Angle = now.Second / 60.0 * 360;
+            //if (updateprogress.Value > 99)
+            //    updateprogress.Value = 0;
+            //updateprogress.Value += 1;
         }
 
 
