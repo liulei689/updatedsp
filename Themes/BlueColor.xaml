@@ -12,4 +12,22 @@
 
     <Color x:Key="LightAccentColor">#F50057</Color>
     <Color x:Key="DarkAccentColor">#F50057</Color>
+
+
+    <Color x:Key="HCDangerColor">#FFDB3340</Color>
+    <Color x:Key="HCDarkDangerColor">#FFDB3340</Color>
+
+    <Color x:Key="HCWarningColor">#FFE9AF20</Color>
+    <Color x:Key="HCDarkWarningColor">#FFE9AF20</Color>
+
+    <Color x:Key="HCInfoColor">#FF00BCD4</Color>
+    <Color x:Key="HCDarkInfoColor">#FF00BCD4</Color>
+
+    <Color x:Key="HCSuccessColor">#FF2DB84d</Color>
+    <Color x:Key="HCDarkSuccessColor">#FF2DB84d</Color>
+
+    <Color x:Key="HCMagentaColor">#FFD80073</Color>
+    <Color x:Key="HCDarkMagentaColor">#FF9F0055</Color>
+    <Color x:Key="HCVioletColor">#FFBB33FF</Color>
+    <Color x:Key="HCDarkVioletColor">#FF7D00BC</Color>
 </ResourceDictionary>

@@ -983,9 +983,9 @@ namespace UpdateDSP.Views
             //hour.Angle = (now.Hour - 12) / 12.0 * 360;
             //minutes.Angle = now.Minute / 60.0 * 360;
             //second.Angle = now.Second / 60.0 * 360;
-            if (updateprogress.Value > 99)
-                updateprogress.Value = 0;
-            updateprogress.Value += 1;
+            //if (updateprogress.Value > 99)
+            //    updateprogress.Value = 0;
+            //updateprogress.Value += 10;
         }
 
 

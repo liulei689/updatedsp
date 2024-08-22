@@ -36,7 +36,7 @@ namespace UpdateDSP.ViewModels
 
         public MainViewModel()
         {
-            Title = "Rubyer UI";
+            Title = "在线升级";
 
             ViewItems =
             [
