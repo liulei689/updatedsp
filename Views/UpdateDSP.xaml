@@ -38,7 +38,7 @@
                         </StackPanel>
                         <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
                             <TextBlock  Grid.Column="0"  Text="打开固件:" />
-                            <Button Grid.Column="1" Foreground="#FB8C00" Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
+                            <Button Grid.Column="1" Foreground="{StaticResource Primary}"  Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
                             <TextBox Grid.Column="2" Name="LoadFileName" IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
                                 <rubyer:InputBoxHelper.PostContent>
                                     <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click">
@@ -58,7 +58,7 @@
                                         rubyer:ButtonHelper.Shape="Round"  Content="开始固件升级" Click="Button_Click_1" />
                             </rubyer:Popover>
 
-                            <ProgressBar Name="updateprogress" Foreground="#FF2DB84d"  rubyer:ProgressBarHelper.IsAnimation="True"  Margin="6"  VerticalAlignment="Stretch" Width="800" HorizontalAlignment="Stretch" Value="10" >
+                            <ProgressBar Name="updateprogress" Foreground="{StaticResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="True"  Margin="6"  VerticalAlignment="Stretch" Width="800" HorizontalAlignment="Stretch" Value="10" >
                                 <ProgressBar.Resources>
                                     <ResourceDictionary>
                                         <ResourceDictionary.MergedDictionaries>
