@@ -36,14 +36,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
-		<PackageReference Include="Rubyer" Version="2.15.19" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
+		<PackageReference Include="Rubyer" Version="2.15.20" />
 		<PackageReference Include="ShowMeTheXAML" Version="2.0.0" />
 		<PackageReference Include="ShowMeTheXAML.AvalonEdit" Version="2.0.0" />
 		<PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
-		<PackageReference Include="VirtualizingWrapPanel" Version="1.5.7" />
+		<PackageReference Include="VirtualizingWrapPanel" Version="2.0.10" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">

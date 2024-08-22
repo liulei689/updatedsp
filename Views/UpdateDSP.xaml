@@ -52,9 +52,12 @@
                             <TextBlock  Text="     通道ID:"  />
                             <ComboBox Name="chanleid" Width="70" Margin="12 0" />
                             <rubyer:Popover  Title="小提示" DockPanel.Dock="Top" Placement="Top" PopoverContent="先点击开始按钮后，再重启设备，等待升级完成" TriggerMode="Hover">
-                                <Button Name="start" Content="开始固件升级" Click="Button_Click_1" />
+                                <Button Name="start"           
+                                        rubyer:ButtonHelper.Loading="False"
+                                        rubyer:ButtonHelper.LoadingContent="升级中..."
+                                        rubyer:ButtonHelper.Shape="Round"  Content="开始固件升级" Click="Button_Click_1" />
                             </rubyer:Popover>
-                            <ProgressBar Name="updateprogress" rubyer:ProgressBarHelper.ShowPercent="True" Width="600" Margin="5" VerticalAlignment="Stretch" rubyer:ProgressBarHelper.Thickness="20" Value="0" />
+                            <ProgressBar Name="updateprogress" rubyer:ProgressBarHelper.IsAnimation="True" rubyer:ProgressBarHelper.ShowPercent="True" Width="600" Margin="5" VerticalAlignment="Stretch" rubyer:ProgressBarHelper.Thickness="20" Value="0" />
                         </StackPanel>
                         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
                             <TextBlock  Text="      状态:"  />

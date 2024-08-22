@@ -727,6 +727,7 @@ namespace UpdateDSP.Views
                             return;
                         }
                         timerhandshake.Start();
+                        ButtonHelper.SetLoading(start,true);                       
                         // 启动固件更新
                         UpdateFlag = true;
                         start.Content = "停止固件升级";
@@ -745,7 +746,7 @@ namespace UpdateDSP.Views
             else {
 
                 // 正在升级时，提醒用户是否要退出升级
-                if (await MessageBoxR.Warning("正在进行固件升级，关闭串口会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (await MessageBoxR.Warning("正在进行固件升级，停止升级会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     // 文件加载按钮
                     timerhandshake.Stop();
@@ -756,6 +757,7 @@ namespace UpdateDSP.Views
                     // TxDisplay.AppendText("固件升级功能强制退出！\r\n");
                     start.Content = "开始固件升级";
                     start.Background = new SolidColorBrush(Colors.Green);
+                    ButtonHelper.SetLoading(start, false);
                 }
             }
         }
@@ -981,9 +983,9 @@ namespace UpdateDSP.Views
             //hour.Angle = (now.Hour - 12) / 12.0 * 360;
             //minutes.Angle = now.Minute / 60.0 * 360;
             //second.Angle = now.Second / 60.0 * 360;
-            //if (updateprogress.Value > 99)
-            //    updateprogress.Value = 0;
-            //updateprogress.Value += 1;
+            if (updateprogress.Value > 99)
+                updateprogress.Value = 0;
+            updateprogress.Value += 1;
         }
 
 
