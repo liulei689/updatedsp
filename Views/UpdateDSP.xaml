@@ -8,7 +8,7 @@
              xmlns:viewmodels="clr-namespace:UpdateDSP.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:DescriptionViewModel}"
              mc:Ignorable="d">
-    <smtx:XamlDisplay UniqueKey="UpdateDspNormal">
+    <smtx:XamlDisplay UniqueKey="UpdateDspNormal" >
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <Grid Margin="10"
                   rubyer:GridHelper.RowDefinitions="Auto, Auto"

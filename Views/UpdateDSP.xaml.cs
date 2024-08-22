@@ -625,6 +625,7 @@ namespace UpdateDSP.Views
             IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString()+"KB";
             // 软件版本号
             IDC_EDIT_SOFTVM.Text = "V"+BinFileData[24].ToString("X2").Insert(1,".") +"."+BinFileData[25].ToString("X2").Insert(1, ".");
+            Message.Success("当前载入的固件版本："+IDC_EDIT_SOFTVM.Text,10000,true);
             // 软件ID
             uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
             IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");

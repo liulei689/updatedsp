@@ -53,10 +53,22 @@ namespace UpdateDSP
             contrainerSlider.Value = ((CornerRadius)App.Current.Resources["AllContainerCornerRadius"]).TopLeft;
             ThemeManager.SwitchThemeMode(ThemeMode.System);
             darkMode.IsChecked = ThemeManager.GetIsAppDarkMode();
-            tiitles.IsExpanded = false;
-        }
+            int hour = DateTime.Now.Hour;
+            if (hour >= 22 || hour < 6)
+            {
+                darkMode.IsChecked = true;
+                ThemeManager.SwitchThemeMode(darkMode.IsChecked ? ThemeMode.Dark : ThemeMode.Light);
+                // 晚上22点（含）到凌晨6点（不含）之间
+            }
+            else
+            {
+            }
+                // 上述之外的时间段
 
-        private void controlSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+                //tiitles.IsExpanded = false;
+            }
+
+            private void controlSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ThemeManager.SwitchControlCornerRadius(e.NewValue);
         }
