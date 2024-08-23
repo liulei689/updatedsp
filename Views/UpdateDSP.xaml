@@ -57,7 +57,8 @@
                                         rubyer:ButtonHelper.Shape="Round"  Content="开始固件升级" Click="Button_Click_1" />
                         </rubyer:Popover>
 
-                        <ProgressBar Name="updateprogress" Foreground="{StaticResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="True"  Margin="6"  VerticalAlignment="Stretch" Width="800" HorizontalAlignment="Stretch" Value="0" >
+                        <ProgressBar Name="updateprogress" 
+Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="True"  Margin="6"  VerticalAlignment="Stretch" Width="800" HorizontalAlignment="Stretch" Value="0" >
                             <ProgressBar.Resources>
                                 <ResourceDictionary>
                                     <ResourceDictionary.MergedDictionaries>
@@ -70,9 +71,11 @@
                     </StackPanel>
                     <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
                         <TextBlock  Text="      状态:"  />
-                        <RichTextBox  Height="100"  Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  />
+                        <RichTextBox  Height="100"  Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  Background="{DynamicResource DefaultBackground}"
+Foreground="{DynamicResource DefaultForeground}"/>
                         <TextBlock  Text="     接受:"  />
-                        <RichTextBox  Height="100"   Width="390" x:Name="txlog" VerticalScrollBarVisibility="Auto"  Margin="5 0" />
+                        <RichTextBox  Height="100"   Width="390" x:Name="txlog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  Background="{DynamicResource DefaultBackground}"
+Foreground="{DynamicResource DefaultForeground}"/>
 
                     </StackPanel>
                 </Grid>

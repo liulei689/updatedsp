@@ -263,7 +263,7 @@ namespace UpdateDSP.Views
                                         byte[] checksum = new byte[2];
                                         checksum = CheckSum(DataArray, PackLength - 6);
 
-                                        if (DataArray[0] == 0x00 && checksum[0] == reclist[PackLength - 4] && checksum[1] == reclist[PackLength - 3])
+                                        if (DataArray[0] == ChannelID && checksum[0] == reclist[PackLength - 4] && checksum[1] == reclist[PackLength - 3])
                                         {
                                             Implement(DataArray);
                                         }
@@ -418,7 +418,7 @@ namespace UpdateDSP.Views
                         break;
                     }
 
-                    str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
+                    str = string.Format("固件包下发成功，收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
                     //TxDisplay.AppendText(str);
                     //TxDisplay.Focus();
                     //TxDisplay.Select(RxDisplay.TextLength, 0);
@@ -642,8 +642,8 @@ namespace UpdateDSP.Views
                 IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "KB";
                 // 软件版本号
                 IDC_EDIT_SOFTVM.Text = "V" + BinFileData[24].ToString("X2").Insert(1, ".") + "." + BinFileData[25].ToString("X2").Insert(1, ".");
-                Message.Success("已重新载入固件，请重新开始固件升级升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
-                AddTextToLog("已重新载入固件，请重新开始固件升级升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text);
+                Message.Success("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
+                AddTextToLog("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text);
                 // 软件ID
                 uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
                 IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");
