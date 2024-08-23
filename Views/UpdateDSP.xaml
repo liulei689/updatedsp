@@ -69,15 +69,30 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                             </ProgressBar.Resources>
                         </ProgressBar>
                     </StackPanel>
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
-                        <TextBlock  Text="      状态:"  />
-                        <RichTextBox  Height="100"  Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  Background="{DynamicResource DefaultBackground}"
-Foreground="{DynamicResource DefaultForeground}"/>
-                        <TextBlock  Text="     接受:"  />
-                        <RichTextBox  Height="100"   Width="390" x:Name="txlog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  Background="{DynamicResource DefaultBackground}"
-Foreground="{DynamicResource DefaultForeground}"/>
+                    <Grid Grid.Row="3" Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- TextBlock的列宽 -->
+                            <ColumnDefinition Width="*"/>
+                            <!-- TextBox的列宽，自适应剩余空间 -->
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- 第二个TextBlock的列宽 -->
+                            <ColumnDefinition Width="*"/>
+                            <!-- 第二个TextBox的列宽，自适应剩余空间 -->
+                        </Grid.ColumnDefinitions>
 
-                    </StackPanel>
+                        <TextBlock Grid.Column="0" Text="状态:           "/>
+                        <TextBox Grid.Column="1" Style="{StaticResource BigTextBox}" Height="150" x:Name="rtbLog"   
+             HorizontalAlignment="Stretch"   
+             rubyer:InputBoxHelper.IsClearable="True"   
+             rubyer:InputBoxHelper.Watermark="消息通知"/>
+
+                        <TextBlock Grid.Column="2" Text="接受:"/>
+                        <TextBox Grid.Column="3" Style="{StaticResource BigTextBox}" Height="150" x:Name="txlog"   
+             HorizontalAlignment="Stretch"   
+             rubyer:InputBoxHelper.IsClearable="True"   
+             rubyer:InputBoxHelper.Watermark="接受数据"/>
+                    </Grid>
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="2" Header="固件信息" >

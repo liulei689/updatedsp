@@ -19,9 +19,7 @@ using System.IO.Ports;
 using System.Threading;
 using Rubyer;
 using System.IO;
-using Microsoft.Win32;
-using System.Runtime.InteropServices.ComTypes;
-using static ICSharpCode.AvalonEdit.Document.TextDocumentWeakEventManager;
+
 
 
 
@@ -339,6 +337,10 @@ namespace UpdateDSP.Views
                             // 下发第一包数据
                             AddTextToLog("握手成功，开始发送第一包数据");
                             AddTextToLog("DSP擦除FLASH中....");
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                tx.Content = "握手已停止，等待设备准备完成后回应中...";
+                            });
                             //Application.Current.Dispatcher.Invoke(() =>
                             //{
                             //    Message.Success("握手成功，开始发送第一包数据");
@@ -474,10 +476,10 @@ namespace UpdateDSP.Views
                     break;
                 case 0x03:
                     str = "固件数据校验码错误";
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Button_Click(null, null);
-                    });
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
+                    //    Button_Click(null, null);
+                    //});
                     break;
                 case 0x04:
                     str = "数据包校验失败";
@@ -498,10 +500,10 @@ namespace UpdateDSP.Views
                     break;
                 case 0x07:
                     str = "Boot串码不符错误";
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Button_Click(null, null);
-                    });
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
+                    //    Button_Click(null, null);
+                    //});
                     break;
                 case 0x08:
                     str = "扇区擦除成功";
@@ -547,6 +549,11 @@ namespace UpdateDSP.Views
             buf[3] = (byte)(len >> 0);
             Array.Copy(pData, tmp, buf, 4, len);
             sendData(buf, len + 4);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                tx.Content = "下发固件包中...";
+            });
+
         }
         #endregion
         #region 串口读取数据
@@ -906,6 +913,9 @@ namespace UpdateDSP.Views
                 start.Content = "开始固件升级";
                 start.Background = new SolidColorBrush(Colors.Green);
                 ButtonHelper.SetLoading(start, false);
+       
+                    tx.Content = "发送";
+                
             });
             // 停止固件更新
             UpdateFlag = false;
@@ -975,8 +985,12 @@ namespace UpdateDSP.Views
             buf[i++] = 0xA5;
             buf[i++] = 0xF1;
             int datalength = i;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                tx.Content = "下发握手帧，等待下位机回应...";
+            });
             sendData(buf, datalength);
-           
+
         }
         /// <summary>
         /// 打包并发送数据
@@ -1059,17 +1073,16 @@ namespace UpdateDSP.Views
             Application.Current.Dispatcher.Invoke(() =>
             {
                 // 创建一个新的Paragraph来包含文本  
-                Paragraph para = new Paragraph();
-                para.Margin = new Thickness(0); // 设置Margin为0以减少额外的垂直空间  
-                para.Inlines.Add(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + text); // 添加换行符以分隔日志项   
-                if (rtbLog.Document.Blocks.Count > 200)
+           
+             
+                if (rtbLog.Text.Length > 5000)
                 {
-                    rtbLog.Document.Blocks.Clear();
+                    rtbLog.Text = "";
                 }
 
-                // 将新的Paragraph添加到RichTextBox的Document中  
-                rtbLog.Document.Blocks.Add(para);
+              
 
+                rtbLog.AppendText(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + text + "\r\n");
                 // 确保滚动到底部  
                 rtbLog.ScrollToEnd();
             });
@@ -1085,17 +1098,11 @@ namespace UpdateDSP.Views
                     str = string.Format("{0:X2} ", raw[i]);
                     strraw += str;
                 }
-                // 创建一个新的Paragraph来包含文本  
-                Paragraph para = new Paragraph();
-                para.Margin = new Thickness(0); // 设置Margin为0以减少额外的垂直空间  
-                para.Inlines.Add(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + strraw); // 添加换行符以分隔日志项   
-                if (txlog.Document.Blocks.Count > 200)
+                if (txlog.Text.Length > 10000)
                 {
-                    txlog.Document.Blocks.Clear();
+                    txlog.Text = "";
                 }
-
-                // 将新的Paragraph添加到RichTextBox的Document中  
-                txlog.Document.Blocks.Add(para);
+                txlog.AppendText(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + strraw + "\r\n");
 
                 // 确保滚动到底部  
                 txlog.ScrollToEnd();
@@ -1105,7 +1112,7 @@ namespace UpdateDSP.Views
         int timeout = 0;
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            if (timeout++ > 10) 
+            if (timeout++ > 5) 
             {
                 timeout = 0;
                 tx.IsEnabled = false;
