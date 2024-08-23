@@ -9,11 +9,11 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:DescriptionViewModel}"
              mc:Ignorable="d">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="10"
-                  rubyer:GridHelper.RowDefinitions="Auto, Auto"
-                  rubyer:PanelHelper.Spacing="10" VerticalAlignment="Top">
+        <Grid Margin="10" 
+                  rubyer:GridHelper.RowDefinitions="*,Auto, Auto"
+                  rubyer:PanelHelper.Spacing="10" VerticalAlignment="Stretch">
             <GroupBox Grid.Row="0" Header="操作区域"  >
-                <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,Auto,*">
+                <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
                     <StackPanel Orientation="Horizontal"  Grid.Row="0" Margin="5">
                         <TextBlock  Text="    串口号:"  />
                         <ComboBox Name="comlist" Width="300" Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
@@ -80,22 +80,21 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                             <ColumnDefinition Width="*"/>
                             <!-- 第二个TextBox的列宽，自适应剩余空间 -->
                         </Grid.ColumnDefinitions>
-
                         <TextBlock Grid.Column="0" Text="状态:           "/>
-                        <TextBox Grid.Column="1" Style="{StaticResource BigTextBox}" Height="150" x:Name="rtbLog"   
+                        <TextBox Grid.Column="1" Grid.Row="0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="消息通知"/>
 
                         <TextBlock Grid.Column="2" Text="接受:"/>
-                        <TextBox Grid.Column="3" Style="{StaticResource BigTextBox}" Height="150" x:Name="txlog"   
+                        <TextBox Grid.Column="3" Style="{StaticResource BigTextBox}"  x:Name="txlog"   
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="接受数据"/>
                     </Grid>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="固件信息" >
+            <GroupBox Grid.Row="1" Header="固件信息" >
                 <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto, Auto, Auto,*">
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                                             Grid.Row="0"
@@ -153,7 +152,21 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                     </rubyer:Description>
                 </Grid>
             </GroupBox>
-
+            <StatusBar  Grid.Row="2" Background="#0F000000" DockPanel.Dock="Bottom" VerticalAlignment="Bottom"  >
+                    <StatusBarItem HorizontalAlignment="Left">
+                        <rubyer:Icon Type="TerminalBoxLine" />
+                    </StatusBarItem>
+                    <Separator />
+                    <StatusBarItem HorizontalAlignment="Left" Content="就绪" />
+                    <StatusBarItem HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal">
+                            <rubyer:Icon Margin="5 0" Type="UploadLine" />
+                            <TextBlock Name="timenow" Margin="5 0" Text="" />
+                            <rubyer:Icon Margin="5 0" Type="Notification3Fill" />
+                        </StackPanel>
+                    </StatusBarItem>
+                </StatusBar>
+         
         </Grid>
     </ScrollViewer>
 </UserControl>

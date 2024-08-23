@@ -19,10 +19,7 @@ using System.IO.Ports;
 using System.Threading;
 using Rubyer;
 using System.IO;
-
-
-
-
+using System.Globalization;
 
 namespace UpdateDSP.Views
 {
@@ -1141,8 +1138,8 @@ namespace UpdateDSP.Views
                
                 }
             }
-         
-            //var now = DateTime.Now;
+
+            timenow.Text = DateTime.Now.ToString("yyyy年MM月dd日 dddd tt hh:mm:ss", CultureInfo.CreateSpecificCulture("zh-CN")); ;
             //hour.Angle = (now.Hour - 12) / 12.0 * 360;
             //minutes.Angle = now.Minute / 60.0 * 360;
             //second.Angle = now.Second / 60.0 * 360;

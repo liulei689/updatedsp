@@ -178,7 +178,7 @@
         <rubyer:HamburgerMenu.ContentTemplate >
             <DataTemplate>
                 <Border >
-                    <ContentControl Background="{DynamicResource DefaultBackground}"  Margin="0" VerticalAlignment="Top" Content="{Binding Content}"   HorizontalAlignment="Stretch"/>
+                    <ContentControl Background="{DynamicResource DefaultBackground}"  Margin="0" VerticalAlignment="Stretch" Content="{Binding Content}"   HorizontalAlignment="Stretch"/>
                 </Border>
             </DataTemplate>
         </rubyer:HamburgerMenu.ContentTemplate>
