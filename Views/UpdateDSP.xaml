@@ -31,7 +31,7 @@
                                 </StackPanel>
                             </rubyer:ToggleButtonHelper.CheckedContent>
                         </ToggleButton>
-                        <rubyer:Loading Name="rx" Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="True"/>
+                        <rubyer:Loading Name="rx" Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="False"/>
                         <rubyer:Loading Name="tx" Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
 
                     </StackPanel>
@@ -71,7 +71,7 @@
                     <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
                         <TextBlock  Text="      状态:"  />
                         <RichTextBox  Height="100"  Width="350"  x:Name="rtbLog" VerticalScrollBarVisibility="Auto"  Margin="5 0"  />
-                        <TextBlock  Text="     发送:"  />
+                        <TextBlock  Text="     接受:"  />
                         <RichTextBox  Height="100"   Width="390" x:Name="txlog" VerticalScrollBarVisibility="Auto"  Margin="5 0" />
 
                     </StackPanel>
