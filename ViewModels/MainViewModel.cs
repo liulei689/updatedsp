@@ -41,7 +41,7 @@ namespace UpdateDSP.ViewModels
             ViewItems =
             [
                 new("通用在线升级程序", "首页", new UpdateDspNormal(), IconType.Home2Line),
-                new("65在线升级程序", "适配65 BOOTLOAD",null, IconType.ListCheck2),
+                new("待开发", "待开发",null, IconType.ListCheck2),
                 //new("Button", "按钮", null, IconType.CheckboxBlankFill),
                 //new("DropDownButton", "下拉按钮", new DropDownButtonDemo(), IconType.ArrowDownCircleLine),
                 //new("ToggleButton", "切换按钮", new ToggleButtonDemo(), IconType.ToggleLine),

@@ -81,7 +81,7 @@ namespace UpdateDSP.Views
             botelv.ItemsSource = new string[]{ "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
             chanleid.ItemsSource = new int[] {0,1};
             chanleid.SelectedIndex = 0;
-            botelv.SelectedIndex = 5;
+            botelv.SelectedIndex = 1;
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
