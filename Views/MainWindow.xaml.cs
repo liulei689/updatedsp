@@ -85,5 +85,34 @@ namespace UpdateDSP
         {
             Application.Current.Shutdown();
         }
+
+        private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            RestartApplication();
+        }
+        private void RestartApplication()
+        {
+            // 获取当前可执行文件的路径  
+            string exePath = Process.GetCurrentProcess().MainModule.FileName;
+
+            // 启动新进程  
+            ProcessStartInfo startInfo = new ProcessStartInfo(exePath);
+            // 如果需要，可以在这里添加启动参数  
+            // startInfo.Arguments = "your_arguments_here";  
+
+            try
+            {
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                // 处理启动失败的情况，例如文件被锁定  
+                Message.Error($"Failed to restart application: {ex.Message}");
+                return;
+            }
+
+            // 退出当前进程  
+            Environment.Exit(0);
+        }
     }
 }

@@ -43,6 +43,15 @@
                 <MenuItem>
                     <MenuItem.Header>
                         <StackPanel rubyer:PanelHelper.Spacing="8" Orientation="Horizontal">
+                            <rubyer:Icon Type="RefreshLine" />
+                            <TextBlock Text="重启软件" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"/>
+                        </StackPanel>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    
+                    <MenuItem.Header>
+                        <StackPanel rubyer:PanelHelper.Spacing="8" Orientation="Horizontal">
                             <rubyer:Icon Type="Settings2Line" />
                             <TextBlock Text="设置" />
                         </StackPanel>
