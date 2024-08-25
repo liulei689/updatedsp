@@ -6,8 +6,8 @@
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>rubyer.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<Authors>Ensin</Authors>
-		<Version>2.9.3</Version>
+		<Authors>昆明光博科技有限公司</Authors>
+		<Version>0.0.0.1</Version>
 		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
@@ -70,5 +70,10 @@
 
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<PackageId>DSP在线升级上位机程序</PackageId>
+		<Title>DSP在线升级上位机程序</Title>
+		<Product>DSP在线升级上位机程序</Product>
+		<Description>LL</Description>
+		<Copyright>guangbo.td版权所有</Copyright>
 	</PropertyGroup>
 </Project>
