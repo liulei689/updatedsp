@@ -698,11 +698,11 @@ namespace UpdateDSP.Views
             }
             else
             {
-                var openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+                var openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
                 openFileDialog1.Filter = "二进制文件|*.bin";
                 openFileDialog1.Title = "Load File";
 
-                if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (openFileDialog1.ShowDialog()==true)
                 {
                     //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
                     var filepath = openFileDialog1.FileName;//取全路径文件名

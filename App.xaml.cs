@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ShowMeTheXAML;
 using System;
 using System.Windows;
 using UpdateDSP.ViewModels;
@@ -30,7 +29,7 @@ namespace UpdateDSP
         {
             base.OnStartup(e);
 
-            XamlDisplay.Init();
+       
 
             new MainWindow().Show();
         }
