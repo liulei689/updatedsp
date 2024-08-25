@@ -107,7 +107,7 @@ namespace UpdateDSP
             catch (Exception ex)
             {
                 // 处理启动失败的情况，例如文件被锁定  
-                Message.Error($"Failed to restart application: {ex.Message}");
+                Message.Error($"重启失败: {ex.Message}");
                 return;
             }
 

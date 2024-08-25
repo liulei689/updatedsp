@@ -79,7 +79,7 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                             <ColumnDefinition Width="*"/>
                             <!-- 第二个TextBox的列宽，自适应剩余空间 -->
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="状态:           "/>
+                        <TextBlock Grid.Column="0" Text="        状态:   "/>
                         <TextBox Grid.Column="1" Grid.Row="0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   
