@@ -77,11 +77,6 @@ namespace UpdateDSP.ViewModels
                     IsSeleted =false
                 },
             ];
-
-            SampleItems =
-            [
-            
-            ];
         }
 
         [RelayCommand]
