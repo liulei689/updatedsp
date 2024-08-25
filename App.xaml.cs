@@ -1,19 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using UpdateDSP.ViewModels;
-using UpdateDSP.ViewModels.Samples;
-using UpdateDSP.Views.Samples;
 using ShowMeTheXAML;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
+using UpdateDSP.ViewModels;
 
 namespace UpdateDSP
 {
@@ -52,32 +41,8 @@ namespace UpdateDSP
         private static IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
-
-            // View models
             services.AddSingleton<MainViewModel>();
-            services.AddSingleton<IconViewModel>();
-            services.AddSingleton<ListViewModel>();
-            services.AddSingleton<TabControlViewModel>();
-            services.AddSingleton<MessageBoxViewModel>();
-            services.AddSingleton<DialogViewModel>();
-            services.AddSingleton<StepBarViewModel>();
-            services.AddSingleton<DescriptionViewModel>();
-            services.AddSingleton<HamburgerMenuViewModel>();
-            services.AddSingleton<TextBoxViewModel>();
-            services.AddSingleton<PasswordBoxViewModel>();
-            services.AddSingleton<NumericBoxViewModel>();
-            services.AddSingleton<ComboBoxViewModel>();
-            services.AddSingleton<DateTimePickerViewModel>();
-            services.AddSingleton<GroupBoxViewModel>();
-            services.AddSingleton<ExpanderViewModel>();
-            services.AddSingleton<ListBoxViewModel>();
-            services.AddSingleton<FlipViewViewModel>();
-            services.AddTransient<Dialog2ViewModel>();
-
-            services.AddSingleton<WechatViewModel>();
-            services.AddSingleton<NetEaseCloudMusicViewModel>();
-
-            return services.BuildServiceProvider();
+           return services.BuildServiceProvider();
         }
     }
 }

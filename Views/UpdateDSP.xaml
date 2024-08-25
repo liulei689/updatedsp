@@ -6,7 +6,7 @@
              xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
              xmlns:smtx="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML"
              xmlns:viewmodels="clr-namespace:UpdateDSP.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:DescriptionViewModel}"
+            
              mc:Ignorable="d">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="10" 

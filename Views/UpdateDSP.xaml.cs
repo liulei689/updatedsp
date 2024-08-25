@@ -77,7 +77,7 @@ namespace UpdateDSP.Views
         public UpdateDspNormal()
         {
             InitializeComponent();
-            this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
+           // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
             botelv.ItemsSource = new string[]{ "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
             chanleid.ItemsSource = new int[] {0,1};
             chanleid.SelectedIndex = 0;
