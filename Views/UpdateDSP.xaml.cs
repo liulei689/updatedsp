@@ -564,28 +564,24 @@ namespace UpdateDSP.Views
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
-            {
-              
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        rx.IsEnabled = true;
-                    });
-                
+            {             
                 Thread.Sleep(50);
                 int n = serialPort2.BytesToRead;//接收缓冲区中数据的字节数
                 byte[] RecData = new byte[serialPort2.BytesToRead];
                 serialPort2.Read(RecData, 0, RecData.Length);
+                if (IsAllZeros(RecData)) 
+                    return;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    rx.IsEnabled = true;
+                });
+
                 if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0X55 && RecData[3] == 0x80) 
                 {
-                    if (notifytimes++ > 1000)
+                    if (notifytimes == 0)
                     {
-                        notifytimes = 0;
-                        AddTextToLog("识别到当前设备不在BOOTLOAD模式下，请点击上方开始固件升级按钮后，再上下电设备进入BOOTLOAD模式升级!"+ notifytimes);
-                    }
-                    if (notifytimes == 1)
-                    {
+                        notifytimes = 1;
                         AddTextToLog("识别到当前设备不在BOOTLOAD模式下，请点击上方固件升级按钮后，再上下电设备进入BOOTLOAD模式升级!");
-
                     }
                     return;
                 }
@@ -595,6 +591,17 @@ namespace UpdateDSP.Views
                 }
             }
             catch { }
+        }
+        public static bool IsAllZeros(byte[] array)
+        {
+            foreach (var item in array)
+            {
+                if (item != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         #endregion
         private void openclosecom_Click(object sender, RoutedEventArgs e)
@@ -809,12 +816,60 @@ namespace UpdateDSP.Views
         }
         #endregion
         #region 开始固件升级
+        private void StartToUpdate() 
+        {
+            try
+            {
+                // 禁止再次点击加载文件
+                //LoadFileButton.Enabled = false;
+                // 启动固件更新
+                string pathname = LoadFileName.Text;
+                if (pathname.Length == 0)
+                {
+                    Message.Error("尚未加载BIN固件文件！");
+                    return;
+                }
+                // 初始化固件升级功能,数据分包，每包512字节
+                if (UpdateStart(BinFileData, BinFileLen) == false)
+                {
+                    Message.Error("初始化固件升级模块失败！");
+                    return;
+                }
+                // 向文本框中添加文本
+                Message.Success("固件升级启动，等待设备应答......\r\n");
+                // 获取通道选择
+                if (chanleid.SelectedItem != null)
+                {
+                    ChannelID = byte.Parse(chanleid.SelectedItem.ToString());
+                }
+                else
+                {
+                    Message.Error("请填写通道号");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Message.Error(ex.Message);
+                return;
+            }
+            timerhandshake.Start();
+            ButtonHelper.SetLoading(start, true);
+            // Button_Click(null,null);
+            // 启动固件更新
+            UpdateFlag = true;
+            start.Content = "停止固件升级";
+            start.Background = new SolidColorBrush(Colors.Red);
+            //timerhandshake.Enabled = true;
+            //timerTx.Enabled = true;
+            //timerRx.Enabled = true;
+            updateprogress.Value = updateprogress.Minimum;
+            issend = false;
+        }
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (start.Content.ToString() == "开始固件升级")
             {
-
-
                 if (serialPort2.IsOpen)
                 {
                     if (UpdateFlag == true)
@@ -824,58 +879,21 @@ namespace UpdateDSP.Views
                     }
                     else
                     {
-                        try
-                        {
-                            // 禁止再次点击加载文件
-                            //LoadFileButton.Enabled = false;
-                            // 启动固件更新
-                            string pathname = LoadFileName.Text;
-                            if (pathname.Length == 0)
-                            {
-                                Message.Error("尚未加载BIN固件文件！");
-                                return;
-                            }
-                            // 初始化固件升级功能,数据分包，每包512字节
-                            if (UpdateStart(BinFileData, BinFileLen) == false)
-                            {
-                                Message.Error("初始化固件升级模块失败！");
-                                return;
-                            }
-                            // 向文本框中添加文本
-                            Message.Success("固件升级启动，等待设备应答......\r\n");
-                            // 获取通道选择
-                            if (chanleid.SelectedItem != null)
-                            {
-                                ChannelID = byte.Parse(chanleid.SelectedItem.ToString());
-                            }
-                            else
-                            {
-                                Message.Error("请填写通道号");
-                                return;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Message.Error(ex.Message);
-                            return;
-                        }
-                        timerhandshake.Start();
-                        ButtonHelper.SetLoading(start,true);
-                       // Button_Click(null,null);
-                        // 启动固件更新
-                        UpdateFlag = true;
-                        start.Content = "停止固件升级";
-                        start.Background = new SolidColorBrush(Colors.Red);
-                        //timerhandshake.Enabled = true;
-                        //timerTx.Enabled = true;
-                        //timerRx.Enabled = true;
-                        updateprogress.Value = updateprogress.Minimum;
-                        issend = false;
+                        StartToUpdate();
                     }
                 }
                 else
                 {
-                    Message.Error("串口未打开，无法进行固件升级！");
+                    if (await MessageBoxR.Warning("串口未打开，是否要打开串口并进行固件升级？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                        OpenCloseCom();
+                        StartToUpdate();
+                    }
+                    else 
+                    {
+                        Message.Error("串口未打开，无法进行固件升级！");
+
+                    }
                 }
             }
             else {

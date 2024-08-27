@@ -7,12 +7,12 @@
              xmlns:viewmodels="clr-namespace:UpdateDSP.ViewModels"
             
              mc:Ignorable="d">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
         <Grid Margin="10" 
                   rubyer:GridHelper.RowDefinitions="*,Auto, Auto"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Stretch">
             <GroupBox Grid.Row="0" Header="操作区域"  >
-                <Grid rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
+                <Grid  rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
                     <Grid  rubyer:GridHelper.ColumnDefinitions="Auto,*, Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Margin="5">
                         <TextBlock Grid.Column="0"  Text="    串口号:"  />
                         <ComboBox Grid.Column="1" Name="comlist" MinWidth="300" Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
@@ -79,13 +79,13 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                             <!-- 第二个TextBox的列宽，自适应剩余空间 -->
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="        状态:   "/>
-                        <TextBox Grid.Column="1" Grid.Row="0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   
+                        <TextBox Grid.Column="1"   Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   
-             rubyer:InputBoxHelper.Watermark="消息通知"/>
+             rubyer:InputBoxHelper.Watermark="消息通知" Cursor="IBeam"/>
 
                         <TextBlock Grid.Column="2" Text="接受:"/>
-                        <TextBox Grid.Column="3" Style="{StaticResource BigTextBox}"  x:Name="txlog"   
+                        <TextBox Grid.Column="3"   Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="接受数据"/>
