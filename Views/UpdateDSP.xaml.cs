@@ -77,7 +77,7 @@ namespace UpdateDSP.Views
         public UpdateDspNormal()
         {
             InitializeComponent();
-            this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
+           // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
             botelv.ItemsSource = new string[]{ "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
             chanleid.ItemsSource = new int[] {0,1};
             chanleid.SelectedIndex = 0;
@@ -698,11 +698,11 @@ namespace UpdateDSP.Views
             }
             else
             {
-                var openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+                var openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
                 openFileDialog1.Filter = "二进制文件|*.bin";
                 openFileDialog1.Title = "Load File";
 
-                if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (openFileDialog1.ShowDialog()==true)
                 {
                     //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
                     var filepath = openFileDialog1.FileName;//取全路径文件名

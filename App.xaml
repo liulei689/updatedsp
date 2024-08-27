@@ -1,68 +1,18 @@
 ﻿<Application x:Class="UpdateDSP.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:avalonEdit="clr-namespace:ShowMeTheXAML.AvalonEdit;assembly=ShowMeTheXAML.AvalonEdit"
-             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
-             xmlns:smtx="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML"
              mc:Ignorable="d">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Rubyer;component/Themes/Generic.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/UpdateDSP;component/Themes/Generic.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/ShowMeTheXAML.AvalonEdit;component/Themes/Default.xaml" />
                 <!--<ResourceDictionary Source="pack://application:,,,/Rubyer;component/Themes/Resources/I18N/en-US.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
 
-            <Style BasedOn="{StaticResource {x:Type smtx:XamlDisplay}}" TargetType="smtx:XamlDisplay">
-                <Style.Resources>
-                    <avalonEdit:TextDocumentValueConverter x:Key="TextDocumentValueConverter" />
-                </Style.Resources>
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="VerticalContentAlignment" Value="Center" />
-                <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="smtx:XamlDisplay">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}">
-                                <TabControl Style="{StaticResource CardTabControl}"
-                                            rubyer:ControlHelper.CornerRadius="0"
-                                            rubyer:HeaderHelper.FontSize="16">
-                                    <TabItem MinWidth="200" rubyer:ControlHelper.CornerRadius="{DynamicResource AllControlCornerRadius}">
-                                        <TabItem.Header>
-                                            <StackPanel Orientation="Horizontal">
-                                                <rubyer:Icon Margin="0 0 8 0" Type="{Binding DataContext.CurrentViewItem.IconType, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                <TextBlock Height="Auto" Text="{Binding DataContext.CurrentViewItem.Name, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                            </StackPanel>
-                                        </TabItem.Header>
-
-                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                                    </TabItem>
-                                    <TabItem MinWidth="200" rubyer:ControlHelper.CornerRadius="{DynamicResource AllControlCornerRadius}">
-                                        <TabItem.Header>
-                                            <StackPanel Orientation="Horizontal">
-                                                <rubyer:Icon Margin="0 0 8 0" Type="CodeSSlashFill" />
-                                                <TextBlock Text="Xaml" />
-                                            </StackPanel>
-                                        </TabItem.Header>
-
-                                        <avalonedit:TextEditor Style="{StaticResource AvalonTextEditorXamlDisplay}"
-                                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                               Document="{Binding Xaml, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TextDocumentValueConverter}}"
-                                                               FontSize="14" />
-                                    </TabItem>
-                                </TabControl>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

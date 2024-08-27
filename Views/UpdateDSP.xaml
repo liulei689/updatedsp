@@ -4,9 +4,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
-             xmlns:smtx="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML"
              xmlns:viewmodels="clr-namespace:UpdateDSP.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:DescriptionViewModel}"
+            
              mc:Ignorable="d">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="10" 
@@ -79,7 +78,7 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                             <ColumnDefinition Width="*"/>
                             <!-- 第二个TextBox的列宽，自适应剩余空间 -->
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="状态:           "/>
+                        <TextBlock Grid.Column="0" Text="        状态:   "/>
                         <TextBox Grid.Column="1" Grid.Row="0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   

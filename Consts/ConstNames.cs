@@ -8,7 +8,7 @@ namespace UpdateDSP.Consts
 {
     public class ConstNames
     {
-        public const string MessageDemo = "MessageDemo";
-        public const string NotificationDemo = "NotificationDemo";
+        public const string MessageDemo = "1";
+        public const string NotificationDemo = "1";
     }
 }

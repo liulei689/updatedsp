@@ -6,8 +6,8 @@
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>rubyer.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<Authors>Ensin</Authors>
-		<Version>2.9.3</Version>
+		<Authors>昆明光博科技有限公司</Authors>
+		<Version>0.0.0.1</Version>
 		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
@@ -24,10 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Assets\img1.jpg" />
-	  <None Remove="Assets\img2.jpg" />
-	  <None Remove="Assets\img3.jpg" />
-	  <None Remove="Assets\img4.jpg" />
 	  <None Remove="weather.json" />
 	</ItemGroup>
 
@@ -37,19 +33,17 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="HandyControl" Version="3.5.1" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
 		<PackageReference Include="Rubyer" Version="2.15.21" />
-		<PackageReference Include="ShowMeTheXAML" Version="2.0.0" />
-		<PackageReference Include="ShowMeTheXAML.AvalonEdit" Version="2.0.0" />
-		<PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
-		<PackageReference Include="VirtualizingWrapPanel" Version="2.0.10" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
 		<Reference Include="System.ComponentModel.DataAnnotations" />
-		<PackageReference Include="System.Text.Json" Version="9.0.0-preview.7.24405.7" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -57,16 +51,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="Assets\ali.jpg">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Resource>
-		<Resource Include="Assets\img1.jpg" />
-		<Resource Include="Assets\img2.jpg" />
-		<Resource Include="Assets\img3.jpg" />
-		<Resource Include="Assets\img4.jpg" />
-		<Resource Include="Assets\wechat.jpg">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Resource>
 		<Resource Include="rubyer.ico">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Resource>
@@ -78,7 +62,18 @@
 		</Page>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Assets\" />
+	  <Folder Include="Enums\" />
+	  <Folder Include="Models\" />
+	</ItemGroup>
+
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<PackageId>DSP在线升级上位机程序</PackageId>
+		<Title>DSP在线升级上位机程序</Title>
+		<Product>DSP在线升级上位机程序</Product>
+		<Description>LL</Description>
+		<Copyright>guangbo.td版权所有</Copyright>
 	</PropertyGroup>
 </Project>

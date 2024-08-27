@@ -1,22 +1,10 @@
-﻿using ICSharpCode.AvalonEdit.Highlighting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Rubyer;
 using Rubyer.Enums;
-using UpdateDSP.ViewModels;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
+using UpdateDSP.ViewModels;
 
 namespace UpdateDSP
 {
@@ -84,6 +72,35 @@ namespace UpdateDSP
         protected override void OnClosed(EventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            RestartApplication();
+        }
+        private void RestartApplication()
+        {
+            // 获取当前可执行文件的路径  
+            string exePath = Process.GetCurrentProcess().MainModule.FileName;
+
+            // 启动新进程  
+            ProcessStartInfo startInfo = new ProcessStartInfo(exePath);
+            // 如果需要，可以在这里添加启动参数  
+            // startInfo.Arguments = "your_arguments_here";  
+
+            try
+            {
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                // 处理启动失败的情况，例如文件被锁定  
+                Message.Error($"重启失败: {ex.Message}");
+                return;
+            }
+
+            // 退出当前进程  
+            Environment.Exit(0);
         }
     }
 }
