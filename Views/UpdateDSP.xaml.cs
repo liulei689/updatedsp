@@ -91,7 +91,15 @@ namespace UpdateDSP.Views
             timerhandshake.Interval = TimeSpan.FromMilliseconds(200);
            // timerhandshake.IsEnabled = false;
             timerhandshake.Tick += timerhandshake_Tick;
-           
+            var ports =Common.Common.SearchPort();
+            if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
+            {
+                comlist.ItemsSource = Common.Common.SearchPort();
+            }
+            if (comlist.SelectedItem == null && comlist.Items.Count > 0)
+            {
+                comlist.SelectedIndex = comlist.Items.Count - 1;
+            }
 
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
@@ -320,17 +328,11 @@ namespace UpdateDSP.Views
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            //timerhandshake.IsEnabled = false;
                             timerhandshake.Stop();
                         });
                        
                         if (DataBuf[3] == 0)
                         {
-                            //TxDisplay.AppendText("握手成功，开始发送第一包数据\r\n");
-                            //TxDisplay.AppendText("MCU擦除FLASH成功，开始下发数据.....\r\n");
-                            //TxDisplay.Focus();
-                            //TxDisplay.Select(RxDisplay.TextLength, 0);
-                            //TxDisplay.ScrollToCaret();
                             // 下发第一包数据
                             AddTextToLog("握手成功，开始发送第一包数据");
                             AddTextToLog("DSP擦除FLASH中....");
@@ -338,11 +340,6 @@ namespace UpdateDSP.Views
                             {
                                 tx.Content = "握手已停止，等待设备准备完成后回应中...";
                             });
-                            //Application.Current.Dispatcher.Invoke(() =>
-                            //{
-                            //    Message.Success("握手成功，开始发送第一包数据");
-                            //    Message.Success("MCU擦除FLASH成功，开始下发数据");
-                            //});
                             issend = true;
                             SendPackBinData(BinPackOrder);
                             ProgState = PROGSTATE_UPDATE_LOAD;
@@ -561,22 +558,23 @@ namespace UpdateDSP.Views
         /// <param name="e"></param>
         Queue<byte> RecDataQueue = new Queue<byte>();//接收队列，用于数据处理
         int notifytimes = 0;
-        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        private   void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            try
-            {             
+     
+                try
+            {
                 Thread.Sleep(50);
                 int n = serialPort2.BytesToRead;//接收缓冲区中数据的字节数
                 byte[] RecData = new byte[serialPort2.BytesToRead];
                 serialPort2.Read(RecData, 0, RecData.Length);
-                if (IsAllZeros(RecData)) 
+                if (IsAllZeros(RecData))
                     return;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     rx.IsEnabled = true;
                 });
 
-                if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0X55 && RecData[3] == 0x80) 
+                if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0X55 && RecData[3] == 0x80)
                 {
                     if (notifytimes == 0)
                     {
@@ -585,12 +583,19 @@ namespace UpdateDSP.Views
                     }
                     return;
                 }
+                //string data = "";
+                //for (int i = 0; i < RecData.Length; i++) 
+                //{
+                //    data += RecData[i].ToString("X2")+" ";
+                //}
+                //File.AppendAllLines(AppDomain.CurrentDomain.BaseDirectory + "1.txt",new string[] { DateTime.Now.ToString()+" " + data });
                 foreach (byte tmpInt in RecData)
                 {
                     RecDataQueue.Enqueue(tmpInt); //放入Queue 给Deal线程备用
                 }
             }
             catch { }
+    
         }
         public static bool IsAllZeros(byte[] array)
         {
@@ -855,16 +860,14 @@ namespace UpdateDSP.Views
             }
             timerhandshake.Start();
             ButtonHelper.SetLoading(start, true);
-            // Button_Click(null,null);
             // 启动固件更新
             UpdateFlag = true;
             start.Content = "停止固件升级";
-            start.Background = new SolidColorBrush(Colors.Red);
-            //timerhandshake.Enabled = true;
-            //timerTx.Enabled = true;
-            //timerRx.Enabled = true;
+            start.Background = new SolidColorBrush(Colors.Red);  
             updateprogress.Value = updateprogress.Minimum;
             issend = false;
+            AddTextToLog("等待设备响应握手...此过程可能需重新上下电设备!");
+
         }
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -892,7 +895,6 @@ namespace UpdateDSP.Views
                     else 
                     {
                         Message.Error("串口未打开，无法进行固件升级！");
-
                     }
                 }
             }
@@ -1002,7 +1004,7 @@ namespace UpdateDSP.Views
             int datalength = i;
             Application.Current.Dispatcher.Invoke(() =>
             {
-                tx.Content = "下发握手帧，等待下位机回应...";
+                tx.Content = "下发握手帧，等待设备回应...";
             });
             sendData(buf, datalength);
 
@@ -1087,16 +1089,11 @@ namespace UpdateDSP.Views
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // 创建一个新的Paragraph来包含文本  
-           
-             
+                // 创建一个新的Paragraph来包含文本             
                 if (rtbLog.Text.Length > 5000)
                 {
                     rtbLog.Text = "";
                 }
-
-              
-
                 rtbLog.AppendText(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + text + "\r\n");
                 // 确保滚动到底部  
                 rtbLog.ScrollToEnd();
@@ -1124,9 +1121,23 @@ namespace UpdateDSP.Views
             });
         }
         double pres = 0;
+        double woshoutimeout = 0;
         int timeout = 0;
         private async void Timer_Tick(object sender, EventArgs e)
         {
+            //if (UpdateFlag)
+            //{
+            //    if (woshoutimeout > 60*10) 
+            //    {
+            //        AddTextToLog("等待设备握手超时，已停止固件升级，请确保串口波特率正确,设备已重新上下电!");
+            //        UpdateStop();
+            //    }
+            //    else
+            //    {
+            //        woshoutimeout++;
+            //    }
+            //}
+          
             if (timeout++ > 5) 
             {
                 timeout = 0;
@@ -1152,18 +1163,10 @@ namespace UpdateDSP.Views
                 {
                     AddTextToLog("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
                     Message.Error("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
-                    UpdateStop();
-               
+                    UpdateStop();              
                 }
             }
-
             timenow.Text = DateTime.Now.ToString("yyyy年MM月dd日 dddd tt hh:mm:ss", CultureInfo.CreateSpecificCulture("zh-CN")); ;
-            //hour.Angle = (now.Hour - 12) / 12.0 * 360;
-            //minutes.Angle = now.Minute / 60.0 * 360;
-            //second.Angle = now.Second / 60.0 * 360;
-            //if (updateprogress.Value > 99)
-            //    updateprogress.Value = 0;
-            //updateprogress.Value += 10;
         }
 
 
