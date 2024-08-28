@@ -86,7 +86,7 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
 
                         <TextBlock Grid.Column="2" Text="接受:"/>
                         <TextBox Grid.Column="3"   Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 
-             HorizontalAlignment="Stretch"   
+             HorizontalAlignment="Stretch" 
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="接受数据"/>
                     </Grid>
@@ -98,7 +98,7 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                                             Grid.Row="0"
                                             Margin="10"
                                             
-                                            Columns="3">
+                                            Columns="5">
                         <rubyer:DescriptionItem  Description="版本号" >
                             <rubyer:DescriptionItem.Content>
                                 <rubyer:Tag Name="version" Margin="2" Visibility="Hidden" Foreground="{DynamicResource DefaultBackground}" HeadBackground="Green" HeadForeground="#FFFFFF" >
@@ -109,9 +109,9 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                                 </rubyer:Tag>
                             </rubyer:DescriptionItem.Content>
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA" Content="                                   " Description="校验A" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB" Content="" Description="校验B" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CODELENGTH" Content="" Description="固件大小" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA" Content="              " Description="校验A" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB" Content="              " Description="校验B" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CODELENGTH" Content="              " Description="固件大小" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_SOFTSN"  Content="" Description="软件串码" />
 
                         <rubyer:DescriptionItem  Name="IDC_EDIT_SOFTID" Content="" Description="ID" />
@@ -130,10 +130,10 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                       Grid.Row="2"
                       Margin="10"
                       Columns="2"  HorizontalAlignment="Left">
-                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT0" Content="" Description="0~7字节" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT8" Content="" Description="8~15字节" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT16" Content="" Description="16~23字节" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT24" Content="" Description="24~31字节" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT0" Content="" Description="0~7" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT8" Content="" Description="8~15" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT16" Content="" Description="16~23" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_DAT24" Content="" Description="24~31" />
 
                     </rubyer:Description>
                     <TextBlock    Grid.Row="3" Text="固件密钥信息" />
@@ -143,8 +143,8 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                           Margin="10"
                           Columns="2">
 
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER0" Content="" Description="0~7字节" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER8" Content="" Description="8~15字节" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER0" Content="" Description="0~7" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CIPHER8" Content="" Description="8~15" />
 
 
                     </rubyer:Description>

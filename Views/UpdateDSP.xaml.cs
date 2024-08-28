@@ -1,25 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using UpdateDSP.ViewModels;
+﻿using Rubyer;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.IO.Ports;
-using System.Threading;
-using Rubyer;
-using System.IO;
-using System.Globalization;
 
 namespace UpdateDSP.Views
 {
@@ -77,9 +70,9 @@ namespace UpdateDSP.Views
         public UpdateDspNormal()
         {
             InitializeComponent();
-           // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
-            botelv.ItemsSource = new string[]{ "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
-            chanleid.ItemsSource = new int[] {0,1};
+            // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
+            botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
+            chanleid.ItemsSource = new int[] { 0, 1 };
             chanleid.SelectedIndex = 0;
             botelv.SelectedIndex = 1;
             DispatcherTimer timer = new DispatcherTimer();
@@ -87,11 +80,11 @@ namespace UpdateDSP.Views
             timer.Tick += Timer_Tick;
             timer.Start();
             //握手定时器
-             timerhandshake = new DispatcherTimer();
+            timerhandshake = new DispatcherTimer();
             timerhandshake.Interval = TimeSpan.FromMilliseconds(200);
-           // timerhandshake.IsEnabled = false;
+            // timerhandshake.IsEnabled = false;
             timerhandshake.Tick += timerhandshake_Tick;
-            var ports =Common.Common.SearchPort();
+            var ports = Common.Common.SearchPort();
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
             {
                 comlist.ItemsSource = Common.Common.SearchPort();
@@ -103,7 +96,7 @@ namespace UpdateDSP.Views
 
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
-            this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            //this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
         }
         #region 串口打开关闭
         //打开关闭串口
@@ -116,11 +109,8 @@ namespace UpdateDSP.Views
                 {
                     if (UpdateFlag == true)
                     {
-
                         if (await MessageBoxR.Warning("正在进行固件升级，关闭串口会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
-
-
                             //// 停止固件升级
                             UpdateFlag = false;
                             UpdateStop();
@@ -129,21 +119,20 @@ namespace UpdateDSP.Views
                             serialPort2.Close();    //关闭串口
                             comlist.IsEnabled = true;
                             botelv.IsEnabled = true;
-
                             RecDataDeal.Abort();
                         }
-                        else {
+                        else
+                        {
                             openclosecom.IsChecked = true;
-                                return; }
+                            return;
+                        }
                     }
                     else
                     {
                         ////串口已经处于打开状态
                         serialPort2.Close();    //关闭串口
-
                         comlist.IsEnabled = true;
                         botelv.IsEnabled = true;
-
                         RecDataDeal.Abort();
                     }
                 }
@@ -154,7 +143,7 @@ namespace UpdateDSP.Views
                     botelv.IsEnabled = false;
 
                     ////配置串口
-                       string comname = "";
+                    string comname = "";
                     if ((comlist.SelectedItem as string).Contains("("))
                         comname = (comlist.SelectedItem as string).Split('(')[1].Replace(")", "");
                     if (comname.Contains("->"))
@@ -183,10 +172,10 @@ namespace UpdateDSP.Views
                 //RecDataDeal.Abort();
             }
             openclosecom.IsChecked = serialPort2.IsOpen;
-            if(serialPort2.IsOpen)
-            Message.Success(comlist.SelectedItem as string+"连接成功！");
+            if (serialPort2.IsOpen)
+                Message.Success(comlist.SelectedItem as string + "连接成功！");
             else
-            Message.Warning(comlist.SelectedItem as string + "已断开连接！");
+                Message.Warning(comlist.SelectedItem as string + "已断开连接！");
 
         }
 
@@ -195,108 +184,135 @@ namespace UpdateDSP.Views
         /// </summary>
         public void ProtocolParsing()
         {
+
             List<byte> reclist = new List<byte>();
             byte data;
             while (serialPort2.IsOpen)
             {
+                byte[] RecData = new byte[serialPort2.BytesToRead];
+                serialPort2.Read(RecData, 0, RecData.Length);
+
+                if (IsAllZeros(RecData))
+                { }
+                else if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0x55 && RecData[3] == 0x80)
+                {
+                    if (notifytimes == 0)
+                    {
+                        notifytimes = 1;
+                        AddTextToLog("识别到当前设备不在BOOTLOAD模式下，请点击上方固件升级按钮后，再上下电设备进入BOOTLOAD模式升级!");
+                    }
+
+                }
+                else
+                {
+                    foreach (byte tmpInt in RecData)
+                    {
+                        RecDataQueue.Enqueue(tmpInt); //放入Queue 给Deal线程备用
+                    }
+                }
                 //try
                 //{
-                    if (RecDataQueue.Count < 1)
-                    { Thread.Sleep(10); }
-                    while (RecDataQueue.Count > 0)
+                if (RecDataQueue.Count < 1)
+                { Thread.Sleep(10); }
+                while (RecDataQueue.Count > 0)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        data = RecDataQueue.Dequeue();
-                        switch (protocol_sign)
-                        {
-                            // 找到数据包开始标志DLE
-                            case protocol_sign_startDLE:
-                                if (data == DLE)
-                                {
-                                    reclist.Clear();
-                                    protocol_sign = protocol_sign_STX;
-                                    reclist.Add(data);
-                                }
-                                break;
-                            // 找到数据包开始标志STX
-                            case protocol_sign_STX:
-                                if (data == STX)
-                                {
-                                    protocol_sign = protocol_sign_endDLE;
-                                    reclist.Add(data);
-                                }
-                                else if (data == DLE)
-                                {
-                                    reclist.Clear();
-                                    reclist.Add(data);
-                                }
-                                else
-                                {
-                                    protocol_sign = protocol_sign_startDLE;
-                                }
-                                break;
-                            // 找到数据包结束标志DLE
-                            case protocol_sign_endDLE:
+                        rx.IsEnabled = true;
+                    });
+                    data = RecDataQueue.Dequeue();
+                    switch (protocol_sign)
+                    {
+                        // 找到数据包开始标志DLE
+                        case protocol_sign_startDLE:
+                            if (data == DLE)
+                            {
+                                reclist.Clear();
+                                protocol_sign = protocol_sign_STX;
                                 reclist.Add(data);
-                                if (data == DLE)
+                            }
+                            break;
+                        // 找到数据包开始标志STX
+                        case protocol_sign_STX:
+                            if (data == STX)
+                            {
+                                protocol_sign = protocol_sign_endDLE;
+                                reclist.Add(data);
+                            }
+                            else if (data == DLE)
+                            {
+                                reclist.Clear();
+                                reclist.Add(data);
+                            }
+                            else
+                            {
+                                protocol_sign = protocol_sign_startDLE;
+                            }
+                            break;
+                        // 找到数据包结束标志DLE
+                        case protocol_sign_endDLE:
+                            reclist.Add(data);
+                            if (data == DLE)
+                            {
+                                protocol_sign = protocol_sign_ETX;
+                            }
+                            break;
+                        // 找到数据包结束标志ETX
+                        case protocol_sign_ETX:
+                            if (data == ETX)
+                            {
+                                reclist.Add(data);
+                                // DLE+STX+<data stream>+CHECKA+CHECKB+DLE+ETX
+                                if (reclist.Count >= 7 && reclist.Count <= 2048)
                                 {
-                                    protocol_sign = protocol_sign_ETX;
-                                }
-                                break;
-                            // 找到数据包结束标志ETX
-                            case protocol_sign_ETX:
-                                if (data == ETX)
-                                {
-                                    reclist.Add(data);
-                                    // DLE+STX+<data stream>+CHECKA+CHECKB+DLE+ETX
-                                    if (reclist.Count >= 7 && reclist.Count <= 2048)
+                                    DisDataToDlg(reclist, reclist.Count);
+                                    // 将数据内部DLE DLE转换为DLE  其实没啥用
+                                    for (int j = 2; j < reclist.Count - 2; j++)
                                     {
-                                        DisDataToDlg(reclist, reclist.Count);
-                                        // 将数据内部DLE DLE转换为DLE
-                                        for (int j = 2; j < reclist.Count - 2; j++)
+                                        if (reclist[j] == DLE && (j + 1) < (reclist.Count - 2) && reclist[j + 1] == DLE)
                                         {
-                                            if (reclist[j] == DLE && (j + 1) < (reclist.Count - 2) && reclist[j + 1] == DLE)
-                                            {
-                                                reclist.RemoveAt(j);
-                                            }
+                                            reclist.RemoveAt(j);
                                         }
-                                        // 通道地址不对，不处理
-                                        int PackLength = reclist.Count;
-                                        byte[] DataArray = new byte[PackLength - 6];
-                                        reclist.CopyTo(2, DataArray, 0, PackLength - 6);
-                                        byte[] checksum = new byte[2];
-                                        checksum = CheckSum(DataArray, PackLength - 6);
-
-                                        if (DataArray[0] == ChannelID && checksum[0] == reclist[PackLength - 4] && checksum[1] == reclist[PackLength - 3])
-                                        {
-                                            Implement(DataArray);
-                                        }
-                                        // 恢复默认值
-                                        protocol_sign = protocol_sign_startDLE;
                                     }
-                                }
-                                else if (data == DLE)
-                                {
-                                    // DLE+DLE为数据中出现DLE的转义
-                                    protocol_sign = protocol_sign_endDLE;
-                                }
+                                    // 通道地址不对，不处理
+                                    int PackLength = reclist.Count;
+                                    byte[] DataArray = new byte[PackLength - 6];
+                                    reclist.CopyTo(2, DataArray, 0, PackLength - 6);
+                                    byte[] checksum = new byte[2];
+                                    checksum = CheckSum(DataArray, PackLength - 6);
 
-                                else
-                                {
-                                    // DLE后跟的既不是ETX也不是DLE，数据包出错
+                                    if (DataArray[0] == ChannelID && checksum[0] == reclist[PackLength - 4] && checksum[1] == reclist[PackLength - 3])
+                                    {
+                                        Implement(DataArray);
+                                    }
+                                    // 恢复默认值
                                     protocol_sign = protocol_sign_startDLE;
                                 }
-                                break;
-                            default:
+                            }
+                            else if (data == DLE)
+                            {
+                                // DLE+DLE为数据中出现DLE的转义 特么的下位机如果有0x55会给两个0x55，防止数据中出现0x55 0x03认为完整帧了，在这里其实已经去掉其中一个0x55
+                                //数据帧连续两个0x55 只取一个  只有0x55 0x03这种情况才认为出来，其他无论多少一个0x55 后面跟一个0x03 只取一个0x55 ，0x03正常取出不来。严谨逻辑
+                                protocol_sign = protocol_sign_endDLE;
+                            }
+
+                            else
+                            {
+                                // DLE后跟的既不是ETX也不是DLE，数据包出错
                                 protocol_sign = protocol_sign_startDLE;
-                                break;
-                        }
-                        // 数据过长，丢弃数据
-                        if (reclist.Count >= 2048)
-                        {
-                            reclist.Clear();
+                            }
+                            break;
+                        default:
                             protocol_sign = protocol_sign_startDLE;
-                        }
+                            break;
                     }
+                    // 数据过长，丢弃数据
+                    if (reclist.Count >= 2048)
+                    {
+                        reclist.Clear();
+                        protocol_sign = protocol_sign_startDLE;
+                    }
+                }
                 //}
                 //catch (Exception ex)
                 //{ Message.Error(ex.Message, "提示"); }
@@ -316,7 +332,7 @@ namespace UpdateDSP.Views
             // 一般命令处理
             if (cmd == 0x04)
             {
-               // RecvDevInfo(DataBuf, DataBuf.Length);
+                // RecvDevInfo(DataBuf, DataBuf.Length);
             }
             // 固件升级
             switch (ProgState)
@@ -330,7 +346,7 @@ namespace UpdateDSP.Views
                         {
                             timerhandshake.Stop();
                         });
-                       
+
                         if (DataBuf[3] == 0)
                         {
                             // 下发第一包数据
@@ -397,8 +413,8 @@ namespace UpdateDSP.Views
                     // 设置进度条
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        if (updateprogress.Value<=updateprogress.Maximum)
-                    updateprogress.Value = pres+BinPackOrder;
+                        if (updateprogress.Value <= updateprogress.Maximum)
+                            updateprogress.Value = pres + BinPackOrder;
                     });
                     // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
                     if ((BinPackOrder + 1) >= BinPackNum)
@@ -469,14 +485,14 @@ namespace UpdateDSP.Views
                     str = "扇区写入错误";
                     break;
                 case 0x03:
-                    str = "固件数据校验码错误";
+                    str = "固件数据校验码错误，请尝试重新加载固件";
                     //Application.Current.Dispatcher.Invoke(() =>
                     //{
                     //    Button_Click(null, null);
                     //});
                     break;
                 case 0x04:
-                    str = "数据包校验失败";
+                    str = "数据包校验失败，请尝试重新加载固件";
                     break;
                 case 0x05:
                     str = "固件数据写入成功";
@@ -486,14 +502,14 @@ namespace UpdateDSP.Views
                         comlist.IsEnabled = true;
                         botelv.IsEnabled = true;
                         openclosecom.IsChecked = false;
-                        Message.Success(str+"！串口已关闭！");
+                        Message.Success(str + "！串口已关闭！");
                     });
                     break;
                 case 0x06:
                     str = "超出FLASH容量范围";
                     break;
                 case 0x07:
-                    str = "Boot串码不符错误";
+                    str = "Boot串码不符错误,请尝试重新加载固件";
                     //Application.Current.Dispatcher.Invoke(() =>
                     //{
                     //    Button_Click(null, null);
@@ -503,7 +519,7 @@ namespace UpdateDSP.Views
                     str = "扇区擦除成功";
                     break;
                 case 0xFF:
-                    str = "非法数据包";
+                    str = "非法数据包，,请尝试重新加载固件";
                     break;
                 default:
                     str = "应答无法解析";
@@ -558,13 +574,13 @@ namespace UpdateDSP.Views
         /// <param name="e"></param>
         Queue<byte> RecDataQueue = new Queue<byte>();//接收队列，用于数据处理
         int notifytimes = 0;
-        private   void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-     
-                try
+            return;
+            try
             {
-                Thread.Sleep(50);
-                int n = serialPort2.BytesToRead;//接收缓冲区中数据的字节数
+
+                // int n = serialPort2.BytesToRead;//接收缓冲区中数据的字节数
                 byte[] RecData = new byte[serialPort2.BytesToRead];
                 serialPort2.Read(RecData, 0, RecData.Length);
                 if (IsAllZeros(RecData))
@@ -583,6 +599,11 @@ namespace UpdateDSP.Views
                     }
                     return;
                 }
+                else
+                {
+                    //if (UpdateFlag)
+                    //    Thread.Sleep(50);
+                }
                 //string data = "";
                 //for (int i = 0; i < RecData.Length; i++) 
                 //{
@@ -595,7 +616,7 @@ namespace UpdateDSP.Views
                 }
             }
             catch { }
-    
+
         }
         public static bool IsAllZeros(byte[] array)
         {
@@ -714,7 +735,7 @@ namespace UpdateDSP.Views
                 openFileDialog1.Filter = "二进制文件|*.bin";
                 openFileDialog1.Title = "Load File";
 
-                if (openFileDialog1.ShowDialog()==true)
+                if (openFileDialog1.ShowDialog() == true)
                 {
                     //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
                     var filepath = openFileDialog1.FileName;//取全路径文件名
@@ -817,11 +838,11 @@ namespace UpdateDSP.Views
                     }
                 }
             }
-           
+
         }
         #endregion
         #region 开始固件升级
-        private void StartToUpdate() 
+        private void StartToUpdate()
         {
             try
             {
@@ -863,7 +884,7 @@ namespace UpdateDSP.Views
             // 启动固件更新
             UpdateFlag = true;
             start.Content = "停止固件升级";
-            start.Background = new SolidColorBrush(Colors.Red);  
+            start.Background = new SolidColorBrush(Colors.Red);
             updateprogress.Value = updateprogress.Minimum;
             issend = false;
             AddTextToLog("等待设备响应握手...此过程可能需重新上下电设备!");
@@ -887,18 +908,19 @@ namespace UpdateDSP.Views
                 }
                 else
                 {
-                    if (await MessageBoxR.Warning("串口未打开，是否要打开串口并进行固件升级？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    if (await MessageBoxR.Warning("串口未打开或需重新打开，是否要打开串口并进行固件升级？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
                         OpenCloseCom();
                         StartToUpdate();
                     }
-                    else 
+                    else
                     {
-                        Message.Error("串口未打开，无法进行固件升级！");
+                        Message.Error("串口状态异常，无法进行固件升级！");
                     }
                 }
             }
-            else {
+            else
+            {
 
                 // 正在升级时，提醒用户是否要退出升级
                 if (await MessageBoxR.Warning("正在进行固件升级，停止升级会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
@@ -908,7 +930,7 @@ namespace UpdateDSP.Views
                     // LoadFileButton.Enabled = true;
                     // 停止固件升级
                     UpdateFlag = false;
-                     UpdateStop();
+                    UpdateStop();
                     // TxDisplay.AppendText("固件升级功能强制退出！\r\n");
                     start.Content = "开始固件升级";
                     start.Background = new SolidColorBrush(Colors.Green);
@@ -930,9 +952,9 @@ namespace UpdateDSP.Views
                 start.Content = "开始固件升级";
                 start.Background = new SolidColorBrush(Colors.Green);
                 ButtonHelper.SetLoading(start, false);
-       
-                    tx.Content = "发送";
-                
+
+                tx.Content = "发送";
+
             });
             // 停止固件更新
             UpdateFlag = false;
@@ -1137,8 +1159,8 @@ namespace UpdateDSP.Views
             //        woshoutimeout++;
             //    }
             //}
-          
-            if (timeout++ > 5) 
+
+            if (timeout++ > 5)
             {
                 timeout = 0;
                 tx.IsEnabled = false;
@@ -1146,24 +1168,25 @@ namespace UpdateDSP.Views
             }
             #region 串口识别
             var ports = await Task.Run(() => Common.Common.SearchPort());
-            if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>)) 
+            if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
             {
                 comlist.ItemsSource = Common.Common.SearchPort();
             }
-            if (comlist.SelectedItem==null && comlist.Items.Count > 0)
+            if (comlist.SelectedItem == null && comlist.Items.Count > 0)
             {
                 comlist.SelectedIndex = comlist.Items.Count - 1;
             }
             #endregion
 
-            if (updateprogress.Value < 80 && issend) {
+            if (updateprogress.Value < 80 && issend)
+            {
                 updateprogress.Value++;
                 pres = updateprogress.Value;
-                if (updateprogress.Value > 60) 
+                if (updateprogress.Value > 60)
                 {
                     AddTextToLog("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
                     Message.Error("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
-                    UpdateStop();              
+                    UpdateStop();
                 }
             }
             timenow.Text = DateTime.Now.ToString("yyyy年MM月dd日 dddd tt hh:mm:ss", CultureInfo.CreateSpecificCulture("zh-CN")); ;
@@ -1174,14 +1197,15 @@ namespace UpdateDSP.Views
         {
 
         }
-        private int isfirst =0;
-        private  void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private int isfirst = 0;
+        private void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (isfirst < 1)
             {
                 isfirst++;
             }
-            else {
+            else
+            {
                 if (comlist.SelectedItem != null)
                     OpenCloseCom();
             }
