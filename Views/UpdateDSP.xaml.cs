@@ -199,7 +199,7 @@ namespace UpdateDSP.Views
                     if (notifytimes == 0)
                     {
                         notifytimes = 1;
-                        AddTextToLog("识别到当前设备不在BOOTLOAD模式下，请点击上方固件升级按钮后，再上下电设备进入BOOTLOAD模式升级!");
+                        AddTextToLog("识别到设备不在BOOTLOAD模式下，请点击上方固件升级，再重新上下电设备!");
                     }
 
                 }
@@ -890,7 +890,7 @@ namespace UpdateDSP.Views
             start.Background = new SolidColorBrush(Colors.Red);
             updateprogress.Value = updateprogress.Minimum;
             issend = false;
-            AddTextToLog("等待设备响应握手...此过程可能需重新上下电设备!");
+            AddTextToLog("待设备响应握手,可能需重新上下电设备");
 
         }
         private async void Button_Click_1(object sender, RoutedEventArgs e)
