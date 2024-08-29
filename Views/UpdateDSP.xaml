@@ -37,9 +37,9 @@
                     <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
                         <TextBlock  Grid.Column="0"  Text="打开固件:" />
                         <Button Grid.Column="1" Foreground="{StaticResource Primary}"  Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
-                        <TextBox Grid.Column="2" Name="LoadFileName" IsHitTestVisible="True"  IsEnabled="True" MouseLeftButtonDown="TextBox_MouseLeftButtonDown">
+                        <TextBox Grid.Column="2" Name="LoadFileName" IsHitTestVisible="True"  IsEnabled="True" >
                             <rubyer:InputBoxHelper.PostContent>
-                                <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click">
+                                <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click" Cursor="Hand">
                                     <rubyer:Icon Type="FolderOpenFill" />
                                 </Button>
                             </rubyer:InputBoxHelper.PostContent>
@@ -82,7 +82,7 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                         <TextBox Grid.Column="1"   Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   
-             rubyer:InputBoxHelper.Watermark="消息通知" Cursor="IBeam"/>
+             rubyer:InputBoxHelper.Watermark="消息通知" Cursor="IBeam" />
 
                         <TextBlock Grid.Column="2" Text="接受:"/>
                         <TextBox Grid.Column="3"   Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 

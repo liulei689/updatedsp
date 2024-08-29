@@ -6,11 +6,11 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -62,7 +62,7 @@ namespace UpdateDSP.Views
         ushort Bin_CheckA, Bin_CheckB;
         ushort[] Data = new ushort[32];
         byte[] Ciphers = new byte[16];
-        byte[] pData = new byte[1024];
+        //byte[] pData = new byte[1024];
 
         Thread RecDataDeal;
         DispatcherTimer timerhandshake;
@@ -74,7 +74,7 @@ namespace UpdateDSP.Views
             botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
             chanleid.ItemsSource = new int[] { 0, 1 };
             chanleid.SelectedIndex = 0;
-            botelv.SelectedIndex = 1;
+            botelv.SelectedIndex = 5;
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -154,7 +154,7 @@ namespace UpdateDSP.Views
                     serialPort2.Parity = Parity.None;
                     serialPort2.DataBits = 8;
                     serialPort2.Open();//打开串口
-
+                    notifytimes = 0;
                     ////创建数据处理线程
                     RecDataDeal = new Thread(new ThreadStart(ProtocolParsing));
                     RecDataDeal.IsBackground = true;
@@ -320,6 +320,7 @@ namespace UpdateDSP.Views
             Thread.Sleep(500);
         }
         bool issend = false;
+        public int needFlashTime = 0;
         /// <summary>
         /// 对接收数据进行处理
         /// </summary>
@@ -351,7 +352,8 @@ namespace UpdateDSP.Views
                         {
                             // 下发第一包数据
                             AddTextToLog("握手成功，开始发送第一包数据");
-                            AddTextToLog("DSP擦除FLASH中....");
+                            needFlashTime = new Random().Next(14, 26);
+                            AddTextToLog("DSP擦除FLASH中，预估（15秒）....".Replace("15", needFlashTime.ToString()));
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 tx.Content = "握手已停止，等待设备准备完成后回应中...";
@@ -369,10 +371,7 @@ namespace UpdateDSP.Views
                             {
                                 Message.Success(str);
                             });
-                            //TxDisplay.AppendText(str);
-                            //TxDisplay.Focus();
-                            //TxDisplay.Select(RxDisplay.TextLength, 0);
-                            //TxDisplay.ScrollToCaret();
+
                             UpdateStop();
                         }
                     }
@@ -380,15 +379,20 @@ namespace UpdateDSP.Views
                 case PROGSTATE_UPDATE_LOAD:
                     if (!(cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_BINDATA))
                     {
+                        str = GetCommAckResult(DataBuf[3]);
+                        str += "，退出固件升级。";
+
+                        UpdateStop();
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            AddTextToLog(str);
+                        });
                         break;
                     }
                     issend = false;
                     // 获得包序号
                     str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
-                    //TxDisplay.AppendText(str);
-                    //TxDisplay.Focus();
-                    //TxDisplay.Select(RxDisplay.TextLength, 0);
-                    //TxDisplay.ScrollToCaret();
+
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         AddTextToLog(str);
@@ -397,10 +401,7 @@ namespace UpdateDSP.Views
                     {
                         str = GetCommAckResult(DataBuf[3]);
                         str += "，退出固件升级。";
-                        //TxDisplay.AppendText(str);
-                        //TxDisplay.Focus();
-                        //TxDisplay.Select(RxDisplay.TextLength, 0);
-                        //TxDisplay.ScrollToCaret();
+
                         UpdateStop();
                         Application.Current.Dispatcher.Invoke(() =>
                         {
@@ -427,14 +428,18 @@ namespace UpdateDSP.Views
                 case PROGSTATE_UPDATE_FINAL:
                     if (!(cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_BINDATA))
                     {
+                        str = GetCommAckResult(DataBuf[3]);
+                        str += "，退出固件升级。";
+
+                        UpdateStop();
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            AddTextToLog(str);
+                        });
                         break;
                     }
 
                     str = string.Format("固件包下发成功，收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
-                    //TxDisplay.AppendText(str);
-                    //TxDisplay.Focus();
-                    //TxDisplay.Select(RxDisplay.TextLength, 0);
-                    //TxDisplay.ScrollToCaret();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         AddTextToLog(str);
@@ -449,11 +454,6 @@ namespace UpdateDSP.Views
                     }
                     str = GetCommAckResult(DataBuf[3]);
                     str += "，退出固件升级。";
-                    //TxDisplay.AppendText(str);
-                    //TxDisplay.Focus();
-                    //TxDisplay.Select(RxDisplay.TextLength, 0);
-                    //TxDisplay.ScrollToCaret();
-
                     UpdateStop();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -557,7 +557,7 @@ namespace UpdateDSP.Views
             buf[1] = PROTOCOL_CMD_BINDATA;
             buf[2] = (byte)(len >> 8);
             buf[3] = (byte)(len >> 0);
-            Array.Copy(pData, tmp, buf, 4, len);
+            Array.Copy(BinFileData, tmp, buf, 4, len);
             sendData(buf, len + 4);
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -637,6 +637,9 @@ namespace UpdateDSP.Views
         #region 加载固件
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            Bin_CheckA = 0;
+            Bin_CheckB = 0;
+            BinFileData = new byte[2 * 1024 * 1024];
             if (sender == null && File.Exists(LoadFileName.Text))
             {
                 FileStream fs = new FileStream(LoadFileName.Text, FileMode.Open, FileAccess.Read);
@@ -676,7 +679,7 @@ namespace UpdateDSP.Views
                 version.Visibility = Visibility.Visible;
                 IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
                 IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
-                IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "KB";
+                IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
                 // 软件版本号
                 IDC_EDIT_SOFTVM.Text = "V" + BinFileData[24].ToString("X2").Insert(1, ".") + "." + BinFileData[25].ToString("X2").Insert(1, ".");
                 Message.Success("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
@@ -785,7 +788,7 @@ namespace UpdateDSP.Views
                     version.Visibility = Visibility.Visible;
                     IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
                     IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
-                    IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "KB";
+                    IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
                     // 软件版本号
                     IDC_EDIT_SOFTVM.Text = "V" + BinFileData[24].ToString("X2").Insert(1, ".") + "." + BinFileData[25].ToString("X2").Insert(1, ".");
                     Message.Success("当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
@@ -958,7 +961,7 @@ namespace UpdateDSP.Views
             });
             // 停止固件更新
             UpdateFlag = false;
-            Array.Clear(pData, 0, pData.Length);
+            //Array.Clear(pData, 0, pData.Length);
             DataLen = 0;
             BinPackNum = 0;
             ProgState = PROGSTATE_UPDATE_IDEL;
@@ -975,7 +978,8 @@ namespace UpdateDSP.Views
             {
                 return false;
             }
-            pData = data;
+
+            // pData = data;
             DataLen = datalen;
             ProgState = PROGSTATE_UPDATE_START;
 
@@ -1070,13 +1074,7 @@ namespace UpdateDSP.Views
             try
             {
                 serialPort2.Write(SendPack, 0, sendlist.Count);
-                if (UpdateFlag == true)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        tx.IsEnabled = true;
-                    });
-                }
+
             }
             catch (Exception ex)
             {
@@ -1182,21 +1180,29 @@ namespace UpdateDSP.Views
             {
                 updateprogress.Value++;
                 pres = updateprogress.Value;
-                if (updateprogress.Value > 60)
+                if (updateprogress.Value > 70)
                 {
                     AddTextToLog("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
                     Message.Error("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
                     UpdateStop();
+                }
+                else
+                {
+                    // 使用正则表达式匹配括号内的数字加“秒”  
+                    string pattern = @"\（(\d+)秒\）";
+
+                    // 替换匹配的文本  
+                    int time = (needFlashTime - (int)updateprogress.Value) < 0 ? 0 : needFlashTime - (int)updateprogress.Value;
+                    rtbLog.Text = Regex.Replace(rtbLog.Text, pattern, match => $"（{time}秒）");
+                    rtbLog.ScrollToEnd();
                 }
             }
             timenow.Text = DateTime.Now.ToString("yyyy年MM月dd日 dddd tt hh:mm:ss", CultureInfo.CreateSpecificCulture("zh-CN")); ;
         }
 
 
-        private void TextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
 
-        }
+
         private int isfirst = 0;
         private void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
