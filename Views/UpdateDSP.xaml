@@ -72,20 +72,16 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                             <ColumnDefinition Width="Auto"/>
                             <!-- TextBlock的列宽 -->
                             <ColumnDefinition Width="*"/>
-                            <!-- TextBox的列宽，自适应剩余空间 -->
-                            <ColumnDefinition Width="Auto"/>
                             <!-- 第二个TextBlock的列宽 -->
                             <ColumnDefinition Width="*"/>
                             <!-- 第二个TextBox的列宽，自适应剩余空间 -->
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="        状态:   "/>
-                        <TextBox Grid.Column="1"   Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
+                        <TextBox Grid.Column="1"  Margin="10,0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
              HorizontalAlignment="Stretch"   
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="消息通知" Cursor="IBeam" />
-
-                        <TextBlock Grid.Column="2" Text="接受:"/>
-                        <TextBox Grid.Column="3"   Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 
+                        <TextBox Grid.Column="2"   Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 
              HorizontalAlignment="Stretch" 
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="接受数据"/>
