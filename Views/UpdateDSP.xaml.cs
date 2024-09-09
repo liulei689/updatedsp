@@ -318,6 +318,7 @@ namespace UpdateDSP.Views
         }
         bool issend = false;
         public int needFlashTime = 0;
+        public int ComfirTimes = 3;
         /// <summary>
         /// 对接收数据进行处理
         /// </summary>
@@ -340,24 +341,27 @@ namespace UpdateDSP.Views
                 case PROGSTATE_UPDATE_START:
                     if (cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_STARTUPDATE)
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            timerhandshake.Stop();
-                        });
-
                         if (DataBuf[3] == 0)
                         {
-                            // 下发第一包数据
-                            AddTextToLog("握手成功，开始发送第一包数据");
-                            needFlashTime = new Random().Next(14, 26);
-                            AddTextToLog("DSP擦除FLASH中，预估（15秒）....".Replace("15", needFlashTime.ToString()));
-                            Application.Current.Dispatcher.Invoke(() =>
+                            if (ComfirTimes-- <= 0)
                             {
-                                tx.Content = "握手已停止，等待设备准备完成后回应中...";
-                            });
-                            issend = true;
-                            SendPackBinData(BinPackOrder);
-                            ProgState = PROGSTATE_UPDATE_LOAD;
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    timerhandshake.Stop();
+                                });
+                                ComfirTimes = 3;
+                                // 下发第一包数据
+                                AddTextToLog("握手成功，等待发送第一包数据");
+                                needFlashTime = new Random().Next(14, 26);
+                                AddTextToLog("DSP擦除FLASH中，预估（15秒）....".Replace("15", needFlashTime.ToString()));
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    tx.Content = "握手已停止，等待设备准备完成后回应中...";
+                                });
+                                issend = true;
+                                SendPackBinData(BinPackOrder);
+                                ProgState = PROGSTATE_UPDATE_LOAD;
+                            }
                         }
                         else
                         {
