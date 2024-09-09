@@ -74,7 +74,7 @@ namespace UpdateDSP.Views
             botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
             chanleid.ItemsSource = new int[] { 0, 1 };
             chanleid.SelectedIndex = 0;
-            botelv.SelectedIndex = 5;
+            botelv.SelectedIndex = 1;
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -416,7 +416,7 @@ namespace UpdateDSP.Views
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         if (updateprogress.Value <= updateprogress.Maximum)
-                            updateprogress.Value = pres + BinPackOrder;
+                            updateprogress.Value = pres + BinPackOrder * 0.73;
                     });
                     // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
                     if ((BinPackOrder + 1) >= BinPackNum)
