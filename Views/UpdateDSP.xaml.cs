@@ -191,10 +191,7 @@ namespace UpdateDSP.Views
             {
                 byte[] RecData = new byte[serialPort2.BytesToRead];
                 serialPort2.Read(RecData, 0, RecData.Length);
-
-                if (IsAllZeros(RecData))
-                { }
-                else if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0x55 && RecData[3] == 0x80)
+                if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0x55 && RecData[3] == 0x80)
                 {
                     if (notifytimes == 0)
                     {
