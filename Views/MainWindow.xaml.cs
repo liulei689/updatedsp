@@ -23,6 +23,8 @@ namespace UpdateDSP
             ThemeManager.ThemeModeChanged += OnThemeModeChanged;
         }
 
+
+
         private void OnThemeModeChanged(object sender, ThemeModeChangedArgs e)
         {
             //if (e.IsDarkMode)
@@ -51,10 +53,10 @@ namespace UpdateDSP
             else
             {
             }
-                // 上述之外的时间段
-            }
+            // 上述之外的时间段
+        }
 
-            private void controlSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void controlSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ThemeManager.SwitchControlCornerRadius(e.NewValue);
         }

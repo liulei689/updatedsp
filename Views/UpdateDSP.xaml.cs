@@ -19,7 +19,7 @@ namespace UpdateDSP.Views
     /// <summary>
     /// UpdateDspNormal.xaml 的交互逻辑
     /// </summary>
-    public partial class UpdateDspNormal : UserControl
+    public partial class UpdateDspNormal : UserControl, IDisposable
     {
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
@@ -64,8 +64,9 @@ namespace UpdateDSP.Views
         byte[] Ciphers = new byte[16];
         //byte[] pData = new byte[1024];
 
-        Thread RecDataDeal;
+        public Thread RecDataDeal;
         DispatcherTimer timerhandshake;
+        DispatcherTimer timer;
         #endregion
         public UpdateDspNormal()
         {
@@ -75,7 +76,7 @@ namespace UpdateDSP.Views
             chanleid.ItemsSource = new int[] { 0, 1 };
             chanleid.SelectedIndex = 0;
             botelv.SelectedIndex = 1;
-            DispatcherTimer timer = new DispatcherTimer();
+            timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
             timer.Start();
@@ -148,6 +149,8 @@ namespace UpdateDSP.Views
                         comname = (comlist.SelectedItem as string).Split('(')[1].Replace(")", "");
                     if (comname.Contains("->"))
                         comname = comname.Split('-')[0];
+                    if (comname == "")
+                        comname = comlist.SelectedItem as string;
                     serialPort2.PortName = comname;
                     serialPort2.BaudRate = Convert.ToInt32(botelv.SelectedItem);
                     serialPort2.StopBits = StopBits.One;
@@ -1169,7 +1172,7 @@ namespace UpdateDSP.Views
             var ports = await Task.Run(() => Common.Common.SearchPort());
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
             {
-                comlist.ItemsSource = Common.Common.SearchPort();
+                comlist.ItemsSource = ports;
             }
             if (comlist.SelectedItem == null && comlist.Items.Count > 0)
             {
@@ -1205,6 +1208,8 @@ namespace UpdateDSP.Views
 
 
         private int isfirst = 0;
+        private bool disposedValue;
+
         private void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (isfirst < 1)
@@ -1217,6 +1222,49 @@ namespace UpdateDSP.Views
                     OpenCloseCom();
             }
 
+        }
+        private void ReleaseSerialPort()
+        {
+            if (serialPort2?.IsOpen == true)
+            {
+                serialPort2.Close();
+            }
+            serialPort2?.Dispose();
+            serialPort2 = null;
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 释放托管状态(托管对象)
+                }
+                if (timer != null)
+                    timer.Stop();
+
+                ReleaseSerialPort();
+                if (RecDataDeal != null)
+                    RecDataDeal.Abort();
+
+                // TODO: 释放未托管的资源(未托管的对象)并重写终结器
+                // TODO: 将大型字段设置为 null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
+        ~UpdateDspNormal()
+        {
+            // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

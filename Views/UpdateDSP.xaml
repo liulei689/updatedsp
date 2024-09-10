@@ -15,7 +15,7 @@
                 <Grid  rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
                     <Grid  rubyer:GridHelper.ColumnDefinitions="Auto,*, Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Margin="5">
                         <TextBlock Grid.Column="0"  Text="    串口号:"  />
-                        <ComboBox Grid.Column="1" Name="comlist" MinWidth="300" Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
+                        <ComboBox Grid.Column="1" Name="comlist"  Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
                         <TextBlock Grid.Column="2" Text="    波特率:"  />
                         <ComboBox Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
                         <ToggleButton Grid.Column="4" x:Name="openclosecom" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False" Click="openclosecom_Click">
