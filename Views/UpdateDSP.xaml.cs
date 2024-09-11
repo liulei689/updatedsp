@@ -577,50 +577,7 @@ namespace UpdateDSP.Views
         /// <param name="e"></param>
         Queue<byte> RecDataQueue = new Queue<byte>();//接收队列，用于数据处理
         int notifytimes = 0;
-        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            return;
-            try
-            {
 
-                // int n = serialPort2.BytesToRead;//接收缓冲区中数据的字节数
-                byte[] RecData = new byte[serialPort2.BytesToRead];
-                serialPort2.Read(RecData, 0, RecData.Length);
-                if (IsAllZeros(RecData))
-                    return;
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    rx.IsEnabled = true;
-                });
-
-                if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0X55 && RecData[3] == 0x80)
-                {
-                    if (notifytimes == 0)
-                    {
-                        notifytimes = 1;
-                        AddTextToLog("识别到当前设备不在BOOTLOAD模式下，请点击上方固件升级按钮后，再上下电设备进入BOOTLOAD模式升级!");
-                    }
-                    return;
-                }
-                else
-                {
-                    //if (UpdateFlag)
-                    //    Thread.Sleep(50);
-                }
-                //string data = "";
-                //for (int i = 0; i < RecData.Length; i++) 
-                //{
-                //    data += RecData[i].ToString("X2")+" ";
-                //}
-                //File.AppendAllLines(AppDomain.CurrentDomain.BaseDirectory + "1.txt",new string[] { DateTime.Now.ToString()+" " + data });
-                foreach (byte tmpInt in RecData)
-                {
-                    RecDataQueue.Enqueue(tmpInt); //放入Queue 给Deal线程备用
-                }
-            }
-            catch { }
-
-        }
         public static bool IsAllZeros(byte[] array)
         {
             foreach (var item in array)
@@ -1168,10 +1125,22 @@ namespace UpdateDSP.Views
                 rx.IsEnabled = false;
             }
             #region 串口识别
-            var ports = Common.Common.SearchPort();
+            var ports = Common.Common.SearchPort().Distinct().ToList();
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
             {
+                bool isopen = false;
+                if ((comlist.ItemsSource as IList<string>).Count < ports.Count)
+                    isopen = true;
+                if (!isopen)
+                    comlist.SelectionChanged -= comlist_SelectionChanged;
                 comlist.ItemsSource = ports;
+                if (comlist.Items.Count > 0)
+                {
+                    comlist.SelectedIndex = comlist.Items.Count - 1;
+                }
+                if (!isopen)
+                    comlist.SelectionChanged += comlist_SelectionChanged;
+
             }
             if (comlist.SelectedItem == null && comlist.Items.Count > 0)
             {
