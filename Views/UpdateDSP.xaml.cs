@@ -1,6 +1,7 @@
 ﻿using Rubyer;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Ports;
@@ -170,6 +171,7 @@ namespace UpdateDSP.Views
                 serialPort2.Close();    //关闭串口
                 comlist.IsEnabled = true;
                 botelv.IsEnabled = true;
+                openclosecom.IsChecked = false;
                 return;
                 //RecDataDeal.Abort();
             }
@@ -1200,6 +1202,47 @@ namespace UpdateDSP.Views
             serialPort2?.Dispose();
             serialPort2 = null;
         }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            // 创建一个新的进程启动信息对象  
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                // 设置要启动的程序（cmd.exe）  
+                FileName = "cmd.exe",
+                // 设置要执行的命令，注意这里没有/c参数，因为我们想要看到cmd窗口  
+                Arguments = $"/k \"mode {comlist.SelectedValue}\"", // 使用/k参数保持cmd窗口打开  
+                                                                    // 不隐藏cmd窗口（这是默认行为）  
+                                                                    // CreateNoWindow = false, // 可以省略这行代码  
+                                                                    // 使用系统的shell执行（这是默认行为）  
+                                                                    // UseShellExecute = true, // 可以省略这行代码  
+            };
+
+            // 启动进程执行命令  
+            try
+            {
+                // 创建一个新的进程  
+                using (Process process = new Process { StartInfo = startInfo })
+                {
+                    // 启动进程  
+                    process.Start();
+
+                    // 等待进程退出（可选，如果你想要程序在cmd窗口关闭后继续执行）  
+                    // process.WaitForExit(); // 如果你不调用这个，程序将会立即继续执行，不会等待cmd窗口关闭  
+                }
+            }
+            catch (Exception ex)
+            {
+                Message.Error(ex.Message);
+            }
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Instance.XuanFu();
+
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -1210,11 +1253,9 @@ namespace UpdateDSP.Views
                 }
                 if (timer != null)
                     timer.Stop();
-
-                ReleaseSerialPort();
                 if (RecDataDeal != null)
                     RecDataDeal.Abort();
-
+                ReleaseSerialPort();
                 // TODO: 释放未托管的资源(未托管的对象)并重写终结器
                 // TODO: 将大型字段设置为 null
                 disposedValue = true;

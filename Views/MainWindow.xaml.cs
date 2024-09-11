@@ -13,6 +13,7 @@ namespace UpdateDSP
     /// </summary>
     public partial class MainWindow : RubyerWindow
     {
+        public static MainWindow Instance { get; private set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -21,9 +22,26 @@ namespace UpdateDSP
 
             Loaded += MainWindow_Loaded;
             ThemeManager.ThemeModeChanged += OnThemeModeChanged;
+            Instance = this;
+            this.StateChanged += MainWindow_StateChanged;
         }
-
-
+        private void MainWindow_StateChanged(object sender, EventArgs e)
+        {
+            // 检查窗口是否从最小化状态恢复  
+            if (this.WindowState == WindowState.Normal)
+            {
+                // 这里执行窗口从最小化恢复正常的逻辑  
+                this.Topmost = false;
+                this.ShowInTaskbar = true;
+            }
+        }
+        public void XuanFu()
+        {
+            this.Topmost = true;
+            this.ShowInTaskbar = false;
+            //图标显示在托盘区
+            this.WindowState = WindowState.Minimized;
+        }
 
         private void OnThemeModeChanged(object sender, ThemeModeChangedArgs e)
         {

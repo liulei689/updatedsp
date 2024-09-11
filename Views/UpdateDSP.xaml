@@ -148,14 +148,18 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
             </GroupBox>
             <StatusBar  Grid.Row="2" Background="#0F000000" DockPanel.Dock="Bottom" VerticalAlignment="Bottom"  >
                     <StatusBarItem HorizontalAlignment="Left">
-                    <rubyer:Icon Type="TerminalBoxLine" Foreground="{DynamicResource Primary}"/>
-                    </StatusBarItem>
+                    <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_2" Cursor="Hand">
+                        <rubyer:Icon Type="TerminalBoxLine" Foreground="{DynamicResource Primary}" />
+                    </Button>
+                </StatusBarItem>
                     <Separator />
                     <StatusBarItem HorizontalAlignment="Left" Content="就绪" />
                     <StatusBarItem HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
-                        <rubyer:Icon Margin="5 0" Type="UploadLine"  Foreground="{DynamicResource Primary}"/>
-                            <TextBlock Name="timenow" Margin="5 0" Text="" />
+                        <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_3" Cursor="Hand">
+                            <rubyer:Icon Margin="5 0" Type="UploadLine"  Foreground="{DynamicResource Primary}"/>
+                        </Button>
+                        <TextBlock Name="timenow" Margin="5 0" Text="" />
                         <rubyer:Icon Margin="5 0" Type="Notification3Fill" Foreground="{DynamicResource Primary}"/>
                         </StackPanel>
                     </StatusBarItem>
