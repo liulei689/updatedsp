@@ -4,7 +4,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFrameworks>net472</TargetFrameworks>
 		<UseWPF>true</UseWPF>
-		<ApplicationIcon>rubyer.ico</ApplicationIcon>
+		<ApplicationIcon>logo.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Authors>昆明光博科技有限公司</Authors>
 		<Version>0.0.0.1</Version>
@@ -18,18 +18,13 @@
 		<Page Remove="Style\**" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Remove="ViewModels\TreeViewViewModel.cs" />
-	  <Compile Remove="Views\TreeViewDemo.xaml.cs" />
-	</ItemGroup>
+
 
 	<ItemGroup>
-	  <None Remove="weather.json" />
+	  <None Remove="logo.ico" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Page Remove="Views\TreeViewDemo.xaml" />
-	</ItemGroup>
+
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
@@ -51,12 +46,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="rubyer.ico">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Resource>
-	</ItemGroup>
-
-	<ItemGroup>
 		<Page Update="Views\About.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
@@ -66,6 +55,12 @@
 	  <Folder Include="Assets\" />
 	  <Folder Include="Enums\" />
 	  <Folder Include="Models\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="logo.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
 	</ItemGroup>
 
 	<PropertyGroup>

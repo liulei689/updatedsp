@@ -10,7 +10,7 @@
             <Image Grid.Column="0"
                    Width="50"
                    VerticalAlignment="Center"
-                   Source="../rubyer.ico" />
+                   Source="../logo.ico" />
             <StackPanel Grid.Column="1" Margin="20 0">
                 <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
                     <TextBlock FontSize="20">DSP在线升级模拟上位机</TextBlock>

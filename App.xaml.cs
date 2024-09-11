@@ -13,6 +13,7 @@ namespace UpdateDSP
         public App()
         {
             Services = ConfigureServices();
+            ShowSplashScreen();
         }
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace UpdateDSP
         {
             base.OnStartup(e);
 
-       
+
 
             new MainWindow().Show();
         }
@@ -41,7 +42,12 @@ namespace UpdateDSP
         {
             var services = new ServiceCollection();
             services.AddSingleton<MainViewModel>();
-           return services.BuildServiceProvider();
+            return services.BuildServiceProvider();
+        }
+        void ShowSplashScreen()
+        {
+            var splashScreen = new SplashScreen("../logo.ico");
+            splashScreen.Show(true);
         }
     }
 }

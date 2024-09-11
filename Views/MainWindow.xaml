@@ -15,7 +15,7 @@
                      d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
                      FontSize="13"
                      Foreground="{DynamicResource DefaultForeground}"
-                     Icon="pack://application:,,,/UpdateDSP;component/rubyer.ico"
+                     Icon="pack://application:,,,/UpdateDSP;component/logo.ico"
                      TitleHeight="34"
                      WindowStartupLocation="CenterScreen"
                      mc:Ignorable="d">

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -1145,9 +1144,9 @@ namespace UpdateDSP.Views
             });
         }
         double pres = 0;
-        double woshoutimeout = 0;
+
         int timeout = 0;
-        private async void Timer_Tick(object sender, EventArgs e)
+        private void Timer_Tick(object sender, EventArgs e)
         {
             //if (UpdateFlag)
             //{
@@ -1169,7 +1168,7 @@ namespace UpdateDSP.Views
                 rx.IsEnabled = false;
             }
             #region 串口识别
-            var ports = await Task.Run(() => Common.Common.SearchPort());
+            var ports = Common.Common.SearchPort();
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
             {
                 comlist.ItemsSource = ports;
