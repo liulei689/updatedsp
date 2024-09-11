@@ -35,6 +35,13 @@ namespace UpdateDSP
                 this.ShowInTaskbar = true;
             }
         }
+        public void SetTitle(string title)
+        {
+            if (Topmost && !ShowInTaskbar && WindowState == WindowState.Minimized)
+            {
+                Title = title;
+            }
+        }
         public void XuanFu()
         {
             this.Topmost = true;

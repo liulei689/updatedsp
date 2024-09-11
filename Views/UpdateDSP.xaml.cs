@@ -421,6 +421,10 @@ namespace UpdateDSP.Views
                     {
                         if (updateprogress.Value <= updateprogress.Maximum)
                             updateprogress.Value = pres + BinPackOrder * 0.73;
+                        double pre = updateprogress.Value <= 100 ? updateprogress.Value : 100;
+                        if (pre == 100) MainWindow.Instance.SetTitle("稍等升级即将完成");
+
+                        else MainWindow.Instance.SetTitle("升级进度" + pre.ToString() + "%");
                     });
                     // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
                     if ((BinPackOrder + 1) >= BinPackNum)
@@ -919,7 +923,7 @@ namespace UpdateDSP.Views
                 ButtonHelper.SetLoading(start, false);
 
                 tx.Content = "发送";
-
+                MainWindow.Instance.SetTitle("在线升级");
             });
             // 停止固件更新
             UpdateFlag = false;
@@ -1168,6 +1172,8 @@ namespace UpdateDSP.Views
                     // 替换匹配的文本  
                     int time = (needFlashTime - (int)updateprogress.Value) < 0 ? 0 : needFlashTime - (int)updateprogress.Value;
                     rtbLog.Text = Regex.Replace(rtbLog.Text, pattern, match => $"（{time}秒）");
+                    MainWindow.Instance.SetTitle("擦除中还剩" + time + "秒");
+
                     rtbLog.ScrollToEnd();
                 }
             }
