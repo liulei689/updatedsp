@@ -31,25 +31,33 @@ namespace LL2024.Algorithms.UpdateDSP
         }
 
         /// <summary>
-        /// 初始化CheckA和CheckB和代码长度
+        /// 初始化固件信息中CheckA和CheckB
         /// 固件信息前部分字节保留，下发前写入校验和与长度，0~1校验双字节CheckA和0~2双字节CheckB 4~7写入32字节长度
         /// </summary>
         /// <param name="BinFileData">固件字节</param>
-        /// <param name="BinFileLen">固件长度</param>
-        public static void GetHexHeadsNomarl(byte[] BinFileData, int BinFileLen)
+        /// <param name="Bin_CheckA">A</param>
+        /// <param name="Bin_CheckB">B</param>
+        public static void SetHexCheckAB(byte[] BinFileData, ushort Bin_CheckA, ushort Bin_CheckB)
         {
-            var (tempA, tempB) = GetBinCheckAAndCheckB(BinFileData, BinFileLen);
-            ushort Bin_CheckA = tempA;
-            ushort Bin_CheckB = tempB;
-            BinFileData[0] = 0;
-            BinFileData[1] = 0;
-            BinFileData[2] = 0;
-            BinFileData[3] = 0;
+            BinFileData[0] = (byte)(Bin_CheckA >> 8);
+            BinFileData[1] = (byte)(Bin_CheckA >> 0);
+            BinFileData[2] = (byte)(Bin_CheckB >> 8);
+            BinFileData[3] = (byte)(Bin_CheckB >> 0);
+        }
+
+        /// <summary>
+        /// 初始化固件信息中代码长度
+        /// </summary>
+        /// <param name="BinFileData">固件字节</param>
+        /// <param name="BinFileLen">固件长度</param>
+        public static void SetHexLength(byte[] BinFileData, int BinFileLen)
+        {
             BinFileData[4] = (byte)(BinFileLen >> 24);
             BinFileData[5] = (byte)(BinFileLen >> 16);
             BinFileData[6] = (byte)(BinFileLen >> 8);
             BinFileData[7] = (byte)(BinFileLen >> 0);
         }
+
 
     }
 }

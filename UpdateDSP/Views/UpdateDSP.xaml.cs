@@ -623,21 +623,12 @@ namespace UpdateDSP.Views
                 }
                 fs.Close();
                 // 初始化CheckA和CheckB和代码长度
-                BinFileData[0] = 0;
-                BinFileData[1] = 0;
-                BinFileData[2] = 0;
-                BinFileData[3] = 0;
-                BinFileData[4] = (byte)(BinFileLen >> 24);
-                BinFileData[5] = (byte)(BinFileLen >> 16);
-                BinFileData[6] = (byte)(BinFileLen >> 8);
-                BinFileData[7] = (byte)(BinFileLen >> 0);
                 // 加入校验码
+                DSP28335.SetHexLength(BinFileData, BinFileLen);
                 var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
                 Bin_CheckA = tempA; Bin_CheckB = tempB;
-                BinFileData[0] = (byte)(Bin_CheckA >> 8);
-                BinFileData[1] = (byte)(Bin_CheckA >> 0);
-                BinFileData[2] = (byte)(Bin_CheckB >> 8);
-                BinFileData[3] = (byte)(Bin_CheckB >> 0);
+                DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
+
                 // 显示文件信息
                 version.Visibility = Visibility.Visible;
                 IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
@@ -728,22 +719,10 @@ namespace UpdateDSP.Views
                     }
 
                     // 初始化CheckA和CheckB和代码长度
-                    BinFileData[0] = 0;
-                    BinFileData[1] = 0;
-                    BinFileData[2] = 0;
-                    BinFileData[3] = 0;
-                    BinFileData[4] = (byte)(BinFileLen >> 24);
-                    BinFileData[5] = (byte)(BinFileLen >> 16);
-                    BinFileData[6] = (byte)(BinFileLen >> 8);
-                    BinFileData[7] = (byte)(BinFileLen >> 0);
-
-                    // 加入校验码
+                    DSP28335.SetHexLength(BinFileData, BinFileLen);
                     var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
                     Bin_CheckA = tempA; Bin_CheckB = tempB;
-                    BinFileData[0] = (byte)(Bin_CheckA >> 8);
-                    BinFileData[1] = (byte)(Bin_CheckA >> 0);
-                    BinFileData[2] = (byte)(Bin_CheckB >> 8);
-                    BinFileData[3] = (byte)(Bin_CheckB >> 0);
+                    DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
                     // 显示文件信息
                     version.Visibility = Visibility.Visible;
                     IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
