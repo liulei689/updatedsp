@@ -58,6 +58,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\LL.Algorithms.UpdateDSP\LL2024.Algorithms.UpdateDSP.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Resource Include="logo.ico">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Resource>
