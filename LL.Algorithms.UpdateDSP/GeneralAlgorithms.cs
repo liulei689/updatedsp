@@ -17,6 +17,26 @@
             return (Bin_CheckA, Bin_CheckB);
         }
 
+        /// <summary>
+        /// 计算或校验校验和
+        /// </summary>
+        /// <param name="databuf">待生成数据</param>
+        /// <param name="datalength">长度</param>
+        /// <param name="Sum">生成的校验和</param>
+        /// <param name="CHECKA">待校验A</param>
+        /// <param name="CHECKB">待校验B</param>
+        /// <returns></returns>
+        public byte[] CheckSum(byte[] databuf, int datalength, byte CHECKA = 0, byte CHECKB = 0)
+        {
+            byte CHECK_A = 0, CHECK_B = 0;
+            for (int i = 0; i < datalength; i++)
+            {
+                CHECK_A += databuf[i];
+                CHECK_B += CHECK_A;
+            }
+            return new byte[3] { CHECK_A, CHECK_B, (CHECK_A == CHECKA && CHECK_B == CHECKB) ? (byte)1 : (byte)0 };
+        }
+
         public string GetVersionToString(byte byte1, byte byte2)
         {
             return byte1.ToString("X2").Insert(1, ".") + "." + byte2.ToString("X2").Insert(1, ".");

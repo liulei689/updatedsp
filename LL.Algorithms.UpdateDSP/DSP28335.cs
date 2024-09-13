@@ -68,5 +68,9 @@ namespace LL2024.Algorithms.UpdateDSP
             return _instance.GetCommAckResult(code);
         }
 
+        public static byte[] CheckSum(byte[] databuf, int datalength, byte CHECKA = 0, byte CHECKB = 0)
+        {
+            return _instance.CheckSum(databuf, datalength, CHECKA, CHECKB);
+        }
     }
 }

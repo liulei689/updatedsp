@@ -280,10 +280,9 @@ namespace UpdateDSP.Views
                                     int PackLength = reclist.Count;
                                     byte[] DataArray = new byte[PackLength - 6];
                                     reclist.CopyTo(2, DataArray, 0, PackLength - 6);
-                                    byte[] checksum = new byte[2];
-                                    checksum = CheckSum(DataArray, PackLength - 6);
 
-                                    if (DataArray[0] == ChannelID && checksum[0] == reclist[PackLength - 4] && checksum[1] == reclist[PackLength - 3])
+                                    byte isRight = DSP28335.CheckSum(DataArray, PackLength - 6, reclist[PackLength - 4], reclist[PackLength - 3])[2];
+                                    if (DataArray[0] == ChannelID && isRight == 1)
                                     {
                                         Implement(DataArray);
                                     }
@@ -957,7 +956,7 @@ namespace UpdateDSP.Views
                 sendlist.Add(databuf[i]);
             }
             // 校验字节
-            byte[] Check = CheckSum(databuf, datalength);
+            byte[] Check = DSP28335.CheckSum(databuf, datalength);
             if (Check[0] == DLE)
             { sendlist.Add(Check[0]); }
             sendlist.Add(Check[0]);
@@ -983,23 +982,6 @@ namespace UpdateDSP.Views
             }
             sendlist.Clear();
             Thread.Sleep(1);
-        }
-        /// <summary>
-        /// 计算校验和
-        /// </summary>
-        /// <param name="databuf"></param>
-        /// <param name="datalength"></param>
-        /// <returns></returns>
-        private byte[] CheckSum(byte[] databuf, int datalength)
-        {
-            byte CHECK_A = 0, CHECK_B = 0;
-            for (int i = 0; i < datalength; i++)
-            {
-                CHECK_A += databuf[i];
-                CHECK_B += CHECK_A;
-            }
-            byte[] checksum = new byte[2] { CHECK_A, CHECK_B };
-            return checksum;
         }
         #endregion
         private void AddTextToLog(string text)
