@@ -32,11 +32,11 @@ namespace LL2024.Algorithms.UpdateDSP
 
         /// <summary>
         /// 初始化固件信息中CheckA和CheckB
-        /// 固件信息前部分字节保留，下发前写入校验和与长度，0~1校验双字节CheckA和0~2双字节CheckB 4~7写入32字节长度
+        /// 固件信息前部分字节保留，下发前写入校验和与长度，0~1校验双字节CheckA和0~2双字节CheckB 4~7
         /// </summary>
         /// <param name="BinFileData">固件字节</param>
-        /// <param name="Bin_CheckA">A</param>
-        /// <param name="Bin_CheckB">B</param>
+        /// <param name="Bin_CheckA">校验A</param>
+        /// <param name="Bin_CheckB">校验B</param>
         public static void SetHexCheckAB(byte[] BinFileData, ushort Bin_CheckA, ushort Bin_CheckB)
         {
             BinFileData[0] = (byte)(Bin_CheckA >> 8);
@@ -46,7 +46,7 @@ namespace LL2024.Algorithms.UpdateDSP
         }
 
         /// <summary>
-        /// 初始化固件信息中代码长度
+        /// 初始化固件信息中代码长度 写入32字节长度
         /// </summary>
         /// <param name="BinFileData">固件字节</param>
         /// <param name="BinFileLen">固件长度</param>

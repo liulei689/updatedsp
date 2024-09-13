@@ -422,10 +422,7 @@ namespace UpdateDSP.Views
                     {
                         if (updateprogress.Value <= updateprogress.Maximum)
                             updateprogress.Value = pres + BinPackOrder * 0.73;
-                        double pre = updateprogress.Value <= 100 ? updateprogress.Value : 100;
-                        if (pre == 100) MainWindow.Instance.SetTitle("稍等升级即将完成");
-
-                        else MainWindow.Instance.SetTitle("升级进度" + pre.ToString() + "%");
+                        MainWindow.Instance.SetTitle("升级进度" + ((updateprogress.Value * 100) / updateprogress.Maximum).ToString("F2") + "%");
                     });
                     // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
                     if ((BinPackOrder + 1) >= BinPackNum)
@@ -439,6 +436,10 @@ namespace UpdateDSP.Views
                     if (!(cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_BINDATA))
                     {
                         str = GetCommAckResult(DataBuf[3]);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.Instance.SetTitle(str);
+                        });
                         str += "，退出固件升级。";
 
                         UpdateStop();
@@ -894,9 +895,7 @@ namespace UpdateDSP.Views
                 start.Content = "开始固件升级";
                 start.Background = new SolidColorBrush(Colors.Green);
                 ButtonHelper.SetLoading(start, false);
-
                 tx.Content = "发送";
-                MainWindow.Instance.SetTitle("在线升级");
             });
             // 停止固件更新
             UpdateFlag = false;
