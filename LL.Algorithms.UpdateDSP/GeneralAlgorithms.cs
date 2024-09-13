@@ -1,4 +1,8 @@
-﻿namespace LL.Algorithms.UpdateDSP
+﻿using LL2024.Algorithms.UpdateDSP;
+using System;
+using System.Collections.Generic;
+
+namespace LL.Algorithms.UpdateDSP
 {
     public class GeneralAlgorithms : IGeneralAlgorithms
     {
@@ -17,15 +21,6 @@
             return (Bin_CheckA, Bin_CheckB);
         }
 
-        /// <summary>
-        /// 计算或校验校验和
-        /// </summary>
-        /// <param name="databuf">待生成数据</param>
-        /// <param name="datalength">长度</param>
-        /// <param name="Sum">生成的校验和</param>
-        /// <param name="CHECKA">待校验A</param>
-        /// <param name="CHECKB">待校验B</param>
-        /// <returns></returns>
         public byte[] CheckSum(byte[] databuf, int datalength, byte CHECKA = 0, byte CHECKB = 0)
         {
             byte CHECK_A = 0, CHECK_B = 0;
@@ -82,6 +77,114 @@
                     break;
             }
             return str;
+        }
+
+        public event Action<byte[]> MessageReceive; //解析
+        public event Action<List<byte>> DisDataToDlg;
+        private volatile int protocol_sign = 0;
+        private const int protocol_sign_startDLE = 0;
+        private const int protocol_sign_STX = 1;
+        private const int protocol_sign_endDLE = 2;
+        private const int protocol_sign_ETX = 3;
+        const byte DLE = 0x55, STX = 0x02, ETX = 0x03;//包头包尾数值
+
+        public void ClearRecListCache()
+        {
+            if (reclist != null)
+                reclist.Clear();
+        }
+
+        List<byte> reclist = new List<byte>();
+        public void SerialDataReceiver(byte data)
+        {
+            switch (protocol_sign)
+            {
+                // 找到数据包开始标志DLE
+                case protocol_sign_startDLE:
+                    if (data == DLE)
+                    {
+                        reclist.Clear();
+                        protocol_sign = protocol_sign_STX;
+                        reclist.Add(data);
+                    }
+                    break;
+                // 找到数据包开始标志STX
+                case protocol_sign_STX:
+                    if (data == STX)
+                    {
+                        protocol_sign = protocol_sign_endDLE;
+                        reclist.Add(data);
+                    }
+                    else if (data == DLE)
+                    {
+                        reclist.Clear();
+                        reclist.Add(data);
+                    }
+                    else
+                    {
+                        protocol_sign = protocol_sign_startDLE;
+                    }
+                    break;
+                // 找到数据包结束标志DLE
+                case protocol_sign_endDLE:
+                    reclist.Add(data);
+                    if (data == DLE)
+                    {
+                        protocol_sign = protocol_sign_ETX;
+                    }
+                    break;
+                // 找到数据包结束标志ETX
+                case protocol_sign_ETX:
+                    if (data == ETX)
+                    {
+                        reclist.Add(data);
+                        // DLE+STX+<data stream>+CHECKA+CHECKB+DLE+ETX
+                        if (reclist.Count >= 7 && reclist.Count <= 2048)
+                        {
+                            DisDataToDlg?.Invoke(reclist);
+                            // 将数据内部DLE DLE转换为DLE  其实没啥用
+                            for (int j = 2; j < reclist.Count - 2; j++)
+                            {
+                                if (reclist[j] == DLE && (j + 1) < (reclist.Count - 2) && reclist[j + 1] == DLE)
+                                {
+                                    reclist.RemoveAt(j);
+                                }
+                            }
+                            // 通道地址不对，不处理
+                            int PackLength = reclist.Count;
+                            byte[] DataArray = new byte[PackLength - 6];
+                            reclist.CopyTo(2, DataArray, 0, PackLength - 6);
+
+                            byte isRight = DSP28335.CheckSum(DataArray, PackLength - 6, reclist[PackLength - 4], reclist[PackLength - 3])[2];
+                            if (isRight == 1)
+                                MessageReceive?.Invoke(DataArray);
+                            // 恢复默认值
+                            protocol_sign = protocol_sign_startDLE;
+                        }
+                    }
+                    else if (data == DLE)
+                    {
+                        // DLE+DLE为数据中出现DLE的转义 特么的下位机如果有0x55会给两个0x55，防止数据中出现0x55 0x03认为完整帧了，在这里其实已经去掉其中一个0x55
+                        //数据帧连续两个0x55 只取一个  只有0x55 0x03这种情况才认为出来，其他无论多少一个0x55 后面跟一个0x03 只取一个0x55 ，0x03正常取出不来。严谨逻辑
+                        protocol_sign = protocol_sign_endDLE;
+                    }
+
+                    else
+                    {
+                        // DLE后跟的既不是ETX也不是DLE，数据包出错
+                        protocol_sign = protocol_sign_startDLE;
+                    }
+                    break;
+                default:
+                    protocol_sign = protocol_sign_startDLE;
+                    break;
+            }
+            // 数据过长，丢弃数据
+            if (reclist.Count >= 2048)
+            {
+                reclist.Clear();
+                protocol_sign = protocol_sign_startDLE;
+            }
         }
     }
 }

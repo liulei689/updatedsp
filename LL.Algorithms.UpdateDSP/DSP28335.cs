@@ -4,7 +4,7 @@ namespace LL2024.Algorithms.UpdateDSP
 {
     public static class DSP28335
     {
-        private static readonly IGeneralAlgorithms _instance = new GeneralAlgorithms();
+        public static readonly IGeneralAlgorithms _instance = new GeneralAlgorithms();
         /// <summary>
         /// 固件完整性校验，固件所有字节生成双校验和，CheckA固件数据校验，CheckB为带CheckA的固件校验和
         /// 上位机下发固件前生成，BOOTLOAD完全接收后自己生成，校验不过，升级失败，报固件数据校验码错误
@@ -68,9 +68,34 @@ namespace LL2024.Algorithms.UpdateDSP
             return _instance.GetCommAckResult(code);
         }
 
+        /// <summary>
+        /// 计算或校验校验和
+        /// </summary>
+        /// <param name="databuf">待生成数据</param>
+        /// <param name="datalength">长度</param>
+        /// <param name="Sum">生成的校验和</param>
+        /// <param name="CHECKA">待校验A</param>
+        /// <param name="CHECKB">待校验B</param>
+        /// <returns></returns>
         public static byte[] CheckSum(byte[] databuf, int datalength, byte CHECKA = 0, byte CHECKB = 0)
         {
             return _instance.CheckSum(databuf, datalength, CHECKA, CHECKB);
+        }
+
+        /// <summary>
+        /// 解析串口接受数据
+        /// </summary>
+        /// <param name="data"></param>
+        public static void SerialDataReceiver(byte data)
+        {
+            _instance.SerialDataReceiver(data);
+        }
+        /// <summary>
+        /// 清除接受缓存
+        /// </summary>
+        public static void ClearRecListCache()
+        {
+            _instance.ClearRecListCache();
         }
     }
 }

@@ -26,17 +26,7 @@ namespace UpdateDSP.Views
         public System.IO.Ports.SerialPort serialPort2;
         const byte DLE = 0x55, STX = 0x02, ETX = 0x03;//包头包尾数值
         public static byte ChannelID;
-        //通信协议解析
-        private volatile int protocol_sign = 0;
-        private const int protocol_sign_startDLE = 0;
-        private const int protocol_sign_STX = 1;
-        private const int protocol_sign_endDLE = 2;
-        private const int protocol_sign_ETX = 3;
-
-
         private const int BINDATA_PACK_LEN = 512;
-
-
         int BinPackNum;//包个数
         int BinPackOrder;//第BinPackOrder个包
 
@@ -99,6 +89,20 @@ namespace UpdateDSP.Views
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
             //this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            DSP28335._instance.MessageReceive += _instance_MessageReceive;
+            DSP28335._instance.DisDataToDlg += _instance_DisDataToDlg;
+        }
+
+        private void _instance_DisDataToDlg(List<byte> obj)
+        {
+            DisDataToDlg(obj);
+        }
+
+        private void _instance_MessageReceive(byte[] obj)
+        {
+            if (obj[0] == ChannelID)
+                Implement(obj);
+
         }
         #region 串口打开关闭
         //打开关闭串口
@@ -189,8 +193,7 @@ namespace UpdateDSP.Views
         /// </summary>
         public void ProtocolParsing()
         {
-
-            List<byte> reclist = new List<byte>();
+            DSP28335.ClearRecListCache();
             byte data;
             while (serialPort2.IsOpen)
             {
@@ -203,7 +206,6 @@ namespace UpdateDSP.Views
                         notifytimes = 1;
                         AddTextToLog("识别到设备不在BOOTLOAD模式下，请点击上方固件升级，再重新上下电设备!");
                     }
-
                 }
                 else
                 {
@@ -223,96 +225,7 @@ namespace UpdateDSP.Views
                         rx.IsEnabled = true;
                     });
                     data = RecDataQueue.Dequeue();
-                    switch (protocol_sign)
-                    {
-                        // 找到数据包开始标志DLE
-                        case protocol_sign_startDLE:
-                            if (data == DLE)
-                            {
-                                reclist.Clear();
-                                protocol_sign = protocol_sign_STX;
-                                reclist.Add(data);
-                            }
-                            break;
-                        // 找到数据包开始标志STX
-                        case protocol_sign_STX:
-                            if (data == STX)
-                            {
-                                protocol_sign = protocol_sign_endDLE;
-                                reclist.Add(data);
-                            }
-                            else if (data == DLE)
-                            {
-                                reclist.Clear();
-                                reclist.Add(data);
-                            }
-                            else
-                            {
-                                protocol_sign = protocol_sign_startDLE;
-                            }
-                            break;
-                        // 找到数据包结束标志DLE
-                        case protocol_sign_endDLE:
-                            reclist.Add(data);
-                            if (data == DLE)
-                            {
-                                protocol_sign = protocol_sign_ETX;
-                            }
-                            break;
-                        // 找到数据包结束标志ETX
-                        case protocol_sign_ETX:
-                            if (data == ETX)
-                            {
-                                reclist.Add(data);
-                                // DLE+STX+<data stream>+CHECKA+CHECKB+DLE+ETX
-                                if (reclist.Count >= 7 && reclist.Count <= 2048)
-                                {
-                                    DisDataToDlg(reclist, reclist.Count);
-                                    // 将数据内部DLE DLE转换为DLE  其实没啥用
-                                    for (int j = 2; j < reclist.Count - 2; j++)
-                                    {
-                                        if (reclist[j] == DLE && (j + 1) < (reclist.Count - 2) && reclist[j + 1] == DLE)
-                                        {
-                                            reclist.RemoveAt(j);
-                                        }
-                                    }
-                                    // 通道地址不对，不处理
-                                    int PackLength = reclist.Count;
-                                    byte[] DataArray = new byte[PackLength - 6];
-                                    reclist.CopyTo(2, DataArray, 0, PackLength - 6);
-
-                                    byte isRight = DSP28335.CheckSum(DataArray, PackLength - 6, reclist[PackLength - 4], reclist[PackLength - 3])[2];
-                                    if (DataArray[0] == ChannelID && isRight == 1)
-                                    {
-                                        Implement(DataArray);
-                                    }
-                                    // 恢复默认值
-                                    protocol_sign = protocol_sign_startDLE;
-                                }
-                            }
-                            else if (data == DLE)
-                            {
-                                // DLE+DLE为数据中出现DLE的转义 特么的下位机如果有0x55会给两个0x55，防止数据中出现0x55 0x03认为完整帧了，在这里其实已经去掉其中一个0x55
-                                //数据帧连续两个0x55 只取一个  只有0x55 0x03这种情况才认为出来，其他无论多少一个0x55 后面跟一个0x03 只取一个0x55 ，0x03正常取出不来。严谨逻辑
-                                protocol_sign = protocol_sign_endDLE;
-                            }
-
-                            else
-                            {
-                                // DLE后跟的既不是ETX也不是DLE，数据包出错
-                                protocol_sign = protocol_sign_startDLE;
-                            }
-                            break;
-                        default:
-                            protocol_sign = protocol_sign_startDLE;
-                            break;
-                    }
-                    // 数据过长，丢弃数据
-                    if (reclist.Count >= 2048)
-                    {
-                        reclist.Clear();
-                        protocol_sign = protocol_sign_startDLE;
-                    }
+                    DSP28335.SerialDataReceiver(data);
                 }
                 //}
                 //catch (Exception ex)
@@ -998,13 +911,13 @@ namespace UpdateDSP.Views
                 rtbLog.ScrollToEnd();
             });
         }
-        public void DisDataToDlg(List<byte> raw, int datalen)
+        public void DisDataToDlg(List<byte> raw)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
                 string str, strraw;
                 strraw = "";
-                for (int i = 0; i < datalen; i++)
+                for (int i = 0; i < raw.Count; i++)
                 {
                     str = string.Format("{0:X2} ", raw[i]);
                     strraw += str;
