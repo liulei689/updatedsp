@@ -483,58 +483,17 @@ namespace UpdateDSP.Views
         /// <returns></returns>
         public string GetCommAckResult(byte code)
         {
-            string str;
-            switch (code)
+            string str = DSP28335.GetCommAckResult(code);
+            if (code == 0x05)
             {
-                case 0x00:
-                    str = "成功应答";
-                    break;
-                case 0x01:
-                    str = "扇区擦除错误";
-                    break;
-                case 0x02:
-                    str = "扇区写入错误";
-                    break;
-                case 0x03:
-                    str = "固件数据校验码错误，请尝试重新加载固件";
-                    //Application.Current.Dispatcher.Invoke(() =>
-                    //{
-                    //    Button_Click(null, null);
-                    //});
-                    break;
-                case 0x04:
-                    str = "数据包校验失败，请尝试重新加载固件";
-                    break;
-                case 0x05:
-                    str = "固件数据写入成功";
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        serialPort2.Close();    //关闭串口
-                        comlist.IsEnabled = true;
-                        botelv.IsEnabled = true;
-                        openclosecom.IsChecked = false;
-                        Message.Success(str + "！串口已关闭！");
-                    });
-                    break;
-                case 0x06:
-                    str = "超出FLASH容量范围";
-                    break;
-                case 0x07:
-                    str = "Boot串码不符错误,请尝试重新加载固件";
-                    //Application.Current.Dispatcher.Invoke(() =>
-                    //{
-                    //    Button_Click(null, null);
-                    //});
-                    break;
-                case 0x08:
-                    str = "扇区擦除成功";
-                    break;
-                case 0xFF:
-                    str = "非法数据包，,请尝试重新加载固件";
-                    break;
-                default:
-                    str = "应答无法解析";
-                    break;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    serialPort2.Close();    //关闭串口
+                    comlist.IsEnabled = true;
+                    botelv.IsEnabled = true;
+                    openclosecom.IsChecked = false;
+                    Message.Success(str + "！串口已关闭！");
+                });
             }
             return str;
         }

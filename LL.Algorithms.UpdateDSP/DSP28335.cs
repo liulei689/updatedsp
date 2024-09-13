@@ -58,6 +58,15 @@ namespace LL2024.Algorithms.UpdateDSP
             BinFileData[7] = (byte)(BinFileLen >> 0);
         }
 
+        /// <summary>
+        /// 通过状态码获取状态文本信息
+        /// </summary>
+        /// <param name="code">状态码</param>
+        /// <returns></returns>
+        public static string GetCommAckResult(byte code)
+        {
+            return _instance.GetCommAckResult(code);
+        }
 
     }
 }
