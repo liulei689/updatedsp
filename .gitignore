@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs
+/LL.Algorithms.UpdateDSP/bin/Debug/netstandard2.0
+/LL.Algorithms.UpdateDSP/bin/Debug
+/LL.Algorithms.UpdateDSP/obj
