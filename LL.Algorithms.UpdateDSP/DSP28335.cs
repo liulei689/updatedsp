@@ -1,0 +1,55 @@
+﻿using LL.Algorithms.UpdateDSP;
+
+namespace LL2024.Algorithms.UpdateDSP
+{
+    public static class DSP28335
+    {
+        private static readonly IGeneralAlgorithms _instance = new GeneralAlgorithms();
+        /// <summary>
+        /// 固件完整性校验，固件所有字节生成双校验和，CheckA固件数据校验，CheckB为带CheckA的固件校验和
+        /// 上位机下发固件前生成，BOOTLOAD完全接收后自己生成，校验不过，升级失败，报固件数据校验码错误
+        /// 错误响应码：0x03
+        /// </summary>
+        /// <param name="BinFileData">固件字节</param>
+        /// <param name="BinFileLen">固件长度</param>
+        /// <returns>CheckA,CheckB</returns>
+        public static (ushort, ushort) GetBinCheckAAndCheckB(byte[] BinFileData, int BinFileLen)
+        {
+            return _instance.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
+        }
+
+        /// <summary>
+        /// 通过HEX获取固件版本号
+        /// </summary>
+        /// <param name="byte1">字节1</param>
+        /// <param name="byte2">字节2</param>
+        /// <param name="head">版本头</param>
+        /// <returns></returns>
+        public static string GetVersionToString(byte byte1, byte byte2, string head = "V")
+        {
+            return head + _instance.GetVersionToString(byte1, byte2);
+        }
+
+        /// <summary>
+        /// 初始化CheckA和CheckB和代码长度
+        /// 固件信息前部分字节保留，下发前写入校验和与长度，0~1校验双字节CheckA和0~2双字节CheckB 4~7写入32字节长度
+        /// </summary>
+        /// <param name="BinFileData">固件字节</param>
+        /// <param name="BinFileLen">固件长度</param>
+        public static void GetHexHeadsNomarl(byte[] BinFileData, int BinFileLen)
+        {
+            var (tempA, tempB) = GetBinCheckAAndCheckB(BinFileData, BinFileLen);
+            ushort Bin_CheckA = tempA;
+            ushort Bin_CheckB = tempB;
+            BinFileData[0] = 0;
+            BinFileData[1] = 0;
+            BinFileData[2] = 0;
+            BinFileData[3] = 0;
+            BinFileData[4] = (byte)(BinFileLen >> 24);
+            BinFileData[5] = (byte)(BinFileLen >> 16);
+            BinFileData[6] = (byte)(BinFileLen >> 8);
+            BinFileData[7] = (byte)(BinFileLen >> 0);
+        }
+
+    }
+}

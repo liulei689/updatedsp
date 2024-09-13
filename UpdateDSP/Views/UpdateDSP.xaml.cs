@@ -1,4 +1,5 @@
-﻿using Rubyer;
+﻿using LL2024.Algorithms.UpdateDSP;
+using Rubyer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -630,13 +631,9 @@ namespace UpdateDSP.Views
                 BinFileData[5] = (byte)(BinFileLen >> 16);
                 BinFileData[6] = (byte)(BinFileLen >> 8);
                 BinFileData[7] = (byte)(BinFileLen >> 0);
-
                 // 加入校验码
-                for (int i = 0; i < BinFileLen; i++)
-                {
-                    Bin_CheckA += BinFileData[i];
-                    Bin_CheckB += Bin_CheckA;
-                }
+                var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
+                Bin_CheckA = tempA; Bin_CheckB = tempB;
                 BinFileData[0] = (byte)(Bin_CheckA >> 8);
                 BinFileData[1] = (byte)(Bin_CheckA >> 0);
                 BinFileData[2] = (byte)(Bin_CheckB >> 8);
@@ -647,7 +644,7 @@ namespace UpdateDSP.Views
                 IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
                 IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
                 // 软件版本号
-                IDC_EDIT_SOFTVM.Text = "V" + BinFileData[24].ToString("X2").Insert(1, ".") + "." + BinFileData[25].ToString("X2").Insert(1, ".");
+                IDC_EDIT_SOFTVM.Text = DSP28335.GetVersionToString(BinFileData[24], BinFileData[25]);
                 Message.Success("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
                 AddTextToLog("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text);
                 // 软件ID
@@ -741,11 +738,8 @@ namespace UpdateDSP.Views
                     BinFileData[7] = (byte)(BinFileLen >> 0);
 
                     // 加入校验码
-                    for (int i = 0; i < BinFileLen; i++)
-                    {
-                        Bin_CheckA += BinFileData[i];
-                        Bin_CheckB += Bin_CheckA;
-                    }
+                    var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
+                    Bin_CheckA = tempA; Bin_CheckB = tempB;
                     BinFileData[0] = (byte)(Bin_CheckA >> 8);
                     BinFileData[1] = (byte)(Bin_CheckA >> 0);
                     BinFileData[2] = (byte)(Bin_CheckB >> 8);
@@ -756,7 +750,7 @@ namespace UpdateDSP.Views
                     IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
                     IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
                     // 软件版本号
-                    IDC_EDIT_SOFTVM.Text = "V" + BinFileData[24].ToString("X2").Insert(1, ".") + "." + BinFileData[25].ToString("X2").Insert(1, ".");
+                    IDC_EDIT_SOFTVM.Text = DSP28335.GetVersionToString(BinFileData[24], BinFileData[25]);
                     Message.Success("当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
                     // 软件ID
                     uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
