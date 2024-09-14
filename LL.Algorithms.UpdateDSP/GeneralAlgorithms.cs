@@ -1,5 +1,4 @@
 ﻿using LL2024.Algorithms.UpdateDSP;
-using System;
 using System.Collections.Generic;
 
 namespace LL.Algorithms.UpdateDSP
@@ -79,8 +78,6 @@ namespace LL.Algorithms.UpdateDSP
             return str;
         }
 
-        public event Action<byte[]> MessageReceive; //解析
-        public event Action<List<byte>> DisDataToDlg;
         private volatile int protocol_sign = 0;
         private const int protocol_sign_startDLE = 0;
         private const int protocol_sign_STX = 1;
@@ -95,8 +92,10 @@ namespace LL.Algorithms.UpdateDSP
         }
 
         List<byte> reclist = new List<byte>();
-        public void SerialDataReceiver(byte data)
+        List<byte> reclist_rec = new List<byte>();
+        public List<byte> SerialDataReceiver(byte data)
         {
+            reclist_rec.Clear();
             switch (protocol_sign)
             {
                 // 找到数据包开始标志DLE
@@ -141,7 +140,6 @@ namespace LL.Algorithms.UpdateDSP
                         // DLE+STX+<data stream>+CHECKA+CHECKB+DLE+ETX
                         if (reclist.Count >= 7 && reclist.Count <= 2048)
                         {
-                            DisDataToDlg?.Invoke(reclist);
                             // 将数据内部DLE DLE转换为DLE  其实没啥用
                             for (int j = 2; j < reclist.Count - 2; j++)
                             {
@@ -150,14 +148,7 @@ namespace LL.Algorithms.UpdateDSP
                                     reclist.RemoveAt(j);
                                 }
                             }
-                            // 通道地址不对，不处理
-                            int PackLength = reclist.Count;
-                            byte[] DataArray = new byte[PackLength - 6];
-                            reclist.CopyTo(2, DataArray, 0, PackLength - 6);
-
-                            byte isRight = DSP28335.CheckSum(DataArray, PackLength - 6, reclist[PackLength - 4], reclist[PackLength - 3])[2];
-                            if (isRight == 1)
-                                MessageReceive?.Invoke(DataArray);
+                            reclist_rec.AddRange(reclist);
                             // 恢复默认值
                             protocol_sign = protocol_sign_startDLE;
                         }
@@ -185,6 +176,19 @@ namespace LL.Algorithms.UpdateDSP
                 reclist.Clear();
                 protocol_sign = protocol_sign_startDLE;
             }
+            return reclist_rec;
+        }
+
+        public byte[] ValidatePacket(List<byte> data, byte ChannelID)
+        {
+            // 通道地址不对，不处理
+            int PackLength = data.Count;
+            byte[] DataArray = new byte[PackLength - 6];
+            reclist.CopyTo(2, DataArray, 0, PackLength - 6);
+            byte isRight = DSP28335.CheckSum(DataArray, PackLength - 6, reclist[PackLength - 4], reclist[PackLength - 3])[2];
+            if (isRight == 1 && DataArray[0] == ChannelID)
+                return DataArray;
+            else return null;
         }
     }
 }

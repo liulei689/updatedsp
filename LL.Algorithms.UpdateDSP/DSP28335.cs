@@ -1,4 +1,5 @@
 ﻿using LL.Algorithms.UpdateDSP;
+using System.Collections.Generic;
 
 namespace LL2024.Algorithms.UpdateDSP
 {
@@ -83,15 +84,27 @@ namespace LL2024.Algorithms.UpdateDSP
         }
 
         /// <summary>
-        /// 解析串口接受数据
+        /// 串口完整帧数据识别，单字节传入通过帧头，帧尾，转义帧方式,取到完整帧
+        /// </summary>
+        /// <param name="data">接受的单字节</param>
+        public static List<byte> SerialPacketReceiver(byte data)
+        {
+            return _instance.SerialDataReceiver(data);
+        }
+
+        /// <summary>
+        /// 解析校验帧
         /// </summary>
         /// <param name="data"></param>
-        public static void SerialDataReceiver(byte data)
+        /// <returns></returns>
+        public static byte[] ValidatePacket(List<byte> data, byte ChannelID)
         {
-            _instance.SerialDataReceiver(data);
+            return _instance.ValidatePacket(data, ChannelID);
+
         }
+
         /// <summary>
-        /// 清除接受缓存
+        /// 清除接受缓存 一般初始化或停止接受时清空一次即可，清除缓存中干扰数据
         /// </summary>
         public static void ClearRecListCache()
         {

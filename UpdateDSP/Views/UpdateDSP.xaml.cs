@@ -89,21 +89,9 @@ namespace UpdateDSP.Views
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
             //this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
-            DSP28335._instance.MessageReceive += _instance_MessageReceive;
-            DSP28335._instance.DisDataToDlg += _instance_DisDataToDlg;
-        }
-
-        private void _instance_DisDataToDlg(List<byte> obj)
-        {
-            DisDataToDlg(obj);
-        }
-
-        private void _instance_MessageReceive(byte[] obj)
-        {
-            if (obj[0] == ChannelID)
-                Implement(obj);
 
         }
+
         #region 串口打开关闭
         //打开关闭串口
         private async void OpenCloseCom()
@@ -225,7 +213,14 @@ namespace UpdateDSP.Views
                         rx.IsEnabled = true;
                     });
                     data = RecDataQueue.Dequeue();
-                    DSP28335.SerialDataReceiver(data);
+                    var res = DSP28335.SerialPacketReceiver(data);
+                    if (res != null && res.Count != 0)
+                    {
+                        DisDataToDlg(res);
+                        var re = DSP28335.ValidatePacket(res, ChannelID);
+                        if (re != null)
+                            Implement(re);
+                    }
                 }
                 //}
                 //catch (Exception ex)
