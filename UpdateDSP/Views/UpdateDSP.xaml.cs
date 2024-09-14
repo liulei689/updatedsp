@@ -187,7 +187,7 @@ namespace UpdateDSP.Views
             {
                 byte[] RecData = new byte[serialPort2.BytesToRead];
                 serialPort2.Read(RecData, 0, RecData.Length);
-                if (RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0x55 && RecData[3] == 0x80)
+                if (DSP28335.IdentifyPacket(RecData))
                 {
                     if (notifytimes == 0)
                     {
@@ -471,125 +471,22 @@ namespace UpdateDSP.Views
         #region 加载固件
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Bin_CheckA = 0;
-            Bin_CheckB = 0;
-            BinFileData = new byte[2 * 1024 * 1024];
-            if (sender == null && File.Exists(LoadFileName.Text))
+            try
             {
-                FileStream fs = new FileStream(LoadFileName.Text, FileMode.Open, FileAccess.Read);
-                BinFileLen = (int)fs.Length;
-                if (BinFileLen < APPHEAD_LENGTH)
+                Bin_CheckA = 0;
+                Bin_CheckB = 0;
+                BinFileData = new byte[2 * 1024 * 1024];
+                if (sender == null && File.Exists(LoadFileName.Text))
                 {
-                    UpdateFlag = false;
-                    UpdateStop();
-                    Message.Error("程序文件为空，取消固件升级。");
-                }
-                for (int i = 0; i <= BinFileLen; i++)
-                {
-                    BinFileData[i] = (byte)fs.ReadByte();
-                }
-                fs.Close();
-                // 初始化CheckA和CheckB和代码长度
-                // 加入校验码
-                DSP28335.SetHexLength(BinFileData, BinFileLen);
-                var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
-                Bin_CheckA = tempA; Bin_CheckB = tempB;
-                DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
-
-                // 显示文件信息
-                version.Visibility = Visibility.Visible;
-                IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
-                IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
-                IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
-                // 软件版本号
-                IDC_EDIT_SOFTVM.Text = DSP28335.GetVersionToString(BinFileData[24], BinFileData[25]);
-                Message.Success("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
-                AddTextToLog("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text);
-                // 软件ID
-                uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
-                IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");
-                // 串码
-                byte[] SoftSn = new byte[10];
-                for (int i = 0; i < 8; i++)
-                {
-                    SoftSn[i] = BinFileData[8 + i * 2 + 1];
-                }
-                IDC_EDIT_SOFTSN.Content = Encoding.ASCII.GetString(SoftSn);
-                var dataid = new string[32];
-                for (int i = 0; i < 32; i++)
-                {
-                    Data[i] = (ushort)((ushort)(BinFileData[62 + i * 2] << 8) + BinFileData[DATA_LOCAL_START + i * 2 + 1]);
-                    dataid[i] = Data[i].ToString("X4");
-                }
-                IDC_EDIT_DAT0.Content = "";
-                IDC_EDIT_DAT8.Content = "";
-                IDC_EDIT_DAT16.Content = "";
-                IDC_EDIT_DAT24.Content = "";
-                for (int i = 0; i < 32; i++)
-                {
-                    if (i >= 0 && i < 8)
-                        IDC_EDIT_DAT0.Content += dataid[i] + " ";
-                    if (i >= 8 && i < 16)
-                        IDC_EDIT_DAT8.Content += dataid[i] + " ";
-                    if (i >= 16 && i < 24)
-                        IDC_EDIT_DAT16.Content += dataid[i] + " ";
-                    if (i >= 24 && i < 32)
-                        IDC_EDIT_DAT24.Content += dataid[i] + " ";
-                }
-                // CIPHER0~15
-                string[] cipherid = new string[16];
-                for (int i = 0; i < 16; i++)
-                {
-                    Ciphers[i] = BinFileData[CIPHER_LOCAL_START + i];
-                    cipherid[i] = Ciphers[i].ToString("X2");
-                }
-                IDC_EDIT_CIPHER0.Content = "";
-                IDC_EDIT_CIPHER8.Content = "";
-                for (int i = 0; i < 16; i++)
-                {
-                    if (i >= 0 && i < 8)
-                        IDC_EDIT_CIPHER0.Content += cipherid[i] + " ";
-                    if (i >= 8 && i < 16)
-                        IDC_EDIT_CIPHER8.Content += cipherid[i] + " ";
-                }
-            }
-            else
-            {
-                var openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
-                openFileDialog1.Filter = "二进制文件|*.bin";
-                openFileDialog1.Title = "Load File";
-
-                if (openFileDialog1.ShowDialog() == true)
-                {
-                    //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
-                    var filepath = openFileDialog1.FileName;//取全路径文件名
-                    LoadFileName.Text = filepath;
-                    if (!File.Exists(filepath))
-                    {
-                        Message.Error("\n\t读取失败！\n错误原因：可能不存在此文件");
-                    }
-                    else
-                    {
-                        FileStream fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
-                        BinFileLen = (int)fs.Length;
-                        if (BinFileLen < APPHEAD_LENGTH)
-                        {
-                            UpdateFlag = false;
-                            UpdateStop();
-                            Message.Error("程序文件为空，取消固件升级。");
-                        }
-                        for (int i = 0; i <= BinFileLen; i++)
-                        {
-                            BinFileData[i] = (byte)fs.ReadByte();
-                        }
-                        fs.Close();
-                    }
+                    BinFileLen = DSP28335.LoadBinFile(BinFileData, LoadFileName.Text);
 
                     // 初始化CheckA和CheckB和代码长度
+                    // 加入校验码
                     DSP28335.SetHexLength(BinFileData, BinFileLen);
                     var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
                     Bin_CheckA = tempA; Bin_CheckB = tempB;
                     DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
+
                     // 显示文件信息
                     version.Visibility = Visibility.Visible;
                     IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
@@ -597,7 +494,8 @@ namespace UpdateDSP.Views
                     IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
                     // 软件版本号
                     IDC_EDIT_SOFTVM.Text = DSP28335.GetVersionToString(BinFileData[24], BinFileData[25]);
-                    Message.Success("当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
+                    Message.Success("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
+                    AddTextToLog("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text);
                     // 软件ID
                     uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
                     IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");
@@ -646,8 +544,90 @@ namespace UpdateDSP.Views
                             IDC_EDIT_CIPHER8.Content += cipherid[i] + " ";
                     }
                 }
-            }
+                else
+                {
+                    var openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
+                    openFileDialog1.Filter = "二进制文件|*.bin";
+                    openFileDialog1.Title = "Load File";
 
+                    if (openFileDialog1.ShowDialog() == true)
+                    {
+                        //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
+                        var filepath = openFileDialog1.FileName;//取全路径文件名
+                        LoadFileName.Text = filepath;
+                        BinFileLen = DSP28335.LoadBinFile(BinFileData, filepath);
+
+
+
+                        // 初始化CheckA和CheckB和代码长度
+                        DSP28335.SetHexLength(BinFileData, BinFileLen);
+                        var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
+                        Bin_CheckA = tempA; Bin_CheckB = tempB;
+                        DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
+                        // 显示文件信息
+                        version.Visibility = Visibility.Visible;
+                        IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
+                        IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
+                        IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
+                        // 软件版本号
+                        IDC_EDIT_SOFTVM.Text = DSP28335.GetVersionToString(BinFileData[24], BinFileData[25]);
+                        Message.Success("当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
+                        // 软件ID
+                        uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
+                        IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");
+                        // 串码
+                        byte[] SoftSn = new byte[10];
+                        for (int i = 0; i < 8; i++)
+                        {
+                            SoftSn[i] = BinFileData[8 + i * 2 + 1];
+                        }
+                        IDC_EDIT_SOFTSN.Content = Encoding.ASCII.GetString(SoftSn);
+                        var dataid = new string[32];
+                        for (int i = 0; i < 32; i++)
+                        {
+                            Data[i] = (ushort)((ushort)(BinFileData[62 + i * 2] << 8) + BinFileData[DATA_LOCAL_START + i * 2 + 1]);
+                            dataid[i] = Data[i].ToString("X4");
+                        }
+                        IDC_EDIT_DAT0.Content = "";
+                        IDC_EDIT_DAT8.Content = "";
+                        IDC_EDIT_DAT16.Content = "";
+                        IDC_EDIT_DAT24.Content = "";
+                        for (int i = 0; i < 32; i++)
+                        {
+                            if (i >= 0 && i < 8)
+                                IDC_EDIT_DAT0.Content += dataid[i] + " ";
+                            if (i >= 8 && i < 16)
+                                IDC_EDIT_DAT8.Content += dataid[i] + " ";
+                            if (i >= 16 && i < 24)
+                                IDC_EDIT_DAT16.Content += dataid[i] + " ";
+                            if (i >= 24 && i < 32)
+                                IDC_EDIT_DAT24.Content += dataid[i] + " ";
+                        }
+                        // CIPHER0~15
+                        string[] cipherid = new string[16];
+                        for (int i = 0; i < 16; i++)
+                        {
+                            Ciphers[i] = BinFileData[CIPHER_LOCAL_START + i];
+                            cipherid[i] = Ciphers[i].ToString("X2");
+                        }
+                        IDC_EDIT_CIPHER0.Content = "";
+                        IDC_EDIT_CIPHER8.Content = "";
+                        for (int i = 0; i < 16; i++)
+                        {
+                            if (i >= 0 && i < 8)
+                                IDC_EDIT_CIPHER0.Content += cipherid[i] + " ";
+                            if (i >= 8 && i < 16)
+                                IDC_EDIT_CIPHER8.Content += cipherid[i] + " ";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Message.Error(ex.Message, 10000, true);
+                UpdateFlag = false;
+                UpdateStop();
+            }
         }
         #endregion
         #region 开始固件升级

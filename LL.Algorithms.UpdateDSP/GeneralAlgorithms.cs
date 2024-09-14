@@ -1,10 +1,34 @@
 ﻿using LL2024.Algorithms.UpdateDSP;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LL.Algorithms.UpdateDSP
 {
     public class GeneralAlgorithms : IGeneralAlgorithms
     {
+        const int APPHEAD_LENGTH = 124;
+
+        public int LoadBinFile(byte[] BinFileData, string FilePath)
+        {
+            if (File.Exists(FilePath))
+            {
+                FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+                int len = (int)fs.Length;
+                if (len < APPHEAD_LENGTH)
+                {
+                    throw new Exception($"固件不合法，低于最小限制{APPHEAD_LENGTH}BIT，加载固件失败。");
+                }
+                for (int i = 0; i <= len; i++)
+                {
+                    BinFileData[i] = (byte)fs.ReadByte();
+                }
+                fs.Close();
+                return len;
+            }
+            throw new Exception("读取失败！\n错误原因：不存在此文件");
+
+        }
         public (ushort, ushort) GetBinCheckAAndCheckB(byte[] BinFileData, int BinFileLen)
         {
             ushort Bin_CheckA = 0, Bin_CheckB = 0;

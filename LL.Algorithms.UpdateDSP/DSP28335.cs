@@ -6,6 +6,17 @@ namespace LL2024.Algorithms.UpdateDSP
     public static class DSP28335
     {
         public static readonly IGeneralAlgorithms _instance = new GeneralAlgorithms();
+
+        /// <summary>
+        /// 加载固件
+        /// </summary>
+        /// <param name="BinFileData">待载入缓冲区</param>
+        /// <param name="FilePath">固件路径</param>
+        /// <returns></returns>
+        public static int LoadBinFile(byte[] BinFileData, string FilePath)
+        {
+            return _instance.LoadBinFile(BinFileData, FilePath);
+        }
         /// <summary>
         /// 固件完整性校验，固件所有字节生成双校验和，CheckA固件数据校验，CheckB为带CheckA的固件校验和
         /// 上位机下发固件前生成，BOOTLOAD完全接收后自己生成，校验不过，升级失败，报固件数据校验码错误
@@ -100,15 +111,24 @@ namespace LL2024.Algorithms.UpdateDSP
         public static byte[] ValidatePacket(List<byte> data, byte ChannelID)
         {
             return _instance.ValidatePacket(data, ChannelID);
-
         }
 
         /// <summary>
-        /// 清除接受缓存 一般初始化或停止接受时清空一次即可，清除缓存中干扰数据
+        /// 清除接受缓存（可选）一般初始化或停止接受时清空一次即可，清除缓存中干扰数据
         /// </summary>
         public static void ClearRecListCache()
         {
             _instance.ClearRecListCache();
+        }
+
+        /// <summary>
+        /// 识别包类型 业务包识别
+        /// </summary>
+        /// <param name="RecData"></param>
+        /// <returns></returns>
+        public static bool IdentifyPacket(byte[] RecData)
+        {
+            return RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0x55 && RecData[3] == 0x80;
         }
     }
 }
