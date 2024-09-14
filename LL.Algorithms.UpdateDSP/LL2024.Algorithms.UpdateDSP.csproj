@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.0.0.3</Version>
+    <Version>0.0.0.4</Version>
     <Title>DSP在线升级算法库</Title>
     <Description>DSP在线升级算法库</Description>
     <Copyright>昆明光博科技有限公司</Copyright>

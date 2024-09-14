@@ -35,11 +35,9 @@ namespace UpdateDSP.Views
         const int PROGSTATE_UPDATE_FINAL = 3;
 
 
-        const byte PROTOCOL_CMD_MCUINFO = 0x04;
         const byte PROTOCOL_CMD_COMACK = 0x02;
         const byte PROTOCOL_CMD_STARTUPDATE = 0x81;
         const byte PROTOCOL_CMD_BINDATA = 0x82;
-        const byte PROTOCOL_CMD_DEVINFO = 0x84;
 
         int BinFileLen;
 
@@ -50,7 +48,6 @@ namespace UpdateDSP.Views
         ushort Bin_CheckA, Bin_CheckB;
         ushort[] Data = new ushort[32];
         byte[] Ciphers = new byte[16];
-        //byte[] pData = new byte[1024];
 
         public Thread RecDataDeal;
         DispatcherTimer timerhandshake;
@@ -450,9 +447,6 @@ namespace UpdateDSP.Views
                     var filepath = openFileDialog1.FileName;//取全路径文件名
                     LoadFileName.Text = filepath;
                     BinFileLen = DSP28335.LoadBinFile(BinFileData, filepath);
-
-
-
                     // 初始化CheckA和CheckB和代码长度
                     DSP28335.SetHexLength(BinFileData, BinFileLen);
                     var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
@@ -582,7 +576,6 @@ namespace UpdateDSP.Views
                     if (UpdateFlag == true)
                     {
                         Message.Warning("固件升级正在进行中，无须重复开始！");
-
                     }
                     else
                     {
@@ -880,7 +873,6 @@ namespace UpdateDSP.Views
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             MainWindow.Instance.XuanFu();
-
         }
 
         protected virtual void Dispose(bool disposing)
