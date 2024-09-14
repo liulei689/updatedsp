@@ -42,7 +42,7 @@ namespace UpdateDSP.Views
         const byte PROTOCOL_CMD_DEVINFO = 0x84;
 
         int BinFileLen;
-        int DataLen;
+
         bool UpdateFlag;
         const int CIPHER_LOCAL_START = 30;
         const int DATA_LOCAL_START = 62;
@@ -409,7 +409,7 @@ namespace UpdateDSP.Views
         /// <param name="packorder"></param>
         public void SendPackBinData(int packorder)
         {
-            var data = DSP28335.SendPackBinData(BinFileData, ChannelID, packorder, DataLen, BINDATA_PACK_LEN);
+            var data = DSP28335.SendPackBinData(BinFileData, ChannelID, packorder, BinFileLen, BINDATA_PACK_LEN);
             sendData(data, data.Length);
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -427,17 +427,6 @@ namespace UpdateDSP.Views
         Queue<byte> RecDataQueue = new Queue<byte>();//接收队列，用于数据处理
         int notifytimes = 0;
 
-        public static bool IsAllZeros(byte[] array)
-        {
-            foreach (var item in array)
-            {
-                if (item != 0)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
         #endregion
         private void openclosecom_Click(object sender, RoutedEventArgs e)
         {
@@ -651,7 +640,7 @@ namespace UpdateDSP.Views
             // 停止固件更新
             UpdateFlag = false;
             //Array.Clear(pData, 0, pData.Length);
-            DataLen = 0;
+
             BinPackNum = 0;
             ProgState = PROGSTATE_UPDATE_IDEL;
         }
@@ -669,11 +658,10 @@ namespace UpdateDSP.Views
             }
 
             // pData = data;
-            DataLen = datalen;
             ProgState = PROGSTATE_UPDATE_START;
 
             // 数据包总数
-            BinPackNum = DataLen / BINDATA_PACK_LEN;
+            BinPackNum = BinFileLen / BINDATA_PACK_LEN;
             // 最后一包数据可以是0长度
             BinPackNum++;
             updateprogress.Maximum = BinPackNum;

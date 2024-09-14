@@ -7,7 +7,9 @@ namespace UpdateDSP.ViewModels
     /// 视图项
     /// </summary>
     [INotifyPropertyChanged]
+#pragma warning disable MVVMTK0032 // Inherit from ObservableObject instead of using [INotifyPropertyChanged]
     public partial class ViewItem
+#pragma warning restore MVVMTK0032 // Inherit from ObservableObject instead of using [INotifyPropertyChanged]
     {
         /// <summary>
         /// 名称
