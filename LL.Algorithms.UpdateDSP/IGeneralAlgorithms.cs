@@ -12,6 +12,8 @@ namespace LL.Algorithms.UpdateDSP
         List<byte> SerialDataReceiver(byte data);
         byte[] ValidatePacket(List<byte> data, byte ChannelID);
         void ClearRecListCache();
+        byte[] SetSendData(byte[] databuf, int datalength);
+
 
 
     }

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -46,7 +45,6 @@ namespace UpdateDSP.Views
         int BinFileLen;
         int DataLen;
         bool UpdateFlag;
-        const int APPHEAD_LENGTH = 124;
         const int CIPHER_LOCAL_START = 30;
         const int DATA_LOCAL_START = 62;
         byte[] BinFileData = new byte[2 * 1024 * 1024];
@@ -411,31 +409,8 @@ namespace UpdateDSP.Views
         /// <param name="packorder"></param>
         public void SendPackBinData(int packorder)
         {
-            byte[] buf = new byte[BINDATA_PACK_LEN + 4];
-            int tmp, len;
-
-            // 包长度
-            if (DataLen >= ((packorder + 1) * BINDATA_PACK_LEN))
-            {
-                len = BINDATA_PACK_LEN;
-                tmp = packorder * BINDATA_PACK_LEN;
-            }
-            else if (DataLen >= (packorder * BINDATA_PACK_LEN) && DataLen < ((packorder + 1) * BINDATA_PACK_LEN))
-            {
-                len = DataLen - (packorder * BINDATA_PACK_LEN);
-                tmp = packorder * BINDATA_PACK_LEN;
-            }
-            else
-            {
-                len = 0;
-                tmp = 0;
-            }
-            buf[0] = ChannelID;
-            buf[1] = PROTOCOL_CMD_BINDATA;
-            buf[2] = (byte)(len >> 8);
-            buf[3] = (byte)(len >> 0);
-            Array.Copy(BinFileData, tmp, buf, 4, len);
-            sendData(buf, len + 4);
+            var data = DSP28335.SendPackBinData(BinFileData, ChannelID, packorder, DataLen, BINDATA_PACK_LEN);
+            sendData(data, data.Length);
             Application.Current.Dispatcher.Invoke(() =>
             {
                 tx.Content = "下发固件包中...";
@@ -476,17 +451,24 @@ namespace UpdateDSP.Views
                 Bin_CheckA = 0;
                 Bin_CheckB = 0;
                 BinFileData = new byte[2 * 1024 * 1024];
-                if (sender == null && File.Exists(LoadFileName.Text))
+                var openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
+                openFileDialog1.Filter = "二进制文件|*.bin";
+                openFileDialog1.Title = "Load File";
+
+                if (openFileDialog1.ShowDialog() == true)
                 {
-                    BinFileLen = DSP28335.LoadBinFile(BinFileData, LoadFileName.Text);
+                    //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
+                    var filepath = openFileDialog1.FileName;//取全路径文件名
+                    LoadFileName.Text = filepath;
+                    BinFileLen = DSP28335.LoadBinFile(BinFileData, filepath);
+
+
 
                     // 初始化CheckA和CheckB和代码长度
-                    // 加入校验码
                     DSP28335.SetHexLength(BinFileData, BinFileLen);
                     var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
                     Bin_CheckA = tempA; Bin_CheckB = tempB;
                     DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
-
                     // 显示文件信息
                     version.Visibility = Visibility.Visible;
                     IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
@@ -494,8 +476,7 @@ namespace UpdateDSP.Views
                     IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
                     // 软件版本号
                     IDC_EDIT_SOFTVM.Text = DSP28335.GetVersionToString(BinFileData[24], BinFileData[25]);
-                    Message.Success("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
-                    AddTextToLog("已重新载入固件，请重新开始固件升级流程，当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text);
+                    Message.Success("当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
                     // 软件ID
                     uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
                     IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");
@@ -543,83 +524,7 @@ namespace UpdateDSP.Views
                         if (i >= 8 && i < 16)
                             IDC_EDIT_CIPHER8.Content += cipherid[i] + " ";
                     }
-                }
-                else
-                {
-                    var openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
-                    openFileDialog1.Filter = "二进制文件|*.bin";
-                    openFileDialog1.Title = "Load File";
 
-                    if (openFileDialog1.ShowDialog() == true)
-                    {
-                        //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
-                        var filepath = openFileDialog1.FileName;//取全路径文件名
-                        LoadFileName.Text = filepath;
-                        BinFileLen = DSP28335.LoadBinFile(BinFileData, filepath);
-
-
-
-                        // 初始化CheckA和CheckB和代码长度
-                        DSP28335.SetHexLength(BinFileData, BinFileLen);
-                        var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
-                        Bin_CheckA = tempA; Bin_CheckB = tempB;
-                        DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
-                        // 显示文件信息
-                        version.Visibility = Visibility.Visible;
-                        IDC_EDIT_CHECKA.Content = Bin_CheckA.ToString("X4");
-                        IDC_EDIT_CHECKB.Content = Bin_CheckB.ToString("X4");
-                        IDC_EDIT_CODELENGTH.Content = BinFileLen.ToString() + "字节";
-                        // 软件版本号
-                        IDC_EDIT_SOFTVM.Text = DSP28335.GetVersionToString(BinFileData[24], BinFileData[25]);
-                        Message.Success("当前载入的固件版本：" + IDC_EDIT_SOFTVM.Text, 10000, true);
-                        // 软件ID
-                        uint g_SoftId = (uint)(BinFileData[26] << 24) + (uint)(BinFileData[27] << 16) + (uint)(BinFileData[28] << 8) + (uint)(BinFileData[29]);
-                        IDC_EDIT_SOFTID.Content = g_SoftId.ToString("d");
-                        // 串码
-                        byte[] SoftSn = new byte[10];
-                        for (int i = 0; i < 8; i++)
-                        {
-                            SoftSn[i] = BinFileData[8 + i * 2 + 1];
-                        }
-                        IDC_EDIT_SOFTSN.Content = Encoding.ASCII.GetString(SoftSn);
-                        var dataid = new string[32];
-                        for (int i = 0; i < 32; i++)
-                        {
-                            Data[i] = (ushort)((ushort)(BinFileData[62 + i * 2] << 8) + BinFileData[DATA_LOCAL_START + i * 2 + 1]);
-                            dataid[i] = Data[i].ToString("X4");
-                        }
-                        IDC_EDIT_DAT0.Content = "";
-                        IDC_EDIT_DAT8.Content = "";
-                        IDC_EDIT_DAT16.Content = "";
-                        IDC_EDIT_DAT24.Content = "";
-                        for (int i = 0; i < 32; i++)
-                        {
-                            if (i >= 0 && i < 8)
-                                IDC_EDIT_DAT0.Content += dataid[i] + " ";
-                            if (i >= 8 && i < 16)
-                                IDC_EDIT_DAT8.Content += dataid[i] + " ";
-                            if (i >= 16 && i < 24)
-                                IDC_EDIT_DAT16.Content += dataid[i] + " ";
-                            if (i >= 24 && i < 32)
-                                IDC_EDIT_DAT24.Content += dataid[i] + " ";
-                        }
-                        // CIPHER0~15
-                        string[] cipherid = new string[16];
-                        for (int i = 0; i < 16; i++)
-                        {
-                            Ciphers[i] = BinFileData[CIPHER_LOCAL_START + i];
-                            cipherid[i] = Ciphers[i].ToString("X2");
-                        }
-                        IDC_EDIT_CIPHER0.Content = "";
-                        IDC_EDIT_CIPHER8.Content = "";
-                        for (int i = 0; i < 16; i++)
-                        {
-                            if (i >= 0 && i < 8)
-                                IDC_EDIT_CIPHER0.Content += cipherid[i] + " ";
-                            if (i >= 8 && i < 16)
-                                IDC_EDIT_CIPHER8.Content += cipherid[i] + " ";
-                        }
-                    }
                 }
             }
             catch (Exception ex)
@@ -794,29 +699,12 @@ namespace UpdateDSP.Views
         /// </summary>
         public void SendPackStart()
         {
-            byte[] buf = new byte[20];
-            int i = 0;
-            buf[i++] = ChannelID;
-            buf[i++] = 0x81;
-            // 数据总长度
-            buf[i++] = (byte)(BinFileLen >> 24);
-            buf[i++] = (byte)(BinFileLen >> 16);
-            buf[i++] = (byte)(BinFileLen >> 8);
-            buf[i++] = (byte)(BinFileLen >> 0);
-            // BIN文件校验码
-            buf[i++] = (byte)(Bin_CheckA >> 8);
-            buf[i++] = (byte)(Bin_CheckA >> 0);
-            buf[i++] = (byte)(Bin_CheckB >> 8);
-            buf[i++] = (byte)(Bin_CheckB >> 0);
-            // Flash操作码 都是一样的吗？
-            buf[i++] = 0xA5;
-            buf[i++] = 0xF1;
-            int datalength = i;
+            byte[] buf = DSP28335.SetHandshakePacket(ChannelID, BinFileLen, Bin_CheckA, Bin_CheckB);
             Application.Current.Dispatcher.Invoke(() =>
             {
                 tx.Content = "下发握手帧，等待设备回应...";
             });
-            sendData(buf, datalength);
+            sendData(buf, buf.Length);
 
         }
         /// <summary>
@@ -830,34 +718,9 @@ namespace UpdateDSP.Views
             {
                 tx.IsEnabled = true;
             });
-            //给数据包添加包头包尾完成打包
-            List<byte> sendlist = new List<byte>();
-
-            sendlist.Add(DLE);
-            sendlist.Add(STX);
-            for (int i = 0; i < datalength; i++)
-            {
-                if (databuf[i] == DLE)
-                {
-                    sendlist.Add(databuf[i]);
-                }
-                sendlist.Add(databuf[i]);
-            }
-            // 校验字节
-            byte[] Check = DSP28335.CheckSum(databuf, datalength);
-            if (Check[0] == DLE)
-            { sendlist.Add(Check[0]); }
-            sendlist.Add(Check[0]);
-            if (Check[1] == DLE)
-            { sendlist.Add(Check[1]); }
-            sendlist.Add(Check[1]);
-            sendlist.Add(DLE);
-            sendlist.Add(ETX);
-            byte[] SendPack = new byte[sendlist.Count];
-            sendlist.CopyTo(SendPack);
             try
             {
-                serialPort2.Write(SendPack, 0, sendlist.Count);
+                serialPort2.Write(databuf, 0, databuf.Length);
 
             }
             catch (Exception ex)
@@ -868,7 +731,6 @@ namespace UpdateDSP.Views
                     Message.Error(ex.Message);
                 });
             }
-            sendlist.Clear();
             Thread.Sleep(1);
         }
         #endregion
@@ -981,9 +843,6 @@ namespace UpdateDSP.Views
             timenow.Text = DateTime.Now.ToString("yyyy年MM月dd日 dddd tt hh:mm:ss", CultureInfo.CreateSpecificCulture("zh-CN")); ;
         }
 
-
-
-
         private int isfirst = 0;
         private bool disposedValue;
 
@@ -998,7 +857,6 @@ namespace UpdateDSP.Views
                 if (comlist.SelectedItem != null)
                     OpenCloseCom();
             }
-
         }
         private void ReleaseSerialPort()
         {
@@ -1019,10 +877,6 @@ namespace UpdateDSP.Views
                 FileName = "cmd.exe",
                 // 设置要执行的命令，注意这里没有/c参数，因为我们想要看到cmd窗口  
                 Arguments = $"/k \"mode {comlist.SelectedValue}\"", // 使用/k参数保持cmd窗口打开  
-                                                                    // 不隐藏cmd窗口（这是默认行为）  
-                                                                    // CreateNoWindow = false, // 可以省略这行代码  
-                                                                    // 使用系统的shell执行（这是默认行为）  
-                                                                    // UseShellExecute = true, // 可以省略这行代码  
             };
 
             // 启动进程执行命令  
@@ -1033,9 +887,6 @@ namespace UpdateDSP.Views
                 {
                     // 启动进程  
                     process.Start();
-
-                    // 等待进程退出（可选，如果你想要程序在cmd窗口关闭后继续执行）  
-                    // process.WaitForExit(); // 如果你不调用这个，程序将会立即继续执行，不会等待cmd窗口关闭  
                 }
             }
             catch (Exception ex)

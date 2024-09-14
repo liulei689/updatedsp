@@ -214,5 +214,38 @@ namespace LL.Algorithms.UpdateDSP
                 return DataArray;
             else return null;
         }
+
+        public byte[] SetSendData(byte[] databuf, int datalength)
+        {
+            //包头
+            List<byte> sendlist = new List<byte>
+            {
+                DLE,
+                STX
+            };
+            //转义字节
+            for (int i = 0; i < datalength; i++)
+            {
+                if (databuf[i] == DLE)
+                {
+                    sendlist.Add(databuf[i]);
+                }
+                sendlist.Add(databuf[i]);
+            }
+            // 校验字节
+            byte[] Check = DSP28335.CheckSum(databuf, datalength);
+            if (Check[0] == DLE)
+            { sendlist.Add(Check[0]); }
+            sendlist.Add(Check[0]);
+            if (Check[1] == DLE)
+            { sendlist.Add(Check[1]); }
+            sendlist.Add(Check[1]);
+            //包尾
+            sendlist.Add(DLE);
+            sendlist.Add(ETX);
+            byte[] SendPack = new byte[sendlist.Count];
+            sendlist.CopyTo(SendPack);
+            return SendPack;
+        }
     }
 }

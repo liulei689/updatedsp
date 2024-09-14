@@ -1,4 +1,5 @@
 ﻿using LL.Algorithms.UpdateDSP;
+using System;
 using System.Collections.Generic;
 
 namespace LL2024.Algorithms.UpdateDSP
@@ -70,6 +71,80 @@ namespace LL2024.Algorithms.UpdateDSP
             BinFileData[7] = (byte)(BinFileLen >> 0);
         }
 
+        /// <summary>
+        /// 准备握手数据包
+        /// </summary>
+        /// <param name="ChannelID"></param>
+        /// <param name="BinFileLen"></param>
+        /// <param name="Bin_CheckA"></param>
+        /// <param name="Bin_CheckB"></param>
+        /// <returns></returns>
+        public static byte[] SetHandshakePacket(byte ChannelID, int BinFileLen, ushort Bin_CheckA, ushort Bin_CheckB)
+        {
+            byte[] buf = new byte[20];
+            int i = 0;
+            buf[i++] = ChannelID;
+            buf[i++] = 0x81;
+            // 数据总长度
+            buf[i++] = (byte)(BinFileLen >> 24);
+            buf[i++] = (byte)(BinFileLen >> 16);
+            buf[i++] = (byte)(BinFileLen >> 8);
+            buf[i++] = (byte)(BinFileLen >> 0);
+            // BIN文件校验码
+            buf[i++] = (byte)(Bin_CheckA >> 8);
+            buf[i++] = (byte)(Bin_CheckA >> 0);
+            buf[i++] = (byte)(Bin_CheckB >> 8);
+            buf[i++] = (byte)(Bin_CheckB >> 0);
+            // Flash操作码 都是一样的吗？
+            buf[i++] = 0xA5;
+            buf[i++] = 0xF1;
+            return SetSendData(buf, i);
+        }
+
+        /// <summary>
+        /// 发送每包固件
+        /// </summary>
+        /// <param name="packorder">包序号</param>
+        /// <returns></returns>
+        public static byte[] SendPackBinData(byte[] BinFileData, byte ChannelID, int packorder, int datalength, int BINDATA_PACK_LEN)
+        {
+
+            byte[] buf = new byte[BINDATA_PACK_LEN + 4];
+            int tmp, len;
+
+            // 包长度
+            if (datalength >= ((packorder + 1) * BINDATA_PACK_LEN))
+            {
+                len = BINDATA_PACK_LEN;
+                tmp = packorder * BINDATA_PACK_LEN;
+            }
+            else if (datalength >= (packorder * BINDATA_PACK_LEN) && datalength < ((packorder + 1) * BINDATA_PACK_LEN))
+            {
+                len = datalength - (packorder * BINDATA_PACK_LEN);
+                tmp = packorder * BINDATA_PACK_LEN;
+            }
+            else
+            {
+                len = 0;
+                tmp = 0;
+            }
+            buf[0] = ChannelID;
+            buf[1] = 0x82;
+            buf[2] = (byte)(len >> 8);
+            buf[3] = (byte)(len >> 0);
+            Array.Copy(BinFileData, tmp, buf, 4, len);
+            return SetSendData(buf, len + 4);
+        }
+
+        /// <summary>
+        /// 最后发送数据包
+        /// </summary>
+        /// <param name="databuf"></param>
+        /// <param name="datalength"></param>
+        public static byte[] SetSendData(byte[] databuf, int datalength)
+        {
+            return _instance.SetSendData(databuf, datalength);
+        }
         /// <summary>
         /// 通过状态码获取状态文本信息
         /// </summary>
