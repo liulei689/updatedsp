@@ -205,5 +205,10 @@ namespace LL2024.Algorithms.UpdateDSP
         {
             return RecData.Length >= 0x80 && RecData[0] == 0xAA && RecData[1] == 0x55 && RecData[3] == 0x80;
         }
+        //帧头帧尾设置
+        public static void SetDLE_STX_ETX(byte dle = 0x55, byte stx = 0x02, byte etx = 0x03)
+        {
+            _instance.SetDLE_STX_ETX(dle, stx, etx);
+        }
     }
 }

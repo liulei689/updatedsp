@@ -107,8 +107,14 @@ namespace LL.Algorithms.UpdateDSP
         private const int protocol_sign_STX = 1;
         private const int protocol_sign_endDLE = 2;
         private const int protocol_sign_ETX = 3;
-        const byte DLE = 0x55, STX = 0x02, ETX = 0x03;//包头包尾数值
-
+        private byte DLE = 0x55, STX = 0x02, ETX = 0x03;//包头包尾数值
+        //设置帧头帧尾
+        public void SetDLE_STX_ETX(byte dle = 0x55, byte stx = 0x02, byte etx = 0x03)
+        {
+            DLE = dle;
+            STX = stx;
+            ETX = etx;
+        }
         public void ClearRecListCache()
         {
             if (reclist != null)

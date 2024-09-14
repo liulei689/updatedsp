@@ -23,7 +23,6 @@ namespace UpdateDSP.Views
     {
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
-        const byte DLE = 0x55, STX = 0x02, ETX = 0x03;//包头包尾数值
         public static byte ChannelID;
         private const int BINDATA_PACK_LEN = 512;
         int BinPackNum;//包个数
@@ -60,6 +59,7 @@ namespace UpdateDSP.Views
         public UpdateDspNormal()
         {
             InitializeComponent();
+            DSP28335.SetDLE_STX_ETX();
             // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
             botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
             chanleid.ItemsSource = new int[] { 0, 1 };

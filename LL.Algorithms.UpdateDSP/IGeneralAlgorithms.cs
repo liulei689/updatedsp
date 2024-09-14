@@ -13,6 +13,7 @@ namespace LL.Algorithms.UpdateDSP
         byte[] ValidatePacket(List<byte> data, byte ChannelID);
         void ClearRecListCache();
         byte[] SetSendData(byte[] databuf, int datalength);
+        void SetDLE_STX_ETX(byte dle = 0x55, byte stx = 0x02, byte etx = 0x03);
 
 
 
