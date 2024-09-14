@@ -160,8 +160,10 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                             <rubyer:Icon Margin="5 0" Type="UploadLine"  Foreground="{DynamicResource Primary}"/>
                         </Button>
                         <TextBlock Name="timenow" Margin="5 0" Text="" />
-                        <rubyer:Icon Margin="5 0" Type="Notification3Fill" Foreground="{DynamicResource Primary}"/>
-                        </StackPanel>
+                        <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_4"  Cursor="Hand">
+                            <rubyer:Icon Margin="5 0" Type="Notification3Fill" Foreground="{DynamicResource Primary}"/>
+                        </Button>
+                    </StackPanel>
                     </StatusBarItem>
                 </StatusBar>
          

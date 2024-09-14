@@ -901,6 +901,13 @@ namespace UpdateDSP.Views
             Dispose(disposing: false);
         }
 
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            var windows = new BinReader(BinFileData, BinFileLen);
+            windows.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            windows.Show();
+        }
+
         public void Dispose()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
