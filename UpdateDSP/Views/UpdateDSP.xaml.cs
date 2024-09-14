@@ -656,14 +656,8 @@ namespace UpdateDSP.Views
             {
                 return false;
             }
-
-            // pData = data;
             ProgState = PROGSTATE_UPDATE_START;
-
-            // 数据包总数
-            BinPackNum = BinFileLen / BINDATA_PACK_LEN;
-            // 最后一包数据可以是0长度
-            BinPackNum++;
+            BinPackNum = DSP28335.GetBinPackNum(BinFileLen, BINDATA_PACK_LEN);
             updateprogress.Maximum = BinPackNum;
             return true;
         }

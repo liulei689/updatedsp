@@ -210,5 +210,10 @@ namespace LL2024.Algorithms.UpdateDSP
         {
             _instance.SetDLE_STX_ETX(dle, stx, etx);
         }
+
+        public static int GetBinPackNum(int BinFileLen, int BINDATA_PACK_LEN)
+        {
+            return BinFileLen / BINDATA_PACK_LEN + 1;
+        }
     }
 }
