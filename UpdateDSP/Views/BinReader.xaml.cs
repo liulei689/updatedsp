@@ -38,21 +38,16 @@ namespace UpdateDSP.Views
         public string ByteArrayToHexWithAlignedLines(byte[] bytes, int bytesPerLine)
         {
             StringBuilder hex = new StringBuilder(bytes.Length * 3 - 1); // 每个字节2个十六进制字符加1个空格（除了行尾），但最后一行不需要额外的空格  
-
+            int address = 0;
+            hex.Append(address++.ToString("D8"));
             for (int i = 0; i < len; i++)
             {
                 hex.AppendFormat(" {0:x2}", bytes[i]); // 注意前面的空格  
-
-                // 不是每行的最后一个元素时，继续添加空格以保持对齐  
-                //if (i + 1 < bytes.Length && (i + 1) % bytesPerLine != 0)
-                //{
-                //    hex.Append(' ');
-                //}
-
                 // 每行达到限制后换行  
                 if ((i + 1) % bytesPerLine == 0)
                 {
                     hex.AppendLine();
+                    hex.Append(address++.ToString("D8"));
                 }
             }
 
