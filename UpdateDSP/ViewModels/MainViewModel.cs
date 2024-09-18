@@ -4,7 +4,6 @@ using Rubyer;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 using UpdateDSP.Views;
 
@@ -24,17 +23,16 @@ namespace UpdateDSP.ViewModels
         [ObservableProperty]
         private ObservableCollection<ThemeColorInfo> themeColors;
 
-        [ObservableProperty]
-        private ObservableCollection<ViewItem> sampleItems;
-
+        public static MainViewModel Instance { get; set; }
         public MainViewModel()
         {
+            Instance = this;
             Title = "在线升级";
 
             ViewItems =
             [
                 new("通用在线升级程序", "首页", new UpdateDspNormal(), IconType.Home2Line),
-                new("65在线升级程序", "适配65 BOOTLOAD",null, IconType.ListCheck2),
+                new("65在线升级程序", "适配65 BOOTLOAD",new UpdateDSP65(), IconType.ListCheck2),
             ];
 
             CurrentViewItem = ViewItems.First();
@@ -104,12 +102,5 @@ namespace UpdateDSP.ViewModels
             await Dialog.Show(content, title: "关于");
         }
 
-        [RelayCommand]
-        private void OpenSampleWindow(ViewItem item)
-        {
-            var window = item.Content as Window;
-            window.Show();
-            window.Activate();
-        }
     }
 }

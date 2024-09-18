@@ -14,7 +14,7 @@ namespace LL.Algorithms.UpdateDSP
         void ClearRecListCache();
         byte[] SetSendData(byte[] databuf, int datalength);
         void SetDLE_STX_ETX(byte dle = 0x55, byte stx = 0x02, byte etx = 0x03);
-
+        ushort GetCRC16(byte[] data, int len);
 
 
     }

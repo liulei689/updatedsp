@@ -20,7 +20,7 @@ namespace UpdateDSP.Views
     /// <summary>
     /// UpdateDspNormal.xaml 的交互逻辑
     /// </summary>
-    public partial class UpdateDspNormal : UserControl, IDisposable
+    public partial class UpdateDSP65 : UserControl, IDisposable
     {
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
@@ -54,7 +54,7 @@ namespace UpdateDSP.Views
         DispatcherTimer timerhandshake;
         DispatcherTimer timer;
         #endregion
-        public UpdateDspNormal()
+        public UpdateDSP65()
         {
             InitializeComponent();
             DSP28335.SetDLE_STX_ETX();
@@ -901,7 +901,7 @@ namespace UpdateDSP.Views
         }
 
         // // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
-        ~UpdateDspNormal()
+        ~UpdateDSP65()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
             Dispose(disposing: false);
