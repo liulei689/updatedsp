@@ -223,9 +223,76 @@ namespace LL2024.Algorithms.UpdateDSP
             return BinFileLen / BINDATA_PACK_LEN + 1;
         }
 
-        public static ushort GetCRC16(byte[] data, int len)
+        /// <summary>
+        /// 获取CRC
+        /// </summary>
+        /// <param name="data">原始数据</param>
+        /// <param name="start">开始位置</param>
+        /// <param name="len">计算长度</param>
+        /// <returns></returns>
+        public static ushort GetCRC16(byte[] data, int start, int len)
         {
-            return _instance.GetCRC16(data, len);
+            return _instance.GetCRC16(data, start, len);
+        }
+
+        /// <summary>
+        /// 获取CRC
+        /// </summary>
+        /// <param name="start">开始位置</param>
+        /// <param name="len">计算长度</param>
+        /// <returns></returns>
+        public static byte[] GetCRC16Bits(byte[] data, int start, int len)
+        {
+            return _instance.GetCRC16Bits(data, start, len);
+        }
+
+        /// <summary>
+        /// 设位
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="byteIndex"></param>
+        /// <param name="bitIndex"></param>
+        /// <param name="value"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public static void SetBitAt(byte[] array, int byteIndex, int bitIndex, int value)
+        {
+            // 验证参数  
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+            if (byteIndex < 0 || byteIndex >= array.Length)
+                throw new IndexOutOfRangeException("byteIndex is out of range.");
+            if (bitIndex < 0 || bitIndex >= 8)
+                throw new IndexOutOfRangeException("bitIndex is out of range.");
+            if (value != 0 && value != 1)
+                throw new ArgumentException("value must be 0 or 1.", nameof(value));
+
+            // 设置位  
+            int mask = 1 << bitIndex;
+            array[byteIndex] = (byte)(value == 1 ? (array[byteIndex] | mask) : (array[byteIndex] & ~mask));
+        }
+
+        /// <summary>
+        /// 读位
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="byteIndex"></param>
+        /// <param name="bitIndex"></param>
+        /// <returns></returns>
+        public static bool ReadBitAt(byte[] array, int byteIndex, int bitIndex)
+        {
+            // 检查索引是否在有效范围内  
+            if (byteIndex >= 0 && byteIndex < array.Length && bitIndex >= 0 && bitIndex < 8)
+            {
+                // 创建一个掩码，其中只有bitIndex位被设置为1  
+                byte mask = (byte)(1 << bitIndex);
+                // 使用AND操作检查指定字节的bitIndex位是否被设置  
+                // 如果结果为非零，则表示该位被设置（true），否则为false  
+                return (array[byteIndex] & mask) != 0;
+            }
+            // 如果索引超出范围，则默认返回false（或可以选择抛出异常）  
+            return false;
         }
     }
 }

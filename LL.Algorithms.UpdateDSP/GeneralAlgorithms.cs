@@ -255,15 +255,25 @@ namespace LL.Algorithms.UpdateDSP
         }
 
         // 计算给定数据（data）的CRC，长度为len  
-        public ushort GetCRC16(byte[] data, int len)
+        public ushort GetCRC16(byte[] data, int start, int len)
         {
             ushort crc = 0; // 初始CRC值 
-            for (int i = 0; i < len; i++)
+            for (int i = start; i < len; i++)
             {
                 // CRC更新算法  
                 crc = (ushort)((crc >> 8) ^ CC_CRCTAB[(crc ^ data[i]) & 0xFF]);
             }
             return crc;
+        }
+
+        public byte[] GetCRC16Bits(byte[] data, int start, int len)
+        {
+            ushort value = GetCRC16(data, start, len);
+            byte[] byteArray = new byte[2];
+            // 将ushort的高字节和低字节分别存储到byte数组的相应位置  
+            byteArray[0] = (byte)(value >> 8); // 右移8位得到高字节  
+            byteArray[1] = (byte)(value & 0xFF); // 与0xFF进行位与操作得到低字节  
+            return byteArray;
         }
 
         private readonly ushort[] CC_CRCTAB =
