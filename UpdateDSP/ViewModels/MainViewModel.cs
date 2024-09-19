@@ -32,7 +32,7 @@ namespace UpdateDSP.ViewModels
             ViewItems =
             [
                 new("通用在线升级程序", "首页", new UpdateDspNormal(), IconType.Home2Line),
-                new("65在线升级程序", "适配65 BOOTLOAD",new UpdateDSP65(), IconType.ListCheck2),
+                new("65在线升级程序", "适配65 BOOTLOAD",new UpdateDsp65(), IconType.ListCheck2),
             ];
 
             CurrentViewItem = ViewItems.First();

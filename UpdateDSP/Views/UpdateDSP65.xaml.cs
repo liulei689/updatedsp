@@ -20,7 +20,7 @@ namespace UpdateDSP.Views
     /// <summary>
     /// UpdateDspNormal.xaml 的交互逻辑
     /// </summary>
-    public partial class UpdateDSP65 : UserControl, IDisposable
+    public partial class UpdateDsp65 : UserControl, IDisposable
     {
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
@@ -54,7 +54,7 @@ namespace UpdateDSP.Views
         DispatcherTimer timerhandshake;
         DispatcherTimer timer;
         #endregion
-        public UpdateDSP65()
+        public UpdateDsp65()
         {
             InitializeComponent();
             DSP28335.SetDLE_STX_ETX();
@@ -719,7 +719,8 @@ namespace UpdateDSP.Views
                 {
                     rtbLog.Text = "";
                 }
-                rtbLog.AppendText(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + text + "\r\n");
+                string str = issxcheck ? DateTime.Now.ToString("HH:mm:ss.fff") : "";
+                rtbLog.AppendText(str + ">>" + text + "\r\n");
                 // 确保滚动到底部  
                 rtbLog.ScrollToEnd();
             });
@@ -739,7 +740,8 @@ namespace UpdateDSP.Views
                 {
                     txlog.Text = "";
                 }
-                txlog.AppendText(DateTime.Now.ToString("HH:mm:ss.fff") + ">>" + strraw + "\r\n");
+                string strs = isrxcheck ? DateTime.Now.ToString("HH:mm:ss.fff") : "";
+                txlog.AppendText(strs + ">>" + strraw + "\r\n");
 
                 // 确保滚动到底部  
                 txlog.ScrollToEnd();
@@ -901,7 +903,7 @@ namespace UpdateDSP.Views
         }
 
         // // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
-        ~UpdateDSP65()
+        ~UpdateDsp65()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
             Dispose(disposing: false);
@@ -914,6 +916,38 @@ namespace UpdateDSP.Views
             windows.Show();
         }
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string tempFilePath = System.IO.Path.GetTempFileName();
+            System.IO.File.WriteAllText(tempFilePath, rtbLog.Text);
+            Process.Start("notepad.exe", tempFilePath);
+        }
+        private void MenuItem_Click2(object sender, RoutedEventArgs e)
+        {
+            string tempFilePath = System.IO.Path.GetTempFileName();
+            System.IO.File.WriteAllText(tempFilePath, txlog.Text);
+            Process.Start("notepad.exe", tempFilePath);
+        }
+        bool isrxcheck = true;
+        private void MenuItem_Checked(object sender, RoutedEventArgs e)
+        {
+            isrxcheck = true;
+        }
+
+        private void MenuItem_Unchecked(object sender, RoutedEventArgs e)
+        {
+            isrxcheck = false;
+        }
+        bool issxcheck = true;
+        private void MenuItem_Checked2(object sender, RoutedEventArgs e)
+        {
+            issxcheck = true;
+        }
+
+        private void MenuItem_Unchecked2(object sender, RoutedEventArgs e)
+        {
+            issxcheck = false;
+        }
         public void Dispose()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
