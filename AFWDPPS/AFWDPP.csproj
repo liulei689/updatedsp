@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFrameworks>net472</TargetFrameworks>
+		<UseWPF>true</UseWPF>
+		<ApplicationIcon>logo.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Authors>昆明光博科技有限公司</Authors>
+		<Version>0.0.0.1</Version>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Style\**" />
+		<EmbeddedResource Remove="Style\**" />
+		<None Remove="Style\**" />
+		<Page Remove="Style\**" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <None Remove="logo.ico" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="HandyControl" Version="3.5.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="Rubyer" Version="2.15.21" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+		<Reference Include="System.ComponentModel.DataAnnotations" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="System.Management" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="Views\About.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Assets\" />
+	  <Folder Include="Enums\" />
+	  <Folder Include="Models\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\LL.Algorithms.UpdateDSP\LL2024.Algorithms.UpdateDSP.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="logo.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Resource>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<PackageId>DSP在线升级上位机程序</PackageId>
+		<Title>DSP在线升级上位机程序</Title>
+		<Product>DSP在线升级上位机程序</Product>
+		<Description>LL</Description>
+		<Copyright>guangbo.td版权所有</Copyright>
+	</PropertyGroup>
+</Project>

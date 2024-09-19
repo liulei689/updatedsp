@@ -1,9 +1,8 @@
-﻿using LL2024.Algorithms.UpdateDSP;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace LL.Algorithms.UpdateDSP
+namespace LL2024.Algorithms.UpdateDSP
 {
     public class GeneralAlgorithms : IGeneralAlgorithms
     {

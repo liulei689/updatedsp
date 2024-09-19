@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LL.Algorithms.UpdateDSP
+namespace LL2024.Algorithms.UpdateDSP
 {
     public interface IGeneralAlgorithms
     {
