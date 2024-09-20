@@ -303,5 +303,15 @@ namespace LL2024.Algorithms.UpdateDSP
         {
             _instance.GetSumNomarl(btAry_Data);
         }
+
+        public static byte CheckSum_BytesXorResult(byte[] btAry_Data, int start, int end)
+        {
+            return _instance.CheckSum_BytesXorResult(btAry_Data, start, end);
+        }
+
+        public static byte CheckSum_ZeroMinusBytesSum(byte[] btAry_Data, int start, int end)
+        {
+            return _instance.CheckSum_ZeroMinusBytesSum(btAry_Data, start, end);
+        }
     }
 }
