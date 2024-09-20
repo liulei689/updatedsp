@@ -6,6 +6,7 @@ namespace LL2024.Algorithms.UpdateDSP
     public static class DSP28335
     {
         public static readonly IGeneralAlgorithms _instance = new GeneralAlgorithms();
+        public static readonly IQFXHAlgorithms _afxhinstance = new QFXHAlgorithms();
 
         /// <summary>
         /// 加载固件
@@ -312,6 +313,18 @@ namespace LL2024.Algorithms.UpdateDSP
         public static byte CheckSum_ZeroMinusBytesSum(byte[] btAry_Data, int start, int end)
         {
             return _instance.CheckSum_ZeroMinusBytesSum(btAry_Data, start, end);
+        }
+
+        /// <summary>
+        /// 6465握手帧
+        /// </summary>
+        /// <param name="BinFileData"></param>
+        public static void SetQFXHHexHead(byte[] BinFileData)
+        {
+            _afxhinstance.SetHexHead(BinFileData);
+            SetBitAt(BinFileData, 6, 3, 1); //加载模式
+            SetBitAt(BinFileData, 7, 0, 0);//还未加载
+            GetSumNomarl(BinFileData);
         }
     }
 }

@@ -670,17 +670,18 @@ namespace UpdateDSP.Views
             }
             SendPackStart();
         }
+        byte[] SendBuf = new byte[128];
         /// <summary>
         /// 发送握手数据包
         /// </summary>
         public void SendPackStart()
         {
-            byte[] buf = DSP28335.SetHandshakePacket(ChannelID, BinFileLen, Bin_CheckA, Bin_CheckB);
+            DSP28335.SetQFXHHexHead(SendBuf);
             Application.Current.Dispatcher.Invoke(() =>
             {
                 tx.Content = "下发握手帧，等待设备回应...";
             });
-            sendData(buf, buf.Length);
+            sendData(SendBuf, SendBuf.Length);
 
         }
         /// <summary>
