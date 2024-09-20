@@ -252,7 +252,7 @@ namespace LL2024.Algorithms.UpdateDSP
             sendlist.CopyTo(SendPack);
             return SendPack;
         }
-
+        #region 校验算法
         // 计算给定数据（data）的CRC，长度为len  
         public ushort GetCRC16(byte[] data, int start, int len)
         {
@@ -311,7 +311,69 @@ namespace LL2024.Algorithms.UpdateDSP
             0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
         };
 
+        /// <summary>
+        /// 校验和1 字节异或的结果
+        /// </summary>
+        /// <param name="btAry_Data"></param>
+        /// <param name="int_CheckSumIndex"></param>
+        /// <returns></returns>
+        public byte CheckSum_BytesXorResult(byte[] btAry_Data, int start, int end)
+        {
+            int m_int_CheckSum = 0;
+            for (int index = start; index < end; index++)
+            {
+                m_int_CheckSum ^= btAry_Data[index];
+            }
+            return (byte)m_int_CheckSum;
+        }
 
+        /// <summary>
+        /// 校验和2 0减字节之和
+        /// </summary>
+        /// <param name="btAry_Data"></param>
+        /// <param name="int_CheckSumIndex"></param>
+        /// <returns></returns>
+        public byte CheckSum_ZeroMinusBytesSum(byte[] btAry_Data, int start, int end)
+        {
+            int m_int_CheckSum1 = 0;
+            for (int index = start; index < end; index++)
+            {
+                m_int_CheckSum1 += btAry_Data[index];
+            }
+            return (byte)(0 - m_int_CheckSum1);
+        }
+
+        /// <summary>
+        /// 正常校验逻辑 帧最后两位分别是校验和1 校验和2
+        /// </summary>
+        /// <param name="btAry_Data"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public bool CheckSumNomarl(byte[] btAry_Data)
+        {
+            byte s1 = CheckSum_BytesXorResult(btAry_Data, 0, btAry_Data.Length - 2);
+            byte s2 = CheckSum_ZeroMinusBytesSum(btAry_Data, 0, btAry_Data.Length - 1);
+            if (s1 != btAry_Data[btAry_Data.Length - 2])
+                throw new Exception("校验和1未通过");
+            if (s2 != btAry_Data[btAry_Data.Length - 1])
+                throw new Exception("校验和2未通过");
+            return true;
+        }
+
+        /// <summary>
+        /// 正常校验逻辑 帧最后两位分别是校验和1 校验和2
+        /// </summary>
+        /// <param name="btAry_Data"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public void GetSumNomarl(byte[] btAry_Data)
+        {
+            btAry_Data[btAry_Data.Length - 2] = CheckSum_BytesXorResult(btAry_Data, 0, btAry_Data.Length - 2);
+            btAry_Data[btAry_Data.Length - 1] = CheckSum_ZeroMinusBytesSum(btAry_Data, 0, btAry_Data.Length - 1);
+        }
+        #endregion
 
     }
 }

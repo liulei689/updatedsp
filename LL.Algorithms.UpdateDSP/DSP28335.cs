@@ -293,5 +293,15 @@ namespace LL2024.Algorithms.UpdateDSP
             // 如果索引超出范围，则默认返回false（或可以选择抛出异常）  
             return false;
         }
+
+        public static bool CheckSumNomarl(byte[] btAry_Data)
+        {
+            return _instance.CheckSumNomarl(btAry_Data);
+        }
+
+        public static void GetSumNomarl(byte[] btAry_Data)
+        {
+            _instance.GetSumNomarl(btAry_Data);
+        }
     }
 }
