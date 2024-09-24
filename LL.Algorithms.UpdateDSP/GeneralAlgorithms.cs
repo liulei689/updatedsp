@@ -275,6 +275,16 @@ namespace LL2024.Algorithms.UpdateDSP
             return byteArray;
         }
 
+        public bool CheckCRC16Bits(byte[] data, int start, int len)
+        {
+            ushort value = GetCRC16(data, start, len);
+            byte[] byteArray = new byte[2];
+            // 将ushort的高字节和低字节分别存储到byte数组的相应位置  
+            byteArray[0] = (byte)(value >> 8); // 右移8位得到高字节  
+            byteArray[1] = (byte)(value & 0xFF); // 与0xFF进行位与操作得到低字节  
+            return byteArray[0] == data[start + len] && byteArray[1] == data[start + len + 1];
+
+        }
         private readonly ushort[] CC_CRCTAB =
         {
             0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,

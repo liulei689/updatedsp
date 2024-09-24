@@ -247,6 +247,15 @@ namespace LL2024.Algorithms.UpdateDSP
         }
 
         /// <summary>
+        /// 检查crc
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="start"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        public static bool CheckCRC16Bits(byte[] data, int start, int len) => _instance.CheckCRC16Bits(data, start, len);
+
+        /// <summary>
         /// 设位
         /// </summary>
         /// <param name="array"></param>
@@ -324,6 +333,14 @@ namespace LL2024.Algorithms.UpdateDSP
             _afxhinstance.SetHexHead(BinFileData);
             SetBitAt(BinFileData, 6, 3, 1); //加载模式
             SetBitAt(BinFileData, 7, 0, 0);//还未加载
+            //  CSID
+            BinFileData[8] = 0x11;
+            BinFileData[9] = 0x22;
+            BinFileData[10] = 0x33;
+            BinFileData[11] = 0x44;
+            byte[] CRC = GetCRC16Bits(BinFileData, 0, 12);
+            BinFileData[12] = CRC[0];
+            BinFileData[13] = CRC[1];
             GetSumNomarl(BinFileData);
         }
 

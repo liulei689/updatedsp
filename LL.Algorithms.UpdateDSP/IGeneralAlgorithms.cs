@@ -17,6 +17,14 @@ namespace LL2024.Algorithms.UpdateDSP
         ushort GetCRC16(byte[] data, int start, int len);
         byte[] GetCRC16Bits(byte[] data, int start, int len);
         /// <summary>
+        /// 检查crc 默认crc是传入长度的后两字节
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="start"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        bool CheckCRC16Bits(byte[] data, int start, int len);
+        /// <summary>
         /// 校验和1 字节异或的结果
         /// </summary>
         /// <param name="btAry_Data"></param>
