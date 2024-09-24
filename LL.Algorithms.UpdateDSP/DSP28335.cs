@@ -326,5 +326,15 @@ namespace LL2024.Algorithms.UpdateDSP
             SetBitAt(BinFileData, 7, 0, 0);//还未加载
             GetSumNomarl(BinFileData);
         }
+
+        /// <summary>
+        /// 422多字节状态机式接受
+        /// </summary>
+        /// <param name="bt_RecBuf"></param>
+        /// <returns></returns>
+        public static List<byte> GetRecBufData_422(params byte[] bt_RecBuf)
+        {
+            return _afxhinstance.GetRecBufData_422(bt_RecBuf);
+        }
     }
 }

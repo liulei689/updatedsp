@@ -62,7 +62,7 @@ namespace UpdateDSP.Views
             botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
             chanleid.ItemsSource = new int[] { 0, 1 };
             chanleid.SelectedIndex = 0;
-            botelv.SelectedIndex = 1;
+            botelv.SelectedIndex = 5;
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -84,7 +84,47 @@ namespace UpdateDSP.Views
 
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
-            //this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+
+        }
+
+        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            //SerialPort sp = (SerialPort)sender;
+            //int bytesToRead = sp.BytesToRead;
+            //byte[] buffer = new byte[bytesToRead];
+
+            //// 读取数据到缓冲区  
+            //int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
+            //if (nbrDataRead == 0)
+            //    return;
+            byte[] RecData = new byte[serialPort2.BytesToRead];
+            serialPort2.Read(RecData, 0, RecData.Length);
+            try
+            {
+                var rec = DSP28335.GetRecBufData_422(RecData);
+                if (rec != null && rec.Count != 0)
+                {
+                    // 将字节数组转换为十六进制字符串  
+                    string hexString = BitConverter.ToString([.. rec]).Replace("-", " ").ToUpper();
+                    string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        txlog.AppendText(strs);
+
+                        txlog.AppendText(" " + hexString);
+                        txlog.AppendText("\r\n");
+                        // 确保滚动到底部  
+                        txlog.ScrollToEnd();
+
+                    });
+                }
+            }
+            catch
+            {
+
+            }
 
         }
 
@@ -109,7 +149,8 @@ namespace UpdateDSP.Views
                             serialPort2.Close();    //关闭串口
                             comlist.IsEnabled = true;
                             botelv.IsEnabled = true;
-                            RecDataDeal.Abort();
+                            if (RecDataDeal != null)
+                                RecDataDeal.Abort();
                         }
                         else
                         {
@@ -123,7 +164,7 @@ namespace UpdateDSP.Views
                         serialPort2.Close();    //关闭串口
                         comlist.IsEnabled = true;
                         botelv.IsEnabled = true;
-                        RecDataDeal.Abort();
+
                     }
                 }
                 else
@@ -148,9 +189,9 @@ namespace UpdateDSP.Views
                     serialPort2.Open();//打开串口
                     notifytimes = 0;
                     ////创建数据处理线程
-                    RecDataDeal = new Thread(new ThreadStart(ProtocolParsing));
-                    RecDataDeal.IsBackground = true;
-                    RecDataDeal.Start();
+                    //RecDataDeal = new Thread(new ThreadStart(ProtocolParsing));
+                    //RecDataDeal.IsBackground = true;
+                    //RecDataDeal.Start();
 
                 }
             }
