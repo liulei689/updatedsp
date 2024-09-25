@@ -330,9 +330,11 @@ namespace LL2024.Algorithms.UpdateDSP
         /// <param name="BinFileData"></param>
         public static void SetQFXHHexHead(byte[] BinFileData)
         {
+            Array.Clear(BinFileData, 0, BinFileData.Length); // 将数组中的所有元素设置为0
             _afxhinstance.SetHexHead(BinFileData);
             SetBitAt(BinFileData, 6, 3, 1); //加载模式
             SetBitAt(BinFileData, 7, 0, 0);//还未加载
+            SetBitAt(BinFileData, 15, 7, 1);//OFP加载模式进入请求 等待设备回应是否能进入
             //  CSID
             BinFileData[8] = 0x11;
             BinFileData[9] = 0x22;
@@ -345,7 +347,7 @@ namespace LL2024.Algorithms.UpdateDSP
         }
 
         /// <summary>
-        /// 422多字节状态机式接受
+        /// 422多字节状态机式接受带校验和校验
         /// </summary>
         /// <param name="bt_RecBuf"></param>
         /// <returns></returns>

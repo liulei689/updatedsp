@@ -105,20 +105,24 @@ namespace UpdateDSP.Views
                 var rec = DSP28335.GetRecBufData_422(RecData);
                 if (rec != null && rec.Count != 0)
                 {
-                    // 将字节数组转换为十六进制字符串  
-                    string hexString = BitConverter.ToString([.. rec]).Replace("-", " ").ToUpper();
-                    string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
-
-                    Application.Current.Dispatcher.Invoke(() =>
+                    if (rec[4] == 0xB5) //OFP包
                     {
-                        txlog.AppendText(strs);
 
-                        txlog.AppendText(" " + hexString);
-                        txlog.AppendText("\r\n");
-                        // 确保滚动到底部  
-                        txlog.ScrollToEnd();
+                        // 将字节数组转换为十六进制字符串  
+                        string hexString = BitConverter.ToString([.. rec]).Replace("-", " ").ToUpper();
+                        string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
 
-                    });
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            txlog.AppendText(strs);
+
+                            txlog.AppendText(" " + hexString);
+                            txlog.AppendText("\r\n");
+                            // 确保滚动到底部  
+                            txlog.ScrollToEnd();
+
+                        });
+                    }
                 }
             }
             catch
