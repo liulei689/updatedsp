@@ -327,25 +327,58 @@ namespace LL2024.Algorithms.UpdateDSP
         /// <summary>
         /// 6465握手帧
         /// </summary>
-        /// <param name="BinFileData"></param>
-        public static void SetQFXHHexHead(byte[] BinFileData)
+        /// <param name="Data"></param>
+        public static void SetQFXHHexHead(byte[] Data, bool IsEnableload = false)
         {
-            Array.Clear(BinFileData, 0, BinFileData.Length); // 将数组中的所有元素设置为0
-            _afxhinstance.SetHexHead(BinFileData);
-            SetBitAt(BinFileData, 6, 3, 1); //加载模式
-            SetBitAt(BinFileData, 7, 0, 0);//还未加载
-            SetBitAt(BinFileData, 15, 7, 1);//OFP加载模式进入请求 等待设备回应是否能进入
-            //  CSID
-            BinFileData[8] = 0x11;
-            BinFileData[9] = 0x22;
-            BinFileData[10] = 0x33;
-            BinFileData[11] = 0x44;
-            byte[] CRC = GetCRC16Bits(BinFileData, 0, 12);
-            BinFileData[12] = CRC[0];
-            BinFileData[13] = CRC[1];
-            GetSumNomarl(BinFileData);
-        }
+            _afxhinstance.SetHexHead(Data);
+            if (!IsEnableload)
+            {
+                SetBitAt(Data, 6, 3, 0); //加载模式
+                SetBitAt(Data, 7, 0, 0);//还未加载
+                SetBitAt(Data, 15, 5, 0);//a)	系统处于OFP加载模式；b)	执行加载请求由无效变为有效且持续x拍（x在具体编程要求中规定）
+                SetBitAt(Data, 15, 7, 1);//OFP加载模式进入请求 等待设备回应是否能进入
+            }
+            else
+            {
+                SetBitAt(Data, 6, 3, 1); //加载模式
+                SetBitAt(Data, 7, 0, 1);//还未加载
+                SetBitAt(Data, 15, 5, 1);//a)	系统处于OFP加载模式；b)	执行加载请求由无效变为有效且持续x拍（x在具体编程要求中规定）
+                SetBitAt(Data, 15, 7, 0);//OFP加载模式进入请求 等待设备回应是否能进入
 
+            }
+            //  CSID
+            Data[8] = 0x11;
+            Data[9] = 0x22;
+            Data[10] = 0x33;
+            Data[11] = 0x44;
+            byte[] CRC = GetCRC16Bits(Data, 0, 12);
+            Data[12] = CRC[0];
+            Data[13] = CRC[1];
+            Data[16] = 0xFF; //默认给他填满用来识别第一包
+            Data[17] = 0xFF;
+            GetSumNomarl(Data);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Data"></param>
+        public static void SetPackInfo(byte[] Data, int PacketCounts, int CurrentPacketBits)
+        {
+            Data[14] = (byte)CurrentPacketBits;
+            // 使用BitConverter获取int的字节表示（注意：这取决于系统的字节序）  
+            byte[] intBytes = BitConverter.GetBytes(PacketCounts);
+
+            // 假设是小端字节序，我们取后两个字节  
+            // 注意：如果系统是大端字节序，则需要取前两个字节  
+
+            Data[18] = intBytes[1];
+            Data[19] = intBytes[0];
+
+        }
+        public static void ClearQFXHHex(byte[] Data)
+        {
+            Array.Clear(Data, 0, Data.Length); // 将数组中的所有元素设置为0
+        }
         /// <summary>
         /// 422多字节状态机式接受带校验和校验
         /// </summary>
@@ -354,6 +387,53 @@ namespace LL2024.Algorithms.UpdateDSP
         public static List<byte> GetRecBufData_422(params byte[] bt_RecBuf)
         {
             return _afxhinstance.GetRecBufData_422(bt_RecBuf);
+        }
+
+        public static string GetQFXHCommAckResult(byte[] data)
+        {
+            return _afxhinstance.GetQFXHCommAckResult(data);
+        }
+
+        public static string GetQFXHCommAckResult(byte code) => _afxhinstance.GetQFXHCommAckResult(code);
+
+        /// <summary>
+        /// 发送每包固件
+        /// </summary>
+        /// <param name="packorder">包序号</param>
+        /// <returns></returns>
+        public static byte[] SendPackBinDataQFXH(byte[] BinFileData, byte[] SendData, int packorder, int datalength, int BINDATA_PACK_LEN)
+        {
+
+
+            int tmp, len;
+
+            // 包长度
+            if (datalength >= ((packorder + 1) * BINDATA_PACK_LEN))
+            {
+                len = BINDATA_PACK_LEN;
+                tmp = packorder * BINDATA_PACK_LEN;
+            }
+            else if (datalength >= (packorder * BINDATA_PACK_LEN) && datalength < ((packorder + 1) * BINDATA_PACK_LEN))
+            {
+                len = datalength - (packorder * BINDATA_PACK_LEN);
+                tmp = packorder * BINDATA_PACK_LEN;
+            }
+            else
+            {
+                len = 0;
+                tmp = 0;
+            }
+            SetQFXHHexHead(SendData, true);
+            byte[] intBytes = BitConverter.GetBytes(packorder);
+
+            // 假设是小端字节序，我们取后两个字节  
+            // 注意：如果系统是大端字节序，则需要取前两个字节  
+
+            SendData[16] = intBytes[1];
+            SendData[17] = intBytes[0];
+            Array.Copy(BinFileData, tmp, SendData, 20, len);
+            GetSumNomarl(SendData);
+            return SendData;
         }
     }
 }

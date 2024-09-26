@@ -9,10 +9,10 @@ namespace LL2024.Algorithms.UpdateDSP
         private const byte HEAD1 = 0xAA;
         private const byte HEAD2 = 0x55;
 
-        public void SetHexHead(byte[] BinFileData)
+        public void SetHexHead(byte[] data)
         {
-            BinFileData[0] = HEAD1;
-            BinFileData[1] = HEAD2;
+            data[0] = HEAD1;
+            data[1] = HEAD2;
             if (SendCount < 255)
             {
                 SendCount++;
@@ -21,8 +21,8 @@ namespace LL2024.Algorithms.UpdateDSP
             {
                 SendCount = 0;
             }
-            BinFileData[2] = SendCount;
-            BinFileData[3] = 0x80;
+            data[2] = SendCount;
+            data[3] = 0x80;
         }
         /// <summary>
         /// 通讯数据接收状态机标志
@@ -148,6 +148,96 @@ namespace LL2024.Algorithms.UpdateDSP
                 }
             }
             return G_btList_RecBuf_R;
+        }
+
+        public string GetQFXHCommAckResult(byte[] data)
+        {
+            // 将字节数组转换为字符串  
+            if (data.Length < 31) return "应答过短，不合法，无法解析";
+            string code = data[30].ToString("x2") + data[31].ToString("x2"); ;
+            string str;
+            switch (code.ToUpper())
+            {
+                case "0000":
+                    str = "空";
+                    break;
+                case "1111":
+                    str = "传输中";
+                    break;
+                case "2222":
+                    str = "传输成功";
+                    break;
+                case "3333":
+                    str = "传输失败";
+                    break;
+                case "4444":
+                    str = "固化中";
+                    break;
+                case "5555":
+                    str = "固化成功";
+                    break;
+                case "6666":
+                    str = "固化失败";
+                    break;
+                case "7777":
+                    str = "校验中";
+                    break;
+                case "8888":
+                    str = "校验成功";
+                    break;
+                case "9999":
+                    str = "校验失败";
+                    break;
+                default:
+                    str = "应答无法解析";
+                    break;
+            }
+            return str;
+        }
+
+        public string GetQFXHCommAckResult(byte code)
+        {
+            string str;
+            switch (code)
+            {
+                case 0x01:
+                    str = "扇区擦除错误";
+                    break;
+                case 0x02:
+                    str = "扇区写入错误";
+                    break;
+                case 0x03:
+                    str = "固件数据校验码错误，请尝试重新加载固件";
+                    break;
+                case 0x04:
+                    str = "数据包校验失败，请尝试重新加载固件";
+                    break;
+                case 0x05:
+                    str = "固件数据写入成功";
+                    break;
+                case 0x06:
+                    str = "超出FLASH容量范围";
+                    break;
+                case 0x07:
+                    str = "Boot串码不符错误,请尝试重新加载固件";
+                    break;
+                case 0x08:
+                    str = "扇区擦除成功";
+                    break;
+                case 0x09:
+                    str = "成功应答";
+                    break;
+                case 0x10:
+                    str = "开始载入";
+                    break;
+                case 0xFF:
+                    str = "非法数据包，,请尝试重新加载固件";
+                    break;
+                default:
+                    str = "应答无法解析";
+                    break;
+            }
+            return str;
         }
     }
 }

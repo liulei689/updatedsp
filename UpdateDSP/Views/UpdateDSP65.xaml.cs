@@ -25,7 +25,7 @@ namespace UpdateDSP.Views
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
         public static byte ChannelID;
-        private const int BINDATA_PACK_LEN = 512;
+        private const int BINDATA_PACK_LEN = 64;
         int BinPackNum;//包个数
         int BinPackOrder;//第BinPackOrder个包
 
@@ -107,7 +107,16 @@ namespace UpdateDSP.Views
                 {
                     if (rec[4] == 0xB5) //OFP包
                     {
-
+                        var state = DSP28335.GetQFXHCommAckResult(rec[40]);
+                        var ress = DSP28335.GetQFXHCommAckResult(rec.ToArray());
+                        if (state == "成功应答")
+                        {
+                            IsEnableload = true;
+                        }
+                        if (state == "开始载入")
+                        {
+                            Implement(rec.ToArray());
+                        }
                         // 将字节数组转换为十六进制字符串  
                         string hexString = BitConverter.ToString([.. rec]).Replace("-", " ").ToUpper();
                         string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
@@ -278,7 +287,7 @@ namespace UpdateDSP.Views
         public void Implement(byte[] DataBuf)
         {
             //DataBuf[0]是ChannelID
-            byte cmd = DataBuf[1];
+            byte cmd = DataBuf[40];
             string str;
 
             // 一般命令处理
@@ -292,9 +301,9 @@ namespace UpdateDSP.Views
                 case PROGSTATE_UPDATE_IDEL:// 固件升级无效状态
                     break;
                 case PROGSTATE_UPDATE_START:
-                    if (cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_STARTUPDATE)
+                    if (cmd == 0x10)
                     {
-                        if (DataBuf[3] == 0)
+                        if (cmd == 0x10)
                         {
                             if (ComfirTimes-- <= 0)
                             {
@@ -452,7 +461,7 @@ namespace UpdateDSP.Views
         /// <param name="packorder"></param>
         public void SendPackBinData(int packorder)
         {
-            var data = DSP28335.SendPackBinData(BinFileData, ChannelID, packorder, BinFileLen, BINDATA_PACK_LEN);
+            var data = DSP28335.SendPackBinDataQFXH(BinFileData, SendBuf, packorder, BinFileLen, BINDATA_PACK_LEN);
             sendData(data, data.Length);
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -604,6 +613,7 @@ namespace UpdateDSP.Views
             }
             timerhandshake.Start();
             ButtonHelper.SetLoading(start, true);
+            DSP28335.ClearQFXHHex(SendBuf);
             // 启动固件更新
             UpdateFlag = true;
             start.Content = "停止固件升级";
@@ -716,12 +726,15 @@ namespace UpdateDSP.Views
             SendPackStart();
         }
         byte[] SendBuf = new byte[128];
+        bool IsEnableload = false;
         /// <summary>
-        /// 发送握手数据包
+        /// 发送握手数据包 OPF模式请求
         /// </summary>
         public void SendPackStart()
         {
-            DSP28335.SetQFXHHexHead(SendBuf);
+            DSP28335.ClearQFXHHex(SendBuf);
+            DSP28335.SetPackInfo(SendBuf, BinPackNum, BINDATA_PACK_LEN);
+            DSP28335.SetQFXHHexHead(SendBuf, IsEnableload);
             Application.Current.Dispatcher.Invoke(() =>
             {
                 tx.Content = "下发握手帧，等待设备回应...";
