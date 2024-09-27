@@ -87,7 +87,7 @@ namespace UpdateDSP.Views
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
 
         }
-
+        int counts = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             //SerialPort sp = (SerialPort)sender;
@@ -111,7 +111,12 @@ namespace UpdateDSP.Views
                         var ress = DSP28335.GetQFXHCommAckResult(rec.ToArray());
                         if (state == "成功应答")
                         {
-                            IsEnableload = true;
+                            counts++;
+                            if (counts > 3)
+                            {
+                                counts = 0;
+                                IsEnableload = true;
+                            }
                         }
                         if (state == "开始载入" || state == "固件数据写入成功")
                         {
@@ -123,6 +128,7 @@ namespace UpdateDSP.Views
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {
+                            if (txlog.LineCount > 1200) txlog.Clear();
                             txlog.AppendText(strs);
 
                             txlog.AppendText(" " + hexString);
@@ -303,41 +309,39 @@ namespace UpdateDSP.Views
                 case PROGSTATE_UPDATE_START:
                     if (cmd == 0x10)
                     {
-                        if (cmd == 0x10)
+                        if (ComfirTimes-- <= 0)
                         {
-                            if (ComfirTimes-- <= 0)
-                            {
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    timerhandshake.Stop();
-                                });
-                                ComfirTimes = 3;
-                                // 下发第一包数据
-                                AddTextToLog("握手成功，等待发送第一包数据");
-                                needFlashTime = new Random().Next(14, 26);
-                                AddTextToLog("DSP擦除FLASH中，预估（15秒）....".Replace("15", needFlashTime.ToString()));
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    tx.Content = "握手已停止，等待设备准备完成后回应中...";
-                                });
-                                issend = true;
-                                SendPackBinData(BinPackOrder);
-                                ProgState = PROGSTATE_UPDATE_LOAD;
-                            }
-                        }
-                        else
-                        {
-                            str = GetCommAckResult(DataBuf[3]);
-                            str += "，退出固件升级";
-                            AddTextToLog(str);
                             Application.Current.Dispatcher.Invoke(() =>
                             {
-                                Message.Success(str);
+                                timerhandshake.Stop();
                             });
-
-                            UpdateStop();
+                            ComfirTimes = 3;
+                            // 下发第一包数据
+                            AddTextToLog("握手成功，等待发送第一包数据");
+                            needFlashTime = new Random().Next(14, 26);
+                            AddTextToLog("DSP擦除FLASH中，预估（15秒）....".Replace("15", needFlashTime.ToString()));
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                tx.Content = "握手已停止，等待设备准备完成后回应中...";
+                            });
+                            issend = true;
+                            SendPackBinData(BinPackOrder);
+                            ProgState = PROGSTATE_UPDATE_LOAD;
                         }
                     }
+                    else
+                    {
+                        str = GetCommAckResult(DataBuf[3]);
+                        str += "，退出固件升级";
+                        AddTextToLog(str);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            Message.Success(str);
+                        });
+
+                        UpdateStop();
+                    }
+
                     break;
                 case PROGSTATE_UPDATE_LOAD:
                     if (cmd != 0x10)
@@ -378,7 +382,9 @@ namespace UpdateDSP.Views
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         if (updateprogress.Value <= updateprogress.Maximum)
+                        {
                             updateprogress.Value = pres + BinPackOrder * 0.73;
+                        }
                         MainWindow.Instance.SetTitle("升级进度" + ((updateprogress.Value * 100) / updateprogress.Maximum).ToString("F2") + "%");
                     });
                     // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
@@ -390,22 +396,22 @@ namespace UpdateDSP.Views
                     SendPackBinData(BinPackOrder);
                     break;
                 case PROGSTATE_UPDATE_FINAL:
-                    if (cmd != 0x05)
-                    {
-                        str = GetCommAckResult(DataBuf[3]);
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            MainWindow.Instance.SetTitle(str);
-                        });
-                        str += "，退出固件升级。";
+                    //if (cmd != 0x05)
+                    //{
+                    //    str = GetCommAckResult(DataBuf[3]);
+                    //    Application.Current.Dispatcher.Invoke(() =>
+                    //    {
+                    //        MainWindow.Instance.SetTitle(str);
+                    //    });
+                    //    str += "，退出固件升级。";
 
-                        UpdateStop();
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            AddTextToLog(str);
-                        });
-                        break;
-                    }
+                    //    UpdateStop();
+                    //    Application.Current.Dispatcher.Invoke(() =>
+                    //    {
+                    //        AddTextToLog(str);
+                    //    });
+                    //    break;
+                    //}
 
                     str = string.Format("固件包下发成功，收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
                     Application.Current.Dispatcher.Invoke(() =>
@@ -416,6 +422,11 @@ namespace UpdateDSP.Views
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
+                            //serialPort2.Close();    //关闭串口
+                            //comlist.IsEnabled = true;
+                            //botelv.IsEnabled = true;
+                            //openclosecom.IsChecked = false;
+                            Message.Success(str + "！串口已关闭！");
                             updateprogress.Value = updateprogress.Maximum;
                             issend = false;
                         });
@@ -775,7 +786,7 @@ namespace UpdateDSP.Views
             Application.Current.Dispatcher.Invoke(() =>
             {
                 // 创建一个新的Paragraph来包含文本             
-                if (rtbLog.Text.Length > 100000)
+                if (rtbLog.Text.Length > 10000)
                 {
                     rtbLog.Text = "";
                 }
@@ -796,7 +807,7 @@ namespace UpdateDSP.Views
                     str = string.Format("{0:X2} ", raw[i]);
                     strraw += str;
                 }
-                if (txlog.Text.Length > 50000)
+                if (txlog.Text.Length > 10000)
                 {
                     txlog.Text = "";
                 }
