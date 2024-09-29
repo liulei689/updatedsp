@@ -359,7 +359,7 @@ namespace UpdateDSP.Views
                     issend = false;
                     // 获得包序号
                     str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
-
+                    woshoutimeout = 0;
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         AddTextToLog(str);
@@ -383,7 +383,7 @@ namespace UpdateDSP.Views
                     {
                         if (updateprogress.Value <= updateprogress.Maximum)
                         {
-                            updateprogress.Value = pres + BinPackOrder * 0.05;
+                            updateprogress.Value = pres + BinPackOrder * 0.69;
                         }
                         MainWindow.Instance.SetTitle("升级进度" + ((updateprogress.Value * 100) / updateprogress.Maximum).ToString("F2") + "%");
                     });
@@ -413,19 +413,21 @@ namespace UpdateDSP.Views
                     //    break;
                     //}
 
-                    str = string.Format("固件包下发成功，收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
+                    str = string.Format("固件包下发成功，收到{0:d}/{1:d} 反馈包序号：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         AddTextToLog(str);
                     });
                     if (cmd == 0x05)
                     {
+                        if (serialPort2.IsOpen)
+                            serialPort2.Close();    //关闭串口
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            //serialPort2.Close();    //关闭串口
-                            //comlist.IsEnabled = true;
-                            //botelv.IsEnabled = true;
-                            //openclosecom.IsChecked = false;
+
+                            comlist.IsEnabled = true;
+                            botelv.IsEnabled = true;
+                            openclosecom.IsChecked = false;
                             Message.Success(str + "！串口已关闭！");
                             updateprogress.Value = updateprogress.Maximum;
                             issend = false;
@@ -686,6 +688,7 @@ namespace UpdateDSP.Views
         /// </summary>
         public void UpdateStop()
         {
+            woshoutimeout = 0;
             IsEnableload = false;
             issend = false;
             BinPackOrder = 0;
@@ -821,6 +824,7 @@ namespace UpdateDSP.Views
         double pres = 0;
 
         int timeout = 0;
+        int woshoutimeout = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
             var data = MainViewModel.Instance.CurrentViewItem.Content.GetType();
@@ -828,18 +832,18 @@ namespace UpdateDSP.Views
             {
                 return;
             }
-            //if (UpdateFlag)
-            //{
-            //    if (woshoutimeout > 60*10) 
-            //    {
-            //        AddTextToLog("等待设备握手超时，已停止固件升级，请确保串口波特率正确,设备已重新上下电!");
-            //        UpdateStop();
-            //    }
-            //    else
-            //    {
-            //        woshoutimeout++;
-            //    }
-            //}
+            if (UpdateFlag)
+            {
+                if (woshoutimeout > 60 * 5)
+                {
+                    AddTextToLog("等待设备握手超时，已停止固件升级，请确保串口波特率正确,设备已重新上下电!");
+                    UpdateStop();
+                }
+                else
+                {
+                    woshoutimeout++;
+                }
+            }
 
             if (timeout++ > 5)
             {
