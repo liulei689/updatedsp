@@ -18,9 +18,14 @@
                 </StackPanel>
 
                 <TextBlock>
-                    版本:<Hyperlink Click="Hyperlink_Click" NavigateUri="">
-                        V0.0.0.2
+                    主程序版本:<Hyperlink Click="Hyperlink_Click" NavigateUri="">
+                        <TextBlock x:Name="mianver"> V0.0.0.2  </TextBlock>
                     </Hyperlink>
+                </TextBlock>
+                <TextBlock>
+     核心算法库版本:<Hyperlink Click="Hyperlink_Click" NavigateUri="" >
+           <TextBlock Name="version">  V0.0.0.1  </TextBlock>
+     </Hyperlink>
                 </TextBlock>
             </StackPanel>
         </Grid>

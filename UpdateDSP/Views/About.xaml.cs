@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace UpdateDSP.Views
 {
@@ -24,6 +13,13 @@ namespace UpdateDSP.Views
         public About()
         {
             InitializeComponent();
+            // 获取当前执行程序集的引用  
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+
+            // 获取版本信息  
+            Version version2 = currentAssembly.GetName().Version;
+            mianver.Text = "V" + version2.ToString();
+            version.Text = "V" + Common.Common.GetPackageVersion("LL2024.Algorithms.UpdateDSP"); ;
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
