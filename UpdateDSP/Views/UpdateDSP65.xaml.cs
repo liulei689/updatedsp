@@ -318,7 +318,7 @@ namespace UpdateDSP.Views
                             ComfirTimes = 3;
                             // 下发第一包数据
                             AddTextToLog("握手成功，等待发送第一包数据");
-                            needFlashTime = new Random().Next(14, 26);
+                            needFlashTime = new Random().Next(15, 26);
                             AddTextToLog("DSP擦除FLASH中，预估（15秒）....".Replace("15", needFlashTime.ToString()));
                             Application.Current.Dispatcher.Invoke(() =>
                             {
@@ -383,7 +383,7 @@ namespace UpdateDSP.Views
                     {
                         if (updateprogress.Value <= updateprogress.Maximum)
                         {
-                            updateprogress.Value = pres + BinPackOrder * 0.73;
+                            updateprogress.Value = pres + BinPackOrder * 0.05;
                         }
                         MainWindow.Instance.SetTitle("升级进度" + ((updateprogress.Value * 100) / updateprogress.Maximum).ToString("F2") + "%");
                     });
@@ -719,7 +719,7 @@ namespace UpdateDSP.Views
             }
             ProgState = PROGSTATE_UPDATE_START;
             BinPackNum = DSP28335.GetBinPackNum(BinFileLen, BINDATA_PACK_LEN);
-            updateprogress.Maximum = BinPackNum;
+            updateprogress.Maximum = 100;
             return true;
         }
 
