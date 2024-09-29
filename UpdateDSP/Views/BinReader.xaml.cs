@@ -29,7 +29,7 @@ namespace UpdateDSP.Views
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    TestText.Text = ByteArrayToHexWithAlignedLines(_bytes, 40);
+                    TestText.Text = ByteArrayToHexWithAlignedLines(_bytes, 39);
                 });
             });
 
