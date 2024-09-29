@@ -11,7 +11,7 @@
         <Grid Margin="10" 
                   rubyer:GridHelper.RowDefinitions="*,Auto, Auto"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Stretch">
-            <GroupBox Grid.Row="0" Header="操作区域"  >
+            <GroupBox Grid.Row="0" Header="操作区域-65在线升级程序"  >
                 <Grid  rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
                     <Grid  rubyer:GridHelper.ColumnDefinitions="Auto,*, Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Margin="5">
                         <TextBlock Grid.Column="0"  Text="    串口号:"  />
