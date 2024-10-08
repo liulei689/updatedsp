@@ -383,7 +383,7 @@ namespace UpdateDSP.Views
                     {
                         if (updateprogress.Value <= updateprogress.Maximum)
                         {
-                            updateprogress.Value = pres + BinPackOrder * 0.69;
+                            updateprogress.Value = pres + BinPackOrder * 0.07;
                         }
                         MainWindow.Instance.SetTitle("升级进度" + ((updateprogress.Value * 100) / updateprogress.Maximum).ToString("F2") + "%");
                     });
