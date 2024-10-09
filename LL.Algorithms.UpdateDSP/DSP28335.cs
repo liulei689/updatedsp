@@ -323,7 +323,24 @@ namespace LL2024.Algorithms.UpdateDSP
         {
             return _instance.CheckSum_ZeroMinusBytesSum(btAry_Data, start, end);
         }
-
+        static byte SendCount = 0;
+        public static void SetQFXHToBOOTload(byte[] Data)
+        {
+            if (SendCount < 255)
+            {
+                SendCount++;
+            }
+            else
+            {
+                SendCount = 0;
+            }
+            Data[2] = SendCount;
+            Data[54] = 0; Data[55] = 0; Data[62] = 0; Data[63] = 0;
+            Data[54] = CheckSum_BytesXorResult(Data, 0, 54);
+            Data[55] = CheckSum_ZeroMinusBytesSum(Data, 0, 55);
+            Data[62] = CheckSum_BytesXorResult(Data, 56, 62);
+            Data[63] = CheckSum_ZeroMinusBytesSum(Data, 56, 63);
+        }
         /// <summary>
         /// 6465握手帧
         /// </summary>

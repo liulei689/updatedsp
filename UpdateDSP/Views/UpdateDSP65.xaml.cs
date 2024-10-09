@@ -22,6 +22,7 @@ namespace UpdateDSP.Views
     /// </summary>
     public partial class UpdateDsp65 : UserControl, IDisposable
     {
+        public byte[] Up = [0xAA, 0x55, 0x80, 0x40, 0x00, 0x1B, 0x00, 0x00, 0xE8, 0x07, 0x0A, 0x08, 0x19, 0x96, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xF4, 0x01, 0xF4, 0x01, 0xF4, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB6, 0xDC, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0xFA];
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
         public static byte ChannelID;
@@ -69,8 +70,9 @@ namespace UpdateDSP.Views
             timer.Start();
             //握手定时器
             timerhandshake = new DispatcherTimer();
-            timerhandshake.Interval = TimeSpan.FromMilliseconds(200);
+            timerhandshake.Interval = TimeSpan.FromMilliseconds(60);
             // timerhandshake.IsEnabled = false;
+            timerhandshake.Stop();
             timerhandshake.Tick += timerhandshake_Tick;
             var ports = Common.Common.SearchPort();
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
@@ -203,7 +205,7 @@ namespace UpdateDSP.Views
                     serialPort2.PortName = comname;
                     serialPort2.BaudRate = Convert.ToInt32(botelv.SelectedItem);
                     serialPort2.StopBits = StopBits.One;
-                    serialPort2.Parity = Parity.None;
+                    serialPort2.Parity = Parity.Even;
                     serialPort2.DataBits = 8;
                     serialPort2.Open();//打开串口
                     notifytimes = 0;
@@ -624,7 +626,7 @@ namespace UpdateDSP.Views
                 Message.Error(ex.Message);
                 return;
             }
-            timerhandshake.Start();
+
             ButtonHelper.SetLoading(start, true);
             DSP28335.ClearQFXHHex(SendBuf);
             // 启动固件更新
@@ -634,7 +636,8 @@ namespace UpdateDSP.Views
             updateprogress.Value = updateprogress.Minimum;
             issend = false;
             AddTextToLog("待设备响应握手,可能需重新上下电设备");
-
+            bootc = 0;
+            timerhandshake.Start();
         }
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -688,6 +691,7 @@ namespace UpdateDSP.Views
         /// </summary>
         public void UpdateStop()
         {
+            bootc = 0;
             woshoutimeout = 0;
             IsEnableload = false;
             issend = false;
@@ -742,20 +746,35 @@ namespace UpdateDSP.Views
         }
         byte[] SendBuf = new byte[128];
         bool IsEnableload = false;
+        int bootc = 0;
+        bool isOnline = false;
         /// <summary>
         /// 发送握手数据包 OPF模式请求
         /// </summary>
         public void SendPackStart()
         {
-            DSP28335.ClearQFXHHex(SendBuf);
-            DSP28335.SetPackInfo(SendBuf, BinPackNum, BINDATA_PACK_LEN);
-            DSP28335.SetQFXHHexHead(SendBuf, IsEnableload);
-            Application.Current.Dispatcher.Invoke(() =>
+            bootc++;
+            if (bootc < 8)
             {
-                tx.Content = "下发握手帧，等待设备回应...";
-            });
-            sendData(SendBuf, SendBuf.Length);
-
+                DSP28335.SetQFXHToBOOTload(Up);
+                sendData(Up, Up.Length);
+            }
+            else
+            {
+                //if (bootc-- > 0)
+                //    sendData(Up, Up.Length);
+                //else
+                //{
+                DSP28335.ClearQFXHHex(SendBuf);
+                DSP28335.SetPackInfo(SendBuf, BinPackNum, BINDATA_PACK_LEN);
+                DSP28335.SetQFXHHexHead(SendBuf, IsEnableload);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    tx.Content = "下发握手帧，等待设备回应...";
+                });
+                sendData(SendBuf, SendBuf.Length);
+            }
+            // }
         }
         /// <summary>
         /// 打包并发送数据
@@ -983,9 +1002,15 @@ namespace UpdateDSP.Views
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
             Dispose(disposing: false);
         }
-
+        bool IsStart = false;
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
+            if (IsStart)
+            {
+                IsStart = false;
+
+            }
+            else IsStart = true;
             var windows = new BinReader(BinFileData, BinFileLen);
             windows.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             windows.Show();
