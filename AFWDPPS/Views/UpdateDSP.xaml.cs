@@ -1,4 +1,6 @@
 ﻿using AFWDPP.Common;
+using HandyControl.Controls;
+using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
 using System;
@@ -511,6 +513,8 @@ namespace AFWDPP.Views
         private void openclosecom_Click(object sender, RoutedEventArgs e)
         {
             OpenCloseCom();
+            NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
+
         }
         #region 加载固件
         private void Button_Click(object sender, RoutedEventArgs e)

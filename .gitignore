@@ -8,3 +8,8 @@
 /LL.Algorithms.UpdateDSP/obj
 /LL2024.Algorithms.UpdateDSPTests/bin/Debug
 /LL2024.Algorithms.UpdateDSPTests/obj
+/bin
+/LL.Algorithms.UpdateDSP/bin/Release
+/LL2024.Algorithms.UpdateDSPTests/bin/Release/net7
+/obj
+/Properties/PublishProfiles

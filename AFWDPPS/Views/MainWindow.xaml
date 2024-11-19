@@ -6,7 +6,7 @@
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
                      xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                     xmlns:vm="clr-namespace:AFWDPP.ViewModels"
+                     xmlns:vm="clr-namespace:AFWDPP.ViewModels" xmlns:hc="https://handyorg.github.io/handycontrol"
                      Title="{Binding Title}"
                      Width="1000"
                      Height="700"
@@ -28,6 +28,7 @@
     <rubyer:RubyerWindow.TitleBarContent>
         <Grid rubyer:GridHelper.ColumnDefinitions="Auto, *">
             <StackPanel Orientation="Horizontal">
+                <hc:NotifyIcon Token="NotifyIconToken" Text="上位机" hc:TitleElement.Title="111" />
                 <Image Width="22"
                        Height="22"
                        Margin="10 0"
