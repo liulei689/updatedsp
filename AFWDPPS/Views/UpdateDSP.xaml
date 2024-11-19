@@ -34,40 +34,7 @@
                         <rubyer:Loading Grid.Column="6" Name="tx" Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
 
                     </Grid>
-                    <Grid Grid.Row="1" rubyer:GridHelper.ColumnDefinitions="Auto,Auto, *" Margin="5">
-                        <TextBlock  Grid.Column="0"  Text="打开固件:" />
-                        <Button Grid.Column="1" Foreground="{StaticResource Primary}"  Background="Transparent" ToolTip="打开固件(Ctrl+O)"/>
-                        <TextBox Grid.Column="2" Name="LoadFileName" IsHitTestVisible="True"  IsEnabled="True" >
-                            <rubyer:InputBoxHelper.PostContent>
-                                <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click" Cursor="Hand">
-                                    <rubyer:Icon Type="FolderOpenFill" />
-                                </Button>
-                            </rubyer:InputBoxHelper.PostContent>
-                        </TextBox>
-
-                    </Grid>
-                    <Grid Grid.Row="2" rubyer:GridHelper.ColumnDefinitions="Auto, Auto,Auto,*"  Margin="5">
-                        <TextBlock Grid.Column="0" Text="     通道ID:"  />
-                        <ComboBox Grid.Column="1" Name="chanleid" Width="70" Margin="12 0" />
-                        <rubyer:Popover Grid.Column="2"  Title="小提示" DockPanel.Dock="Top" Placement="Top" PopoverContent="先点击开始按钮后，再重启设备，等待升级完成" TriggerMode="Hover">
-                            <Button Name="start"           
-                                        rubyer:ButtonHelper.Loading="False"
-                                        rubyer:ButtonHelper.LoadingContent="升级中..."
-                                        rubyer:ButtonHelper.Shape="Round"  Content="开始固件升级" Click="Button_Click_1" />
-                        </rubyer:Popover>
-                        <ProgressBar Grid.Column="3" Name="updateprogress" 
-Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="True"  Margin="6"  VerticalAlignment="Stretch"  HorizontalAlignment="Stretch" Value="0" >
-                            <ProgressBar.Resources>
-                                <ResourceDictionary>
-                                    <ResourceDictionary.MergedDictionaries>
-                                        <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
-                                        <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
-                                    </ResourceDictionary.MergedDictionaries>
-                                </ResourceDictionary>
-                            </ProgressBar.Resources>
-                        </ProgressBar>
-                    </Grid>
-                    <Grid Grid.Row="3" Margin="5">
+                                <Grid Grid.Row="3" Margin="5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <!-- TextBlock的列宽 -->
@@ -150,7 +117,7 @@ Foreground="{DynamicResource Primary}"  rubyer:ProgressBarHelper.IsAnimation="Tr
                     </Grid>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="固件信息" >
+            <GroupBox Grid.Row="1" Header="信息" >
            
             </GroupBox>
             <StatusBar  Grid.Row="2" Background="#0F000000" DockPanel.Dock="Bottom" VerticalAlignment="Bottom"  >

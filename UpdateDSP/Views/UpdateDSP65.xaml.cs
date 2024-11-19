@@ -205,6 +205,7 @@ namespace UpdateDSP.Views
                     serialPort2.PortName = comname;
                     serialPort2.BaudRate = Convert.ToInt32(botelv.SelectedItem);
                     serialPort2.StopBits = StopBits.One;
+
                     serialPort2.Parity = Parity.Even;
                     serialPort2.DataBits = 8;
                     serialPort2.Open();//打开串口

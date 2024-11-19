@@ -6,11 +6,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace AFWDPP.Views
@@ -59,9 +57,8 @@ namespace AFWDPP.Views
             DSP28335.SetDLE_STX_ETX();
             // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
             botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
-            chanleid.ItemsSource = new int[] { 0, 1 };
-            chanleid.SelectedIndex = 0;
-            botelv.SelectedIndex = 1;
+
+            botelv.SelectedIndex = 7;
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -86,7 +83,20 @@ namespace AFWDPP.Views
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
 
         }
+        byte[] testdata1 = new byte[83];
+        byte[] d1 = { 0x05, 0x06, 0x00, 0x0d, 0x00, 0x01, 0xD8, 0x4D };
+        byte[] d2 = { 0x05, 0x06, 0x00, 0x0E, 0x00, 0x05, 0x29, 0x8E };
+        byte[] d3 = { 0x05, 0x03, 0xA0, 0x00, 0x00, 0x00, 0x66, 0x4E };
+        byte[] d4 = { 0x07, 0x03, 0x41, 0x3C, 0x0B, 0x00, 0x21 };
+        byte[] d5 = { 0x07, 0x03, 0x41, 0x4F, 0x0B, 0x00, 0x21 };
+        byte[] d6 = { 0x07, 0x03, 0x34, 0x00, 0x04, 0x00, 0x21 };
+        byte[] c1 = { 0x05, 0x06, 0x00, 0x0d, 0x00, 0x01, 0xD8, 0x4D };
 
+        byte[] c2 = { 0x05, 0x06, 0x00, 0x0E, 0x00, 0x05, 0x29, 0x8E };
+        byte[] c3 = { 0x05, 0x03, 0x2B, 0x35, 0x35, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x4F, 0x4B, 0x2C, 0x35, 0x39, 0x39, 0x35, 0x34, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x32, 0x34, 0x36, 0x30, 0x39, 0x37, 0x25 };
+        byte[] c4 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
+        byte[] c5 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
+        byte[] c6 = { 0x07, 0x03, 0x08, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0x37, 0x25 };
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -97,12 +107,68 @@ namespace AFWDPP.Views
             int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
             if (nbrDataRead == 0)
                 return;
-            // 将字节数组转换为十六进制字符串  
+
+            //// 将字节数组转换为十六进制字符串  
+            //if (buffer.SequenceEqual(d1))
+            //{
+            //    sendData(c1, c1.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d2))
+            //{
+            //    sendData(c2, c2.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d3))
+            //{
+            //    sendData(c3, c3.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d4))
+            //{
+            //    sendData(c4, c4.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d5))
+            //{
+            //    sendData(c5, c5.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d6))
+            //{
+            //    sendData(c6, c6.Length);
+
+            //}
+            testdata1[0] = 0xEB;
+            testdata1[1] = 0x90;
+            testdata1[3] = 0x13;
+            byte[] buffer3 = new byte[7];
+            buffer3[0] = 0xA5;
+            buffer3[1] = 0x02;
+
+            // 示例用法
+            short xAxisAngle = 1500;  // X 轴示例角度
+            short yAxisAngle = -2500; // Y 轴示例角度
+
+            // 调用方法并获取结果
+            var (Hx_X, Lx_X) = ConvertAngleToBytes(xAxisAngle);
+            var (Hx_Y, Lx_Y) = ConvertAngleToBytes(yAxisAngle);
+
+            buffer3[2] = Hx_X;
+            buffer3[3] = Lx_X;
+            buffer3[4] = Hx_Y;
+            buffer3[5] = Lx_Y;
+            GetSPsum(buffer3, 7);
+            sendData(buffer3, 7);
             string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
             string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
 
             Application.Current.Dispatcher.Invoke(() =>
             {
+
+
+                if (txlog.LineCount > 500)
+                    txlog.Clear();
                 txlog.AppendText(strs);
 
                 txlog.AppendText(" " + hexString);
@@ -111,7 +177,47 @@ namespace AFWDPP.Views
                 txlog.ScrollToEnd();
             });
         }
+        public static (byte Hx, byte Lx) ConvertAngleToBytes(short angle)
+        {
+            // 假设 X 轴和 Y 轴的最大正值分别为 20.5° 和 30.5°，对应的指令值为 20500 和 30500
+            // 但由于我们只关心绝对值，并且知道要乘以 1000，所以这里直接使用 20500 和 30500 的最大值 30500 来判断是否需要处理溢出（尽管在这个特定例子中不会溢出）
+            // 实际上，由于我们分别处理 X 轴和 Y 轴，应该为每个轴设置不同的限制，但这里为了简化，我们假设输入是合法的
 
+            // 将角度乘以 1000（注意：这里假设输入的角度已经在允许范围内）
+            short commandValue = (short)(angle);
+
+            // 对于 X 轴，范围应该是 -20500 到 20500
+            // 对于 Y 轴，范围应该是 -30500 到 30500
+            // 但由于我们在这个方法中不区分轴，只是进行转换，所以这里不进行检查
+            // 如果需要区分轴并进行检查，可以在调用此方法之前或在方法内部添加额外的逻辑
+
+            // 处理负数（转换为补码，即二进制的反码加一）
+            //if (commandValue < 0)
+            //{
+            //    commandValue = (short)~commandValue; // 反码计算
+            //}
+
+            // 注意：这里我们假设转换后的值不会超过一个字节的范围（对于高字节来说是不可能的，因为我们是将整数分为两个字节）
+            // 但实际上，由于我们已经将角度乘以了 1000，所以转换后的值可能会超过一个字节（0-255）的范围
+            // 因此，我们正确地将其分为高字节和低字节
+
+            // 将整数拆分为高字节和低字节
+            byte Hx = (byte)((commandValue >> 8) & 0xFF); // 取高8位
+            byte Lx = (byte)(commandValue & 0xFF);        // 取低8位
+
+            return (Hx, Lx);
+        }
+        void GetSPsum(byte[] data, int length)
+        {
+            int i = 0;
+            byte result = 0;
+            for (i = 0; i < length - 1; i++)
+            {
+                result += data[i];
+            }
+            result &= 0x00FF;
+            data[length - 1] = result;
+        }
         #region 串口打开关闭
         //打开关闭串口
         private async void OpenCloseCom()
@@ -305,9 +411,7 @@ namespace AFWDPP.Views
                     // 设置进度条
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        if (updateprogress.Value <= updateprogress.Maximum)
-                            updateprogress.Value = pres + BinPackOrder * 0.73;
-                        MainWindow.Instance.SetTitle("升级进度" + ((updateprogress.Value * 100) / updateprogress.Maximum).ToString("F2") + "%");
+
                     });
                     // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
                     if ((BinPackOrder + 1) >= BinPackNum)
@@ -344,7 +448,6 @@ namespace AFWDPP.Views
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            updateprogress.Value = updateprogress.Maximum;
                             issend = false;
                         });
                     }
@@ -428,7 +531,6 @@ namespace AFWDPP.Views
                 {
                     //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
                     var filepath = openFileDialog1.FileName;//取全路径文件名
-                    LoadFileName.Text = filepath;
                     BinFileLen = DSP28335.LoadBinFile(BinFileData, filepath);
                     // 初始化CheckA和CheckB和代码长度
                     DSP28335.SetHexLength(BinFileData, BinFileLen);
@@ -452,98 +554,11 @@ namespace AFWDPP.Views
         #region 开始固件升级
         private void StartToUpdate()
         {
-            try
-            {
-                // 禁止再次点击加载文件
-                //LoadFileButton.Enabled = false;
-                // 启动固件更新
-                string pathname = LoadFileName.Text;
-                if (pathname.Length == 0)
-                {
-                    Message.Error("尚未加载BIN固件文件！");
-                    return;
-                }
-                // 初始化固件升级功能,数据分包，每包512字节
-                if (UpdateStart(BinFileData, BinFileLen) == false)
-                {
-                    Message.Error("初始化固件升级模块失败！");
-                    return;
-                }
-                // 向文本框中添加文本
-                Message.Success("固件升级启动，等待设备应答......\r\n");
-                // 获取通道选择
-                if (chanleid.SelectedItem != null)
-                {
-                    ChannelID = byte.Parse(chanleid.SelectedItem.ToString());
-                }
-                else
-                {
-                    Message.Error("请填写通道号");
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Message.Error(ex.Message);
-                return;
-            }
-            timerhandshake.Start();
-            ButtonHelper.SetLoading(start, true);
-            // 启动固件更新
-            UpdateFlag = true;
-            start.Content = "停止固件升级";
-            start.Background = new SolidColorBrush(Colors.Red);
-            updateprogress.Value = updateprogress.Minimum;
-            issend = false;
-            AddTextToLog("待设备响应握手,可能需重新上下电设备");
+
 
         }
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (start.Content.ToString() == "开始固件升级")
-            {
-                if (serialPort2.IsOpen)
-                {
-                    if (UpdateFlag == true)
-                    {
-                        Message.Warning("固件升级正在进行中，无须重复开始！");
-                    }
-                    else
-                    {
-                        StartToUpdate();
-                    }
-                }
-                else
-                {
-                    if (await MessageBoxR.Warning("串口未打开或需重新打开，是否要打开串口并进行固件升级？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                    {
-                        OpenCloseCom();
-                        StartToUpdate();
-                    }
-                    else
-                    {
-                        Message.Error("串口状态异常，无法进行固件升级！");
-                    }
-                }
-            }
-            else
-            {
-
-                // 正在升级时，提醒用户是否要退出升级
-                if (await MessageBoxR.Warning("正在进行固件升级，停止升级会导致固件升级失败，是否要关闭？", button: MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    // 文件加载按钮
-                    timerhandshake.Stop();
-                    // LoadFileButton.Enabled = true;
-                    // 停止固件升级
-                    UpdateFlag = false;
-                    UpdateStop();
-                    // TxDisplay.AppendText("固件升级功能强制退出！\r\n");
-                    start.Content = "开始固件升级";
-                    start.Background = new SolidColorBrush(Colors.Green);
-                    ButtonHelper.SetLoading(start, false);
-                }
-            }
         }
         /// <summary>
         /// 终止固件升级
@@ -556,9 +571,7 @@ namespace AFWDPP.Views
             //文件加载按钮
             Application.Current.Dispatcher.Invoke(() =>
             {
-                start.Content = "开始固件升级";
-                start.Background = new SolidColorBrush(Colors.Green);
-                ButtonHelper.SetLoading(start, false);
+
                 tx.Content = "发送";
             });
             // 停止固件更新
@@ -582,7 +595,6 @@ namespace AFWDPP.Views
             }
             ProgState = PROGSTATE_UPDATE_START;
             BinPackNum = DSP28335.GetBinPackNum(BinFileLen, BINDATA_PACK_LEN);
-            updateprogress.Maximum = BinPackNum;
             return true;
         }
 
@@ -704,7 +716,6 @@ namespace AFWDPP.Views
         int timeout = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
-            SendPackStart();
 
 
 
@@ -738,29 +749,7 @@ namespace AFWDPP.Views
             }
             #endregion
 
-            if (updateprogress.Value < 80 && issend)
-            {
-                updateprogress.Value++;
-                pres = updateprogress.Value;
-                if (updateprogress.Value > 70)
-                {
-                    AddTextToLog("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
-                    Message.Error("擦除时间超时，已停止固件升级，请重新开始固件升级并上下电设备!");
-                    UpdateStop();
-                }
-                else
-                {
-                    // 使用正则表达式匹配括号内的数字加“秒”  
-                    string pattern = @"\（(\d+)秒\）";
 
-                    // 替换匹配的文本  
-                    int time = (needFlashTime - (int)updateprogress.Value) < 0 ? 0 : needFlashTime - (int)updateprogress.Value;
-                    rtbLog.Text = Regex.Replace(rtbLog.Text, pattern, match => $"（{time}秒）");
-                    MainWindow.Instance.SetTitle("擦除中还剩" + time + "秒");
-
-                    rtbLog.ScrollToEnd();
-                }
-            }
             timenow.Text = DateTime.Now.ToString("yyyy年MM月dd日 dddd tt hh:mm:ss", CultureInfo.CreateSpecificCulture("zh-CN")); ;
         }
 
