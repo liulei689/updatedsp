@@ -126,8 +126,8 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_4.Content = buffer[4].ToString("X2");
                     IDC_EDIT_CHECKA_5.Content = buffer[5].ToString("X2");
                     IDC_EDIT_CHECKA_6.Content = buffer[6].ToString("X2");
-                    IDC_EDIT_CHECKA_7.Content = buffer[7].ToString("X2");
-                    IDC_EDIT_CHECKA_10.Content = buffer[10].ToString("X2");
+                    IDC_EDIT_CHECKA_7.Content = buffer[7].GetGateStatus7();
+                    IDC_EDIT_CHECKA_10.Content = buffer[10].GetGateStatus10();
                     IDC_EDIT_CHECKA_11_12.Content = BitConverter.ToInt16(buffer, 11);
                     IDC_EDIT_CHECKA_13.Content = buffer[13].ToString("X2");
                     IDC_EDIT_CHECKA_14_15.Content = BitConverter.ToInt16(buffer, 14);
@@ -151,15 +151,15 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_45_46.Content = BitConverter.ToInt16(buffer, 45);
                     IDC_EDIT_CHECKA_47_48.Content = BitConverter.ToInt16(buffer, 47);
                     IDC_EDIT_CHECKA_49_50.Content = BitConverter.ToInt16(buffer, 49);
-                    IDC_EDIT_CHECKA_51.Content = buffer[51].ToString("X2");
-                    IDC_EDIT_CHECKA_52.Content = buffer[52].ToString("X2");
+                    IDC_EDIT_CHECKA_51.Content = buffer[51].GetGateStatus51();
+                    IDC_EDIT_CHECKA_52.Content = buffer[52].GetGateStatus52();
                     IDC_EDIT_CHECKA_53.Content = buffer[53].ToString("X2");
                     IDC_EDIT_CHECKA_54.Content = buffer[54].ToString("X2");
                     IDC_EDIT_CHECKA_56.Content = buffer[56].ToString("X2");
                     IDC_EDIT_CHECKA_57_58.Content = BitConverter.ToInt16(buffer, 57);
                     IDC_EDIT_CHECKA_59_60.Content = BitConverter.ToInt16(buffer, 59);
                     IDC_EDIT_CHECKA_61_64.Content = BitConverter.ToSingle(buffer, 61);
-                    IDC_EDIT_CHECKA_65.Content = buffer[65].GetGateStatus();
+                    IDC_EDIT_CHECKA_65.Content = buffer[65].GetGateStatus65();
                     IDC_EDIT_CHECKA_66_69.Content = BitConverter.ToSingle(buffer, 66);
                     IDC_EDIT_CHECKA_71.Content = buffer[71].ToString("X2");
                     IDC_EDIT_CHECKA_72.Content = buffer[72].ToString("X2");
@@ -872,6 +872,26 @@ namespace AFWDPP.Views
         {
             issxcheck = false;
         }
+
+        private void yuanshishuju_Click(object sender, RoutedEventArgs e)
+        {
+            var data = sender as Button;
+            if (data != null)
+            {
+                if (data.Content.ToString() == "原始数据")
+                {
+                    data.Content = "解析数据";
+                    Common.Common.IsShowSource = true;
+                }
+                else
+                {
+                    data.Content = "原始数据";
+                    Common.Common.IsShowSource = false;
+
+                }
+            }
+        }
+
         public void Dispose()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
