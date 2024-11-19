@@ -1,5 +1,4 @@
-﻿using AFWDPP.Common;
-using LL2024.Algorithms.UpdateDSP;
+﻿using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,7 @@ namespace AFWDPP.Views
     /// <summary>
     /// UpdateDspNormal.xaml 的交互逻辑
     /// </summary>
-    public partial class UpdateDspNormal : UserControl, IDisposable
+    public partial class SP : UserControl, IDisposable
     {
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
@@ -51,7 +50,7 @@ namespace AFWDPP.Views
         DispatcherTimer timerhandshake;
         DispatcherTimer timer;
         #endregion
-        public UpdateDspNormal()
+        public SP()
         {
             InitializeComponent();
 
@@ -109,70 +108,74 @@ namespace AFWDPP.Views
             if (nbrDataRead == 0)
                 return;
 
-            if (Common.Common.CheckSPsum(buffer))
+            //// 将字节数组转换为十六进制字符串  
+            //if (buffer.SequenceEqual(d1))
+            //{
+            //    sendData(c1, c1.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d2))
+            //{
+            //    sendData(c2, c2.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d3))
+            //{
+            //    sendData(c3, c3.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d4))
+            //{
+            //    sendData(c4, c4.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d5))
+            //{
+            //    sendData(c5, c5.Length);
+
+            //}
+            //else if (buffer.SequenceEqual(d6))
+            //{
+            //    sendData(c6, c6.Length);
+
+            //}
+            testdata1[0] = 0xEB;
+            testdata1[1] = 0x90;
+            testdata1[3] = 0x13;
+            byte[] buffer3 = new byte[7];
+            buffer3[0] = 0xA5;
+            buffer3[1] = 0x02;
+
+            // 示例用法
+            short xAxisAngle = 1500;  // X 轴示例角度
+            short yAxisAngle = -2500; // Y 轴示例角度
+
+            // 调用方法并获取结果
+            var (Hx_X, Lx_X) = ConvertAngleToBytes(xAxisAngle);
+            var (Hx_Y, Lx_Y) = ConvertAngleToBytes(yAxisAngle);
+
+            buffer3[2] = Hx_X;
+            buffer3[3] = Lx_X;
+            buffer3[4] = Hx_Y;
+            buffer3[5] = Lx_Y;
+            GetSPsum(buffer3, 7);
+            sendData(buffer3, 7);
+            string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
+            string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
+
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
-                string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
-
-                // 使用BitConverter将字节数组转换为float
-                Application.Current.Dispatcher.Invoke(() =>
-                {
 
 
-                    IDC_EDIT_CHECKA_0.Content = buffer[0].ToString("X2");
-                    IDC_EDIT_CHECKA_1.Content = buffer[1].ToString("X2");
-                    IDC_EDIT_CHECKA_2.Content = buffer[2].ToString("X2");
-                    IDC_EDIT_CHECKA_3.Content = buffer[3].ToString("X2");
-                    IDC_EDIT_CHECKA_4.Content = buffer[4].ToString("X2");
-                    IDC_EDIT_CHECKA_5.Content = buffer[5].ToString("X2");
-                    IDC_EDIT_CHECKA_6.Content = buffer[6].ToString("X2");
-                    IDC_EDIT_CHECKA_7.Content = buffer[7].ToString("X2");
-                    IDC_EDIT_CHECKA_10.Content = buffer[10].ToString("X2");
-                    IDC_EDIT_CHECKA_11_12.Content = BitConverter.ToInt16(buffer, 11);
-                    IDC_EDIT_CHECKA_13.Content = buffer[13].ToString("X2");
-                    IDC_EDIT_CHECKA_14_15.Content = BitConverter.ToInt16(buffer, 14);
-                    IDC_EDIT_CHECKA_16_17.Content = BitConverter.ToInt16(buffer, 16);
-                    IDC_EDIT_CHECKA_18_19.Content = BitConverter.ToInt16(buffer, 18);
-                    IDC_EDIT_CHECKA_20_21.Content = BitConverter.ToInt16(buffer, 20);
-                    IDC_EDIT_CHECKA_22_23.Content = BitConverter.ToInt16(buffer, 22);
-                    IDC_EDIT_CHECKA_24_25.Content = BitConverter.ToInt16(buffer, 24);
-                    IDC_EDIT_CHECKA_26_27.Content = BitConverter.ToInt16(buffer, 26);
-                    IDC_EDIT_CHECKA_28_29.Content = BitConverter.ToInt16(buffer, 28);
-                    IDC_EDIT_CHECKA_30_31.Content = BitConverter.ToInt16(buffer, 30);
-                    IDC_EDIT_CHECKA_32_33.Content = BitConverter.ToInt16(buffer, 32);
+                if (txlog.LineCount > 500)
+                    txlog.Clear();
+                txlog.AppendText(strs);
 
-                    IDC_EDIT_CHECKA_34.Content = buffer[34].ToString("X2");
-                    IDC_EDIT_CHECKA_35.Content = buffer[35].ToString("X2");
-                    IDC_EDIT_CHECKA_36.Content = buffer[36].ToString("X2");
-                    IDC_EDIT_CHECKA_37_38.Content = BitConverter.ToInt16(buffer, 37);
-                    IDC_EDIT_CHECKA_39_40.Content = BitConverter.ToInt16(buffer, 39);
-                    IDC_EDIT_CHECKA_41_42.Content = BitConverter.ToInt16(buffer, 41);
-                    IDC_EDIT_CHECKA_43_44.Content = BitConverter.ToInt16(buffer, 43);
-                    IDC_EDIT_CHECKA_45_46.Content = BitConverter.ToInt16(buffer, 45);
-                    IDC_EDIT_CHECKA_47_48.Content = BitConverter.ToInt16(buffer, 47);
-                    IDC_EDIT_CHECKA_49_50.Content = BitConverter.ToInt16(buffer, 49);
-                    IDC_EDIT_CHECKA_51.Content = buffer[51].ToString("X2");
-                    IDC_EDIT_CHECKA_52.Content = buffer[52].ToString("X2");
-                    IDC_EDIT_CHECKA_53.Content = buffer[53].ToString("X2");
-                    IDC_EDIT_CHECKA_54.Content = buffer[54].ToString("X2");
-                    IDC_EDIT_CHECKA_56.Content = buffer[56].ToString("X2");
-                    IDC_EDIT_CHECKA_57_58.Content = BitConverter.ToInt16(buffer, 57);
-                    IDC_EDIT_CHECKA_59_60.Content = BitConverter.ToInt16(buffer, 59);
-                    IDC_EDIT_CHECKA_61_64.Content = BitConverter.ToSingle(buffer, 61);
-                    IDC_EDIT_CHECKA_65.Content = buffer[65].GetGateStatus();
-                    IDC_EDIT_CHECKA_66_69.Content = BitConverter.ToSingle(buffer, 66);
-                    IDC_EDIT_CHECKA_71.Content = buffer[71].ToString("X2");
-                    IDC_EDIT_CHECKA_72.Content = buffer[72].ToString("X2");
-                    if (txlog.LineCount > 500)
-                        txlog.Clear();
-                    txlog.AppendText(strs);
-
-                    txlog.AppendText(" " + hexString);
-                    txlog.AppendText("\r\n");
-                    // 确保滚动到底部  
-                    txlog.ScrollToEnd();
-                });
-            }
+                txlog.AppendText(" " + hexString);
+                txlog.AppendText("\r\n");
+                // 确保滚动到底部  
+                txlog.ScrollToEnd();
+            });
         }
         public static (byte Hx, byte Lx) ConvertAngleToBytes(short angle)
         {
@@ -827,7 +830,7 @@ namespace AFWDPP.Views
         }
 
         // // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
-        ~UpdateDspNormal()
+        ~SP()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
             Dispose(disposing: false);

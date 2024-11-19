@@ -27,11 +27,13 @@ namespace AFWDPP.ViewModels
         public MainViewModel()
         {
             Instance = this;
-            Title = "在线升级";
+            Title = "导引头上位机";
 
             ViewItems =
             [
-                new("通用在线升级程序", "首页", new UpdateDspNormal(), IconType.Home2Line),
+                new("控制台", "SCIA", new UpdateDspNormal(), IconType.Home2Line),
+                new("稳定平台", "SCIB", new SP(), IconType.SendBackward),
+
             ];
 
             CurrentViewItem = ViewItems.First();
