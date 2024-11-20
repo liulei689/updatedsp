@@ -70,6 +70,11 @@ namespace AFWDPP.Views
             var FrameTypeHexList = Enum.GetValues(typeof(FrameType));
             comboBoxFrameType.ItemsSource = FrameTypeHexList;
             comboBoxFrameType.SelectedIndex = 0;
+            // 将控制指令列表设置为ComboBox的ItemsSource
+            IDC_EDIT_FC_4.ItemsSource = controlInstructions;
+
+            // 设置DisplayMemberPath来指定要显示的属性
+            IDC_EDIT_FC_4.DisplayMemberPath = "Name";
         }
 
         byte HEARTBEAT = 0;
@@ -688,6 +693,105 @@ namespace AFWDPP.Views
                 var SelectedFrameType = (FrameType)Enum.GetValues(typeof(FrameType)).GetValue(comboBoxFrameType.SelectedIndex);
                 testdata1[3] = (byte)SelectedFrameType;
             }
+        }
+        // 定义控制指令的类
+        public class ControlInstruction
+        {
+            public string Name { get; set; }
+            public byte Code { get; set; }
+            public int DataLength { get; set; }
+            public string ControlData { get; set; }
+            public string Remarks { get; set; }
+        }
+        // 初始化控制指令列表
+        List<ControlInstruction> controlInstructions = new List<ControlInstruction>
+            {
+                new ControlInstruction { Name = "IDLE", Code = 0xFF, DataLength = 0, ControlData = "无参数", Remarks = "空闲时发送" },
+                new ControlInstruction { Name = "无效指令", Code = 0x00, DataLength = 0, ControlData = "无参数", Remarks = "无效时发送" },
+                new ControlInstruction { Name = "自检", Code = 0x13, DataLength = 0, ControlData = "无参数", Remarks = "导引头上电后自动发送自检指令" },
+                new ControlInstruction { Name = "指向（随动）", Code = 0x15, DataLength = 0, ControlData = "无参数", Remarks = "导引头上电或自检完成后控制器将自动发送指向指令，导引头接收到该指令后将一直处于指向模式直到进入目标跟踪状态，指向模式的方位角和俯仰角实时采取表3中的66~69字节数据" },
+                new ControlInstruction { Name = "搜索/跟踪点微调", Code = 0x19, DataLength = 2, ControlData = "控制数据区第1字节：表示方位搜索值，8位有符号整数，数据范围为-127~127，分辨率1；控制数据区第2字节：表示俯仰搜索值，8位有符号整数，数据范围为-127~127，分辨率1；其余字节无效。", Remarks = "" },
+                new ControlInstruction { Name = "手动截获", Code = 0x1A, DataLength = 6, ControlData = "控制数据区第1-2字节：表示截获图像帧编号，16位无符号整数，数据范围为0~65535，分辨率1；控制数据区第3-4字节：表示方位截获像素位置，16位无符号整数，数据范围为0～1024，分辨率1；控制数据区5-6字节：表示俯仰截获像素位置，16位无符号整数，数据范围为0～1024，分辨率1；其余字节无效。", Remarks = "" },
+                new ControlInstruction { Name = "解除跟踪", Code = 0x23, DataLength = 0, ControlData = "无参数", Remarks = "" },
+                new ControlInstruction { Name = "视场调节", Code = 0x26, DataLength = 1, ControlData = "控制数据区第1字节：0x13-宽视场；0x15-窄视场；其余字节无效。", Remarks = "" },
+                new ControlInstruction { Name = "波门调节", Code = 0x28, DataLength = 4, ControlData = "控制数据区第1-2字节：表示波门宽度，16位无符号整数，数据范围为0~1024，分辨率1；控制数据区第3-4字节：表示波门高度，16位无符号整数，数据范围为0~1024，分辨率1；其余字节无效。", Remarks = "" },
+                new ControlInstruction { Name = "字符叠加", Code = 0x29, DataLength = 1, ControlData = "控制数据区第1字节：0x13-不叠加；0x15-叠加；其余字节无效。", Remarks = "" },
+                new ControlInstruction { Name = "目标类型选择", Code = 0x35, DataLength = 1, ControlData = "控制数据区第1字节：人员：0x11；车辆：0x12；工事：0x13；其余字节无效。", Remarks = "" },
+                new ControlInstruction { Name = "零位校准", Code = 0x36, DataLength = 0, ControlData = "无参数", Remarks = "" },
+                new ControlInstruction { Name = "对时指令", Code = 0x37, DataLength = 0, ControlData = "无参数", Remarks = "" }
+            };
+
+        private void IDC_EDIT_FC_4_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // 获取ComboBox控件
+            ComboBox comboBox = sender as ComboBox;
+
+            // 检查是否有选中的项
+            if (comboBox.SelectedItem != null)
+            {
+                // 获取选中的ControlInstruction对象
+                ControlInstruction selectedInstruction = comboBox.SelectedItem as ControlInstruction;
+                IDC_EDIT_FC_5.Content = selectedInstruction.Code.ToString("X2");
+                InputBoxHelper.SetPreContent(IDC_EDIT_FC_6_16, "数据长度(HEX)" + selectedInstruction.DataLength);
+                IDC_EDIT_FC_6_16.Tag = selectedInstruction;
+                testdata1[4] = selectedInstruction.Code;
+                testdata1[5] = selectedInstruction.Code;
+            }
+        }
+
+        private void IDC_EDIT_FC_6_16_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var data = IDC_EDIT_FC_6_16.Tag as ControlInstruction;
+            if (data != null)
+            {
+                if (data.DataLength == 0)
+                {
+                    Message.Error("该控制指令不需要参数");
+                    return;
+                }
+                if (IDC_EDIT_FC_6_16.Text.Trim().Length > data.DataLength * 2)
+                {
+                    Message.Error("数据长度超过" + data.DataLength + "控制指令：" + data.Name + "数据长度为：" + data.DataLength);
+                    return;
+                }
+                if (IDC_EDIT_FC_6_16.Text.Trim().Length == data.DataLength * 2)
+                {
+                    try
+                    {
+                        var data2 = HexStringToByteArray(IDC_EDIT_FC_6_16.Text.Trim());
+                        for (int i = 0; i < data2.Length; i++)
+                        {
+                            testdata1[6 + i] = data2[i];
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        // 将HEX字符串转换为byte数组
+        public static byte[] HexStringToByteArray(string hexString)
+        {
+            // 确保输入字符串长度为偶数
+            if (hexString.Length % 2 != 0)
+            {
+                throw new ArgumentException("无效的hex长度.");
+            }
+
+            // 初始化byte数组，长度为hexString长度的一半
+            int byteCount = hexString.Length / 2;
+            byte[] byteArray = new byte[byteCount];
+
+            // 遍历hexString，每两个字符转换为一个byte
+            for (int i = 0; i < byteCount; i++)
+            {
+                // 获取当前位置的两个字符
+                string hexChar = hexString.Substring(i * 2, 2);
+                // 将两个字符转换为byte并存储到byteArray中
+                byteArray[i] = Convert.ToByte(hexChar, 16);
+            }
+
+            return byteArray;
         }
     }
 }

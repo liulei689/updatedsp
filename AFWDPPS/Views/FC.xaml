@@ -153,7 +153,15 @@
                                     <rubyer:DescriptionItem  Description="【2】图像类型码"  >
                                         <TextBox x:Name="IDC_EDIT_FC_2"  Text="90" />
                                     </rubyer:DescriptionItem>
-                                    <rubyer:DescriptionItem  Description="【17-18】DD俯仰角"  >
+                                <rubyer:DescriptionItem  Description="【4】控制指令"  >
+                                    <ComboBox x:Name="IDC_EDIT_FC_4"  Text="90" SelectedIndex="0"  SelectionChanged="IDC_EDIT_FC_4_SelectionChanged"/>
+                                </rubyer:DescriptionItem>
+                                <rubyer:DescriptionItem  Description="【5】控制指令重复" x:Name="IDC_EDIT_FC_5" >
+                                </rubyer:DescriptionItem>
+                                <rubyer:DescriptionItem  Description="【6-16】控制数据帧" >
+                                    <TextBox x:Name="IDC_EDIT_FC_6_16"   Text="0"   rubyer:InputBoxHelper.PreContent="" TextChanged="IDC_EDIT_FC_6_16_TextChanged"/>
+                                </rubyer:DescriptionItem>
+                                <rubyer:DescriptionItem  Description="【17-18】DD俯仰角"  >
                                         <TextBox x:Name="IDC_EDIT_FC_17_18"  Text="-20" />
                                     </rubyer:DescriptionItem>
                                     <rubyer:DescriptionItem  Description="【19_20】DD横滚角"  >
