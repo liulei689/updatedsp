@@ -14,7 +14,7 @@ using System.Windows.Threading;
 namespace AFWDPP.Views
 {
     /// <summary>
-    /// UpdateDspNormal.xaml 的交互逻辑
+    /// FC.xaml 的交互逻辑
     /// </summary>
     public partial class SP : UserControl, IDisposable
     {
@@ -165,8 +165,7 @@ namespace AFWDPP.Views
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-
-
+                rx.IsEnabled = true;
                 if (txlog.LineCount > 500)
                     txlog.Clear();
                 txlog.AppendText(strs);
@@ -758,15 +757,15 @@ namespace AFWDPP.Views
 
         private void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (isfirst < 1)
-            {
-                isfirst++;
-            }
-            else
-            {
-                if (comlist.SelectedItem != null)
-                    OpenCloseCom();
-            }
+            //if (isfirst < 1)
+            //{
+            //    isfirst++;
+            //}
+            //else
+            //{
+            //    if (comlist.SelectedItem != null)
+            //        OpenCloseCom();
+            //}
         }
         private void ReleaseSerialPort()
         {

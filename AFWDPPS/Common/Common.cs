@@ -1,10 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 
 namespace AFWDPP.Common
 {
     public static class Common
     {
+        public static byte ToByte(this string hexString)
+        {
+            // 如果字符串以"0x"开头，则去掉它
+            if (hexString.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                hexString = hexString.Substring(2);
+            }
+            if (hexString.StartsWith("0X", StringComparison.OrdinalIgnoreCase))
+            {
+                hexString = hexString.Substring(2);
+            }
+            hexString = hexString.Replace("h", ""); // 去掉h后缀
+            hexString = hexString.Trim();
+            // 如果字符串长度不是2，则抛出异常（这里假设输入总是有效的两位十六进制数）
+            if (hexString.Length != 2)
+            {
+                return 0;
+            }
+            // 将十六进制字符串转换为字节
+            return Convert.ToByte(hexString, 16);
+        }
+        public enum FrameType : byte
+        {
+            控制数据帧 = 0x13,    // 控制数据帧（表5）
+            目标参数装订帧 = 0x14, // 目标参数装订帧（表6）
+            图像模板装订帧 = 0x15   // 图像模板装订帧（表7）
+        }
+
+
         public static bool IsShowSource = false; //是否显示原始值
         public static string GetGateStatus65(this byte input)
         {

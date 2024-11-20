@@ -18,7 +18,7 @@ using UpdateDSP.ViewModels;
 namespace UpdateDSP.Views
 {
     /// <summary>
-    /// UpdateDspNormal.xaml 的交互逻辑
+    /// FC.xaml 的交互逻辑
     /// </summary>
     public partial class UpdateDsp65 : UserControl, IDisposable
     {

@@ -31,7 +31,7 @@ namespace AFWDPP.ViewModels
 
             ViewItems =
             [
-                new("控制台", "SCIA", new UpdateDspNormal(), IconType.Home2Line),
+                new("控制台", "SCIA", new FC(), IconType.Home2Line),
                 new("稳定平台", "SCIB", new SP(), IconType.SendBackward),
 
             ];

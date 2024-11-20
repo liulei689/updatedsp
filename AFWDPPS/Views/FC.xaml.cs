@@ -13,47 +13,24 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using static AFWDPP.Common.Common;
 
 namespace AFWDPP.Views
 {
     /// <summary>
-    /// UpdateDspNormal.xaml 的交互逻辑
+    /// FC.xaml 的交互逻辑
     /// </summary>
-    public partial class UpdateDspNormal : UserControl, IDisposable
+    public partial class FC : UserControl, IDisposable
     {
         #region 全局变量
         public System.IO.Ports.SerialPort serialPort2;
-        public static byte ChannelID;
-        private const int BINDATA_PACK_LEN = 512;
-        int BinPackNum;//包个数
-        int BinPackOrder;//第BinPackOrder个包
 
-        volatile int ProgState;//程序状态
-        const int PROGSTATE_UPDATE_IDEL = 0;
-        const int PROGSTATE_UPDATE_START = 1;
-        const int PROGSTATE_UPDATE_LOAD = 2;
-        const int PROGSTATE_UPDATE_FINAL = 3;
-
-
-        const byte PROTOCOL_CMD_COMACK = 0x02;
-        const byte PROTOCOL_CMD_STARTUPDATE = 0x81;
-        const byte PROTOCOL_CMD_BINDATA = 0x82;
-
-        int BinFileLen;
-
-        bool UpdateFlag;
-        const int CIPHER_LOCAL_START = 30;
-        const int DATA_LOCAL_START = 62;
-        byte[] BinFileData = new byte[2 * 1024 * 1024];
-        ushort Bin_CheckA, Bin_CheckB;
-        ushort[] Data = new ushort[32];
-        byte[] Ciphers = new byte[16];
 
         public Thread RecDataDeal;
         DispatcherTimer timerhandshake;
         DispatcherTimer timer;
         #endregion
-        public UpdateDspNormal()
+        public FC()
         {
             InitializeComponent();
 
@@ -69,7 +46,7 @@ namespace AFWDPP.Views
             //握手定时器
             timerhandshake = new DispatcherTimer();
             timerhandshake.Interval = TimeSpan.FromMilliseconds(200);
-            // timerhandshake.IsEnabled = false;
+            timerhandshake.IsEnabled = true;
             timerhandshake.Tick += timerhandshake_Tick;
             var ports = Common.Common.SearchPort();
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
@@ -84,8 +61,31 @@ namespace AFWDPP.Views
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
-
+            Loaded += FC_Loaded;
         }
+
+        private void FC_Loaded(object sender, RoutedEventArgs e)
+        {
+            var FrameTypeHexList = Enum.GetValues(typeof(FrameType));
+            comboBoxFrameType.ItemsSource = FrameTypeHexList;
+            comboBoxFrameType.SelectedIndex = 0;
+        }
+
+        byte HEARTBEAT = 0;
+        private void timerhandshake_Tick(object sender, EventArgs e)
+        {
+            testdata1[0] = IDC_EDIT_FC_0.Text.ToByte();
+            testdata1[1] = (byte)IDC_EDIT_FC_1.Text.ToByte();
+            testdata1[2] = (byte)IDC_EDIT_FC_2.Text.ToByte(); //可见光
+            if (HEARTBEAT > 255)
+            {
+                HEARTBEAT = 0;
+            }
+            testdata1[81] = HEARTBEAT++;
+            GetSPsum(testdata1, testdata1.Length);
+            sendData(testdata1, testdata1.Length);
+        }
+
         byte[] testdata1 = new byte[83];
         byte[] d1 = { 0x05, 0x06, 0x00, 0x0d, 0x00, 0x01, 0xD8, 0x4D };
         byte[] d2 = { 0x05, 0x06, 0x00, 0x0E, 0x00, 0x05, 0x29, 0x8E };
@@ -119,7 +119,8 @@ namespace AFWDPP.Views
                 // 使用BitConverter将字节数组转换为float
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-
+                    if (!rx.IsEnabled)
+                        rx.IsEnabled = true;
 
                     IDC_EDIT_CHECKA_0.Content = buffer[0].ToString("X2");
                     IDC_EDIT_CHECKA_1.Content = buffer[1].ToString("X2");
@@ -218,6 +219,7 @@ namespace AFWDPP.Views
             data[length - 1] = result;
         }
         #region 串口打开关闭
+        bool UpdateFlag = false;
         //打开关闭串口
         private async void OpenCloseCom()
         {
@@ -232,7 +234,7 @@ namespace AFWDPP.Views
                         {
                             //// 停止固件升级
                             UpdateFlag = false;
-                            UpdateStop();
+
                             AddTextToLog("固件升级功能强制退出！\r\n");
                             ////串口已经处于打开状态
                             serialPort2.Close();    //关闭串口
@@ -314,155 +316,7 @@ namespace AFWDPP.Views
         bool issend = false;
         public int needFlashTime = 0;
         public int ComfirTimes = 3;
-        /// <summary>
-        /// 对接收数据进行处理
-        /// </summary>
-        public void Implement(byte[] DataBuf)
-        {
-            //DataBuf[0]是ChannelID
-            byte cmd = DataBuf[1];
-            string str;
 
-            // 一般命令处理
-            if (cmd == 0x04)
-            {
-                // RecvDevInfo(DataBuf, DataBuf.Length);
-            }
-            // 固件升级
-            switch (ProgState)
-            {
-                case PROGSTATE_UPDATE_IDEL:// 固件升级无效状态
-                    break;
-                case PROGSTATE_UPDATE_START:
-                    if (cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_STARTUPDATE)
-                    {
-                        if (DataBuf[3] == 0)
-                        {
-                            if (ComfirTimes-- <= 0)
-                            {
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    timerhandshake.Stop();
-                                });
-                                ComfirTimes = 3;
-                                // 下发第一包数据
-                                AddTextToLog("握手成功，等待发送第一包数据");
-                                needFlashTime = new Random().Next(14, 26);
-                                AddTextToLog("DSP擦除FLASH中，预估（15秒）....".Replace("15", needFlashTime.ToString()));
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    tx.Content = "握手已停止，等待设备准备完成后回应中...";
-                                });
-                                issend = true;
-                                SendPackBinData(BinPackOrder);
-                                ProgState = PROGSTATE_UPDATE_LOAD;
-                            }
-                        }
-                        else
-                        {
-                            str = GetCommAckResult(DataBuf[3]);
-                            str += "，退出固件升级";
-                            AddTextToLog(str);
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                Message.Success(str);
-                            });
-
-                            UpdateStop();
-                        }
-                    }
-                    break;
-                case PROGSTATE_UPDATE_LOAD:
-                    if (!(cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_BINDATA))
-                    {
-                        str = GetCommAckResult(DataBuf[3]);
-                        str += "，退出固件升级。";
-
-                        UpdateStop();
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            AddTextToLog(str);
-                        });
-                        break;
-                    }
-                    issend = false;
-                    // 获得包序号
-                    str = string.Format("收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        AddTextToLog(str);
-                    });
-                    if (DataBuf[3] != 0)
-                    {
-                        str = GetCommAckResult(DataBuf[3]);
-                        str += "，退出固件升级。";
-
-                        UpdateStop();
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            AddTextToLog(str);
-                        });
-                        break;
-                    }
-                    // 下发下一包数据
-                    BinPackOrder = (BinPackOrder + 1) % BinPackNum;
-                    // 设置进度条
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-
-                    });
-                    // 判断是不是最后一包数据,是最后一包数据则等待报告文件校验字节
-                    if ((BinPackOrder + 1) >= BinPackNum)
-                    {
-                        ProgState = PROGSTATE_UPDATE_FINAL;
-                    }
-
-                    SendPackBinData(BinPackOrder);
-                    break;
-                case PROGSTATE_UPDATE_FINAL:
-                    if (!(cmd == PROTOCOL_CMD_COMACK && DataBuf[2] == PROTOCOL_CMD_BINDATA))
-                    {
-                        str = GetCommAckResult(DataBuf[3]);
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            MainWindow.Instance.SetTitle(str);
-                        });
-                        str += "，退出固件升级。";
-
-                        UpdateStop();
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            AddTextToLog(str);
-                        });
-                        break;
-                    }
-
-                    str = string.Format("固件包下发成功，收到{0:d}/{1:d}包应答结果：{2:d}。", BinPackOrder + 1, BinPackNum, DataBuf[3]);
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        AddTextToLog(str);
-                    });
-                    if (DataBuf[3] == 5)
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            issend = false;
-                        });
-                    }
-                    str = GetCommAckResult(DataBuf[3]);
-                    str += "，退出固件升级。";
-                    UpdateStop();
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        AddTextToLog(str);
-                    });
-                    ProgState = PROGSTATE_UPDATE_IDEL;
-                    break;
-                default:
-                    break;
-            }
-        }
         /// <summary>
         /// 获取通用回复结果
         /// </summary>
@@ -489,16 +343,7 @@ namespace AFWDPP.Views
         /// 发送二进制数据包
         /// </summary>
         /// <param name="packorder"></param>
-        public void SendPackBinData(int packorder)
-        {
-            var data = DSP28335.SendPackBinData(BinFileData, ChannelID, packorder, BinFileLen, BINDATA_PACK_LEN);
-            sendData(data, data.Length);
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                tx.Content = "下发固件包中...";
-            });
 
-        }
         #endregion
         #region 串口读取数据
         /// <summary>
@@ -516,116 +361,18 @@ namespace AFWDPP.Views
             NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
 
         }
-        #region 加载固件
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Bin_CheckA = 0;
-                Bin_CheckB = 0;
-                BinFileData = new byte[2 * 1024 * 1024];
-                var openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
-                openFileDialog1.Filter = "二进制文件|*.bin";
-                openFileDialog1.Title = "Load File";
-
-                if (openFileDialog1.ShowDialog() == true)
-                {
-                    //string filename = Path.GetFileName(openFileDialog1.FileName);//只取文件名
-                    var filepath = openFileDialog1.FileName;//取全路径文件名
-                    BinFileLen = DSP28335.LoadBinFile(BinFileData, filepath);
-                    // 初始化CheckA和CheckB和代码长度
-                    DSP28335.SetHexLength(BinFileData, BinFileLen);
-                    var (tempA, tempB) = DSP28335.GetBinCheckAAndCheckB(BinFileData, BinFileLen);
-                    Bin_CheckA = tempA; Bin_CheckB = tempB;
-                    DSP28335.SetHexCheckAB(BinFileData, Bin_CheckA, Bin_CheckB);
-                    // 显示文件信息
 
 
 
-                }
-            }
-            catch (Exception ex)
-            {
-                Message.Error(ex.Message, 10000, true);
-                UpdateFlag = false;
-                UpdateStop();
-            }
-        }
-        #endregion
-        #region 开始固件升级
-        private void StartToUpdate()
-        {
-
-
-        }
-        private async void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-        }
-        /// <summary>
-        /// 终止固件升级
-        /// </summary>
-        public void UpdateStop()
-        {
-            issend = false;
-            BinPackOrder = 0;
-            timerhandshake.Stop();
-            //文件加载按钮
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-
-                tx.Content = "发送";
-            });
-            // 停止固件更新
-            UpdateFlag = false;
-            //Array.Clear(pData, 0, pData.Length);
-
-            BinPackNum = 0;
-            ProgState = PROGSTATE_UPDATE_IDEL;
-        }
         /// <summary>
         /// 对数据进行分包,并启动升级
         /// </summary>
         /// <param name="data"></param>
         /// <param name="datalen"></param>
         /// <returns></returns>
-        public bool UpdateStart(byte[] data, int datalen)
-        {
-            if (data == null)
-            {
-                return false;
-            }
-            ProgState = PROGSTATE_UPDATE_START;
-            BinPackNum = DSP28335.GetBinPackNum(BinFileLen, BINDATA_PACK_LEN);
-            return true;
-        }
 
-        /// <summary>
-        /// 定时发送握手信号
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void timerhandshake_Tick(object sender, EventArgs e)
-        {
-            if (serialPort2.IsOpen == false)
-            {
-                timerhandshake.Stop();
-                return;
-            }
-            SendPackStart();
-        }
-        /// <summary>
-        /// 发送握手数据包
-        /// </summary>
-        public void SendPackStart()
-        {
-            byte[] buf = DSP28335.SetHandshakePacket(ChannelID, BinFileLen, Bin_CheckA, Bin_CheckB);
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                tx.Content = "下发握手帧，等待设备回应...";
-            });
-            sendData(buf, buf.Length);
 
-        }
+
         /// <summary>
         /// 打包并发送数据
         /// </summary>
@@ -633,6 +380,7 @@ namespace AFWDPP.Views
         /// <param name="datalength"></param>
         private void sendData(byte[] databuf, int datalength)
         {
+            if (!serialPort2.IsOpen) return;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 tx.IsEnabled = true;
@@ -665,7 +413,7 @@ namespace AFWDPP.Views
             }
             Thread.Sleep(1);
         }
-        #endregion
+
         private void AddTextToLog(string text)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -831,7 +579,7 @@ namespace AFWDPP.Views
         }
 
         // // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
-        ~UpdateDspNormal()
+        ~FC()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
             Dispose(disposing: false);
@@ -839,9 +587,7 @@ namespace AFWDPP.Views
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            var windows = new BinReader(BinFileData, BinFileLen);
-            windows.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            windows.Show();
+
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -901,6 +647,15 @@ namespace AFWDPP.Views
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private void comboBoxFrameType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboBoxFrameType.SelectedIndex >= 0)
+            {
+                var SelectedFrameType = (FrameType)Enum.GetValues(typeof(FrameType)).GetValue(comboBoxFrameType.SelectedIndex);
+                testdata1[3] = (byte)SelectedFrameType;
+            }
         }
     }
 }
