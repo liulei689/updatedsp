@@ -7,7 +7,7 @@
              xmlns:viewmodels="clr-namespace:AFWDPP.ViewModels"
             
              mc:Ignorable="d">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="5" 
                   rubyer:GridHelper.RowDefinitions="*,Auto, Auto"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Stretch">
@@ -36,7 +36,7 @@
                     </Grid>
                                 <Grid Grid.Row="3" Margin="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" />
                             <!-- TextBlock的列宽 -->
                             <ColumnDefinition Width="*"/>
                             <!-- 第二个TextBlock的列宽 -->
@@ -44,7 +44,7 @@
                             <!-- 第二个TextBox的列宽，自适应剩余空间 -->
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="        状态:   "/>
-                        <TextBox Grid.Column="1"  Margin="10,0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
+                        <TextBox Grid.Column="1" MaxHeight="400"  Margin="10,0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
                          HorizontalAlignment="Stretch"   
                          rubyer:InputBoxHelper.IsClearable="True"   
                          rubyer:InputBoxHelper.Watermark="消息通知" Cursor="IBeam" >
@@ -79,10 +79,10 @@
                                 </ContextMenu>
                             </TextBox.ContextMenu>
                         </TextBox>
-                        <TextBox Grid.Column="2"   Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 
-             HorizontalAlignment="Stretch" 
-             rubyer:InputBoxHelper.IsClearable="True"   
-             rubyer:InputBoxHelper.Watermark="接受数据">
+                        <TextBox Grid.Column="2" MaxHeight="400" Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 
+                             HorizontalAlignment="Stretch" 
+                             rubyer:InputBoxHelper.IsClearable="True"   
+                             rubyer:InputBoxHelper.Watermark="接受数据">
                             <TextBox.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Command="Copy">
@@ -118,144 +118,237 @@
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="信息" >
-                <StackPanel Orientation="Vertical" >
-                    <Expander Margin="5"  rubyer:HeaderHelper.Background="{DynamicResource Primary}"  rubyer:HeaderHelper.Foreground="{DynamicResource WhiteForeground}" rubyer:HeaderHelper.HorizontalAlignment="Center" Header="(发送数据)控制台->导引头" IsExpanded="True">
-                        <StackPanel Orientation="Vertical" >
-                            <ToolBarTray Margin="4" >
-                                <ToolBar>
-                                    <ComboBox x:Name="comboBoxFrameType" SelectionChanged="comboBoxFrameType_SelectionChanged"
+                    <StackPanel Orientation="Vertical"  >
+                        <Expander Margin="5"  rubyer:HeaderHelper.Background="{DynamicResource Primary}"  rubyer:HeaderHelper.Foreground="{DynamicResource WhiteForeground}" rubyer:HeaderHelper.HorizontalAlignment="Center" Header="(发送数据)控制台->导引头" IsExpanded="True">
+                            <StackPanel Orientation="Vertical" >
+                                <ToolBarTray Margin="4" >
+                                    <ToolBar>
+                                        <ComboBox x:Name="comboBoxFrameType" SelectionChanged="comboBoxFrameType_SelectionChanged"
                                   Width="190"
                                   rubyer:InputBoxHelper.PreContent="帧识别码"
                                   SelectedIndex="0">
-                                    </ComboBox>
-                                    <TextBox Width="150"
+                                        </ComboBox>
+                                        <TextBox Width="150"
                                  rubyer:InputBoxHelper.IsClearable="True"
                                  rubyer:InputBoxHelper.Watermark="搜索">
-                                        <rubyer:InputBoxHelper.PreContent>
-                                            <rubyer:Icon Type="SearchLine" />
-                                        </rubyer:InputBoxHelper.PreContent>
-                                    </TextBox>
-                                </ToolBar>
-                            </ToolBarTray>
+                                            <rubyer:InputBoxHelper.PreContent>
+                                                <rubyer:Icon Type="SearchLine" />
+                                            </rubyer:InputBoxHelper.PreContent>
+                                        </TextBox>
+                                    </ToolBar>
+                                </ToolBarTray>
 
-                            <rubyer:Description Style="{StaticResource BorderDescription}"
+                                <rubyer:Description Style="{StaticResource BorderDescription}" Name="allsenddata"
                                Grid.Row="0"
+                                                    FontSize="12"
                                Margin="1"
                                Columns="4">
 
-                                <rubyer:DescriptionItem  Description="【0】帧头"  >
-                                    <TextBox x:Name="IDC_EDIT_FC_0"  Text="EB" Tag="Hex" />
-                                </rubyer:DescriptionItem>
-                                <rubyer:DescriptionItem  Description="【1】帧头"  >
-                                    <TextBox x:Name="IDC_EDIT_FC_1"  Text="90" />
-                                </rubyer:DescriptionItem>
-                                <rubyer:DescriptionItem  Description="【2】图像类型码"  >
-                                    <TextBox x:Name="IDC_EDIT_FC_2"  Text="90" />
-                                </rubyer:DescriptionItem>
-                            </rubyer:Description>
-                        </StackPanel>
-                    </Expander>
+                                    <rubyer:DescriptionItem  Description="【0】帧头"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_0"  Text="EB" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【1】帧头"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_1"  Text="90" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【2】图像类型码"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_2"  Text="90" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【17-18】DD俯仰角"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_17_18"  Text="-20" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【19_20】DD横滚角"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_19_20"  Text="-1" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【21_22】DD航向角"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_21_22"  Text="-2" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【23-24】DD俯仰角速率"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_23_24"  Text="-3" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【25-26】DD滚转角速率"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_25_26"  Text="-4" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【27-28】DD偏航角速率"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_27_28"  Text="5" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【29-32】DD经度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_29_32"  Text="6" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【33-36】DD纬度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_33_36"  Text="7" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【37-38】DD海拔高"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_37_38"  Text="8" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【39-40】DD北向速度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_39_40"  Text="9" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【41-42】DD东向速度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_41_42"  Text="10" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【43-44】DD天向速度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_43_44"  Text="11" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【45-46】UTC时间/年"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_45_46"  Text="2024" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【47】UTC时间/月"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_47"  Text="11" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【48】UTC时间/日"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_48"  Text="11" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【49】UTC时间/时"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_49"  Text="11" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【50】UTC时间/分"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_50"  Text="11" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【51】UTC时间/秒"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_51"  Text="11" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【52】UTC时间/毫秒"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_52"  Text="111" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【53】目标参数有效性"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_53"  Text="13" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【54-57】目标经度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_54_57"  Text="-179" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【58-61】目标纬度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_58_61"  Text="-20" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【62-63】目标海拔高度"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_62_63"  Text="-179" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【64-65】目标距离"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_64_65"  Text="-20" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【66-67】目标方位角（D体系）"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_66_67"  Text="-179" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【68-69】目标俯仰角（D体系）"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_68_69"  Text="-20" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【70-71】目标方位角速度（D体系）"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_70_71"  Text="-179" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【72-73】目标俯仰角速度（D体系）"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_72_73"  Text="-20" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【74】视频控制"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_74"  Text="-179" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem  Description="【75】起飞状态"  >
+                                        <TextBox x:Name="IDC_EDIT_FC_75"  Text="19" Tag="Hex" />
+                                    </rubyer:DescriptionItem>
 
-                    <Expander Margin="5"  rubyer:HeaderHelper.Background="{DynamicResource Primary}"  rubyer:HeaderHelper.Foreground="{DynamicResource WhiteForeground}" rubyer:HeaderHelper.HorizontalAlignment="Center" Header="(接受数据)导引头->控制台" IsExpanded="False">
-                        <StackPanel Orientation="Vertical" >
-                            <ToolBarTray Margin="4" >
-                                <ToolBar>
-                                    <Button Foreground="{DynamicResource Primary}" ToolTip="向后导航(Ctrl+-)">
-                                        <rubyer:Icon Type="ArrowLeftCircleFill" />
-                                    </Button>
-                                    <Button x:Name="yuanshishuju" Click="yuanshishuju_Click" Content="原始数据" Foreground="{DynamicResource Primary}" ToolTip="原始数据(Ctrl+-)">
+                                </rubyer:Description>
+                            </StackPanel>
+                        </Expander>
 
-                                    </Button>
-                                    <Button Foreground="{DynamicResource Primary}" ToolTip="向前导航(Ctrl+Shift+-)">
-                                        <rubyer:Icon Type="ArrowRightCircleFill" />
-                                    </Button>
-                                    <Separator />
-                                    <Button ToolTip="新建项目(Ctrl+Shift+N)">
-                                        <rubyer:Icon Type="FileAddFill" />
-                                    </Button>
-                                    <Button Foreground="#FB8C00" ToolTip="打开文件(Ctrl+O)">
-                                        <rubyer:Icon Type="FolderOpenFill" />
-                                    </Button>
-                                    <Button Foreground="{DynamicResource Primary}" ToolTip="保存(Ctrl+S)">
-                                        <rubyer:Icon Type="Save2Fill" />
-                                    </Button>
-                                </ToolBar>
+                        <Expander Margin="5"  rubyer:HeaderHelper.Background="{DynamicResource Primary}"  rubyer:HeaderHelper.Foreground="{DynamicResource WhiteForeground}" rubyer:HeaderHelper.HorizontalAlignment="Center" Header="(接受数据)导引头->控制台" IsExpanded="False">
+                            <StackPanel Orientation="Vertical" >
+                                <ToolBarTray Margin="4" >
+                                    <ToolBar>
+                                        <Button Foreground="{DynamicResource Primary}" ToolTip="向后导航(Ctrl+-)">
+                                            <rubyer:Icon Type="ArrowLeftCircleFill" />
+                                        </Button>
+                                        <Button x:Name="yuanshishuju" Click="yuanshishuju_Click" Content="原始数据" Foreground="{DynamicResource Primary}" ToolTip="原始数据(Ctrl+-)">
+
+                                        </Button>
+                                        <Button Foreground="{DynamicResource Primary}" ToolTip="向前导航(Ctrl+Shift+-)">
+                                            <rubyer:Icon Type="ArrowRightCircleFill" />
+                                        </Button>
+                                        <Separator />
+                                        <Button ToolTip="新建项目(Ctrl+Shift+N)">
+                                            <rubyer:Icon Type="FileAddFill" />
+                                        </Button>
+                                        <Button Foreground="#FB8C00" ToolTip="打开文件(Ctrl+O)">
+                                            <rubyer:Icon Type="FolderOpenFill" />
+                                        </Button>
+                                        <Button Foreground="{DynamicResource Primary}" ToolTip="保存(Ctrl+S)">
+                                            <rubyer:Icon Type="Save2Fill" />
+                                        </Button>
+                                    </ToolBar>
 
 
-                                <ToolBar>
-                                    <ComboBox 
+                                    <ToolBar>
+                                        <ComboBox 
                                   Width="80"
                                   rubyer:InputBoxHelper.PreContent="字体"
                                   SelectedIndex="0">
 
-                                    </ComboBox>
-                                    <TextBox Width="150"
+                                        </ComboBox>
+                                        <TextBox Width="150"
                                  rubyer:InputBoxHelper.IsClearable="True"
                                  rubyer:InputBoxHelper.Watermark="搜索">
-                                        <rubyer:InputBoxHelper.PreContent>
-                                            <rubyer:Icon Type="SearchLine" />
-                                        </rubyer:InputBoxHelper.PreContent>
-                                    </TextBox>
-                                </ToolBar>
-                            </ToolBarTray>
+                                            <rubyer:InputBoxHelper.PreContent>
+                                                <rubyer:Icon Type="SearchLine" />
+                                            </rubyer:InputBoxHelper.PreContent>
+                                        </TextBox>
+                                    </ToolBar>
+                                </ToolBarTray>
 
-                            <rubyer:Description Style="{StaticResource BorderDescription}"
-                               Grid.Row="0"
+                                <rubyer:Description Style="{StaticResource BorderDescription}"
+                               Grid.Row="0"  FontSize="12"
                                Margin="1"
                                Columns="4">
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_0"       Description="【0】同步字1" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_1"       Description="【1】同步字2" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_2"       Description="【2】图像类型码" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3"       Description="【3】自检结果" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4"       Description="【4】主控工作状态" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5"       Description="【5】输出图像类型" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6"       Description="【6】视场" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7"       Description="【7】字符叠加" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_0"       Description="【0】同步字1" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_1"       Description="【1】同步字2" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_2"       Description="【2】图像类型码" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3"       Description="【3】自检结果" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4"       Description="【4】主控工作状态" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5"       Description="【5】输出图像类型" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6"       Description="【6】视场" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7"       Description="【7】字符叠加" />
 
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10"       Description="【10】目标跟踪状态" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10"       Description="【10】目标跟踪状态" />
 
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_11_12"       Description="【11-12】数字图像帧编号" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_13"       Description="【13】伺服工作状态" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_14_15"       Description="【14-15】伺服方位指令角" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_16_17"       Description="【16-17】伺服俯仰指令角" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_18_19"       Description="【18-19】伺服方位框架角" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_20_21"       Description="【20-21】伺服俯仰框架角" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_22_23"       Description="【22-23】伺服方位指令角速度" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_24_25"       Description="【24-25】伺服俯仰指令角速度" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_26_27"       Description="【26-27】方位视线角速度" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_28_29"       Description="【28-29】俯仰视线角速度" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_30_31"       Description="【30-31】航向陀螺角速度" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_32_33"       Description="【32-33】俯仰陀螺角速度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_11_12"       Description="【11-12】数字图像帧编号" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_13"       Description="【13】伺服工作状态" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_14_15"       Description="【14-15】伺服方位指令角" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_16_17"       Description="【16-17】伺服俯仰指令角" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_18_19"       Description="【18-19】伺服方位框架角" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_20_21"       Description="【20-21】伺服俯仰框架角" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_22_23"       Description="【22-23】伺服方位指令角速度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_24_25"       Description="【24-25】伺服俯仰指令角速度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_26_27"       Description="【26-27】方位视线角速度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_28_29"       Description="【28-29】俯仰视线角速度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_30_31"       Description="【30-31】航向陀螺角速度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_32_33"       Description="【32-33】俯仰陀螺角速度" />
 
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_34"      Description="【34】图像处理工作状态" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_35"       Description="【35】主控->图像处理指令" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_36"       Description="【36】图像处理->主控回令" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_37_38"       Description="【37-38】截获图像编号" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_39_40"       Description="【39-40】方位截获位置" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_41_42"       Description="【41-42】俯仰截获位置" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_43_44"       Description="【43-44】方位跟踪位置" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_45_46"       Description="【45-46】俯仰跟踪位置" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_47_48"       Description="【47-48】跟踪目标宽度" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_49_50"       Description="【49-50】起飞状态返回" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_34"      Description="【34】图像处理工作状态" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_35"       Description="【35】主控->图像处理指令" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_36"       Description="【36】图像处理->主控回令" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_37_38"       Description="【37-38】截获图像编号" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_39_40"       Description="【39-40】方位截获位置" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_41_42"       Description="【41-42】俯仰截获位置" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_43_44"       Description="【43-44】方位跟踪位置" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_45_46"       Description="【45-46】俯仰跟踪位置" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_47_48"       Description="【47-48】跟踪目标宽度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_49_50"       Description="【49-50】起飞状态返回" />
 
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_51"       Description="【51】目标类型" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_52"       Description="【52】视频输出状态" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_53"       Description="【53】充满视场及盲区标志" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_54"       Description="【54】发射允许" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_56"       Description="【56】起飞状态返回" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_57_58"   Description="【57-58】俯仰跟踪偏差" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_59_60"    Description="【59-60】方位跟踪偏差" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_61_64"    Description="【61-64】偏航调整角度" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_65"       Description="【65】波门标志" />
-                                <rubyer:DescriptionItem  Description="【66-69】俯仰调整角度" x:Name="IDC_EDIT_CHECKA_66_69" >
-                                    <!--<rubyer:NumericBox x:Name="IDC_EDIT_CHECKA_66_69" NumericType="Double" Width="150" MaxValue="360" MinValue="-360" Value="14" />-->
-                                </rubyer:DescriptionItem>
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_71"     MinWidth="220"   Description="【71】帧计数" />
-                                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_72"     MinWidth="120"    Description="【72】校验和" />
-                            </rubyer:Description>
-                        </StackPanel>
-                    </Expander>
-                </StackPanel>
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_51"       Description="【51】目标类型" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_52"       Description="【52】视频输出状态" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_53"       Description="【53】充满视场及盲区标志" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_54"       Description="【54】发射允许" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_56"       Description="【56】起飞状态返回" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_57_58"   Description="【57-58】俯仰跟踪偏差" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_59_60"    Description="【59-60】方位跟踪偏差" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_61_64"    Description="【61-64】偏航调整角度" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_65"       Description="【65】波门标志" />
+                                    <rubyer:DescriptionItem  Description="【66-69】俯仰调整角度" x:Name="IDC_EDIT_CHECKA_66_69" >
+                                        <!--<rubyer:NumericBox x:Name="IDC_EDIT_CHECKA_66_69" NumericType="Double" Width="150" MaxValue="360" MinValue="-360" Value="14" />-->
+                                    </rubyer:DescriptionItem>
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_71"     MinWidth="220"   Description="【71】帧计数" />
+                                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_72"     MinWidth="120"    Description="【72】校验和" />
+                                </rubyer:Description>
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+     
             </GroupBox>
             <StatusBar  Grid.Row="2" Background="#0F000000" DockPanel.Dock="Bottom" VerticalAlignment="Bottom"  >
                     <StatusBarItem HorizontalAlignment="Left">

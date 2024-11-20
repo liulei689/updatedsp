@@ -1,5 +1,5 @@
 ﻿using AFWDPP.Common;
-using HandyControl.Controls;
+
 using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using static AFWDPP.Common.Common;
 
@@ -74,9 +75,12 @@ namespace AFWDPP.Views
         byte HEARTBEAT = 0;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
-            testdata1[0] = IDC_EDIT_FC_0.Text.ToByte();
-            testdata1[1] = (byte)IDC_EDIT_FC_1.Text.ToByte();
-            testdata1[2] = (byte)IDC_EDIT_FC_2.Text.ToByte(); //可见光
+            GetTextBoxes(allsenddata);
+            //testdata1.ToByte(IDC_EDIT_FC_0);
+            //testdata1.ToByte(IDC_EDIT_FC_1);
+            //testdata1.ToByte(IDC_EDIT_FC_2);
+            //testdata1.ToByte(IDC_EDIT_FC_17_18);
+
             if (HEARTBEAT > 255)
             {
                 HEARTBEAT = 0;
@@ -100,6 +104,34 @@ namespace AFWDPP.Views
         byte[] c4 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
         byte[] c5 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
         byte[] c6 = { 0x07, 0x03, 0x08, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0x37, 0x25 };
+
+        public IEnumerable<T> FindChildrenOfType<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T t)
+                    {
+                        yield return t;
+                    }
+
+                    foreach (T childOfType in FindChildrenOfType<T>(child))
+                    {
+                        yield return childOfType;
+                    }
+                }
+            }
+        }
+        public void GetTextBoxes(DependencyObject parent)
+        {
+            var textBoxes = FindChildrenOfType<TextBox>(parent);
+            foreach (TextBox textBox in textBoxes)
+            {
+                testdata1.ToByte(textBox);
+            }
+        }
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -358,7 +390,7 @@ namespace AFWDPP.Views
         private void openclosecom_Click(object sender, RoutedEventArgs e)
         {
             OpenCloseCom();
-            NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
+            HandyControl.Controls.NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
 
         }
 

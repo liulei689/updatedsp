@@ -1,11 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
+using System.Windows.Controls;
 
 namespace AFWDPP.Common
 {
     public static class Common
     {
+        public static void ToByte(this byte[] bytes, TextBox textbox)
+        {
+            var res = textbox.Tag;
+
+            var name = textbox.Name.ToString().ToUpper();
+            name = name.Replace("IDC_EDIT_FC_", "");
+            string[] index = name.Split('_');
+            int[] intArray = new int[index.Length];
+            int validIndex = 0; // 用于记录有效转换的索引
+
+            foreach (string str in index)
+            {
+                if (int.TryParse(str, out int result))
+                {
+                    intArray[validIndex++] = result;
+                }
+                else
+                    intArray[validIndex++] = -1;
+            }
+            if (intArray.Length == 1 && intArray[0] >= 0) //hex
+                bytes[intArray[0]] = textbox.Text.ToByte();
+            if (intArray.Length == 2 && intArray[0] >= 0 && intArray[1] >= 0)
+            {
+                if (intArray[1] - intArray[0] == 1) //双字节
+                {
+                    if (int.TryParse(textbox.Text, out int re2))
+                    {
+                        var data2 = IntToTwoByteArrayLittleEndian(re2);
+                        bytes[intArray[0]] = data2[0];
+                        bytes[intArray[1]] = data2[1];
+                    }
+                }
+                if (intArray[1] - intArray[0] == 3) //四字节
+                {
+                    if (int.TryParse(textbox.Text, out int re3))
+                    {
+                        var data3 = FloatToLittleEndianBytes(re3);
+                        bytes[intArray[0]] = data3[0];
+                        bytes[intArray[0] + 1] = data3[1];
+                        bytes[intArray[0] + 2] = data3[2];
+                        bytes[intArray[0] + 3] = data3[3];
+                    }
+                }
+            }
+
+
+        }
+        public static byte[] FloatToLittleEndianBytes(float value)
+        {
+            // 使用BitConverter将float转换为字节数组（默认是大端序）
+            byte[] bytes = BitConverter.GetBytes(value);
+
+            // 检查系统是否使用大端序（通常Windows是小端序，但最好检查一下）
+            if (BitConverter.IsLittleEndian)
+            {
+                // 如果系统已经是小端序，则不需要转换
+                return bytes;
+            }
+            else
+            {
+                // 如果系统是大端序，则需要反转字节数组
+                Array.Reverse(bytes);
+                return bytes;
+            }
+        }
+        public static byte[] IntToTwoByteArrayLittleEndian(int value)
+        {
+            // 由于int通常是4个字节，我们需要确保只取最低的2个字节
+            // 我们可以通过与0x00FF进行位与操作来获取最低字节，然后通过右移8位来获取次低字节
+
+            byte lowByte = (byte)(value & 0x00FF);
+            byte highByte = (byte)((value >> 8) & 0x00FF);
+
+            // 返回一个包含这两个字节的数组，顺序为小端字节序
+            return new byte[] { lowByte, highByte };
+        }
         public static byte ToByte(this string hexString)
         {
             // 如果字符串以"0x"开头，则去掉它
@@ -17,12 +94,20 @@ namespace AFWDPP.Common
             {
                 hexString = hexString.Substring(2);
             }
-            hexString = hexString.Replace("h", ""); // 去掉h后缀
+            hexString = hexString.Replace("h", "").Replace("H", ""); // 去掉h后缀
             hexString = hexString.Trim();
             // 如果字符串长度不是2，则抛出异常（这里假设输入总是有效的两位十六进制数）
             if (hexString.Length != 2)
             {
                 return 0;
+            }
+            // 检查字符串是否只包含有效的十六进制字符
+            foreach (char c in hexString)
+            {
+                if (!char.IsDigit(c) && !(char.IsLower(c) && (c >= 'a' && c <= 'f')) && !(char.IsUpper(c) && (c >= 'A' && c <= 'F')))
+                {
+                    return 0; // 发现非法字符
+                }
             }
             // 将十六进制字符串转换为字节
             return Convert.ToByte(hexString, 16);
