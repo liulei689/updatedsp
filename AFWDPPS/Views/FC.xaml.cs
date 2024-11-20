@@ -692,6 +692,25 @@ namespace AFWDPP.Views
             {
                 var SelectedFrameType = (FrameType)Enum.GetValues(typeof(FrameType)).GetValue(comboBoxFrameType.SelectedIndex);
                 testdata1[3] = (byte)SelectedFrameType;
+                Array.Clear(testdata1, 4, testdata1.Length-1);
+                if (SelectedFrameType == FrameType.控制数据帧) 
+                {
+                    allsenddata.Visibility = Visibility.Visible;
+                    allsenddata2.Visibility = Visibility.Collapsed;
+                    allsenddata3.Visibility = Visibility.Collapsed;
+                }
+                if (SelectedFrameType == FrameType.目标参数装订帧)
+                {
+                    allsenddata.Visibility = Visibility.Collapsed;
+                    allsenddata2.Visibility = Visibility.Visible;
+                    allsenddata3.Visibility = Visibility.Collapsed;
+                }
+                if (SelectedFrameType == FrameType.图像模板装订帧)
+                {
+                    allsenddata.Visibility = Visibility.Collapsed;
+                    allsenddata2.Visibility = Visibility.Collapsed;
+                    allsenddata3.Visibility = Visibility.Visible;
+                }
             }
         }
         // 定义控制指令的类

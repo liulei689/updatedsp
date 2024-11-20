@@ -253,7 +253,23 @@
                                     </rubyer:DescriptionItem>
 
                                 </rubyer:Description>
-                            </StackPanel>
+                            <rubyer:Description Style="{StaticResource BorderDescription}" Name="allsenddata2"
+                                 Grid.Row="0"                            
+                                 Margin="1"
+                                 Columns="4">
+                                <rubyer:DescriptionItem  Description="【0】帧头"  >
+                                    <TextBox x:Name="IDC_EDIT_FC2_0"  Text="EB" Tag="Hex" />
+                                </rubyer:DescriptionItem>
+                            </rubyer:Description>
+                            <rubyer:Description Style="{StaticResource BorderDescription}" Name="allsenddata3"
+                               Grid.Row="0"                            
+                               Margin="1"
+                               Columns="4">
+                                <rubyer:DescriptionItem  Description="【0】帧头"  >
+                                    <TextBox x:Name="IDC_EDIT_FC3_0"  Text="EB" Tag="Hex" />
+                                </rubyer:DescriptionItem>
+                            </rubyer:Description>
+                        </StackPanel>
                         </Expander>
 
                         <Expander Margin="5"  rubyer:HeaderHelper.Background="{DynamicResource Primary}"  rubyer:HeaderHelper.Foreground="{DynamicResource WhiteForeground}" rubyer:HeaderHelper.HorizontalAlignment="Center" Header="(接受数据)导引头->控制台" IsExpanded="False">
