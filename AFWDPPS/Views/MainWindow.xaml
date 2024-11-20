@@ -13,7 +13,7 @@
                      MinWidth="1100"
                      MinHeight="650"
                      d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
-                     FontSize="13"
+                     FontSize="12"
                      Foreground="{DynamicResource DefaultForeground}"
                      Icon="pack://application:,,,/AFWDPP;component/logo.ico"
                      TitleHeight="34"
@@ -94,7 +94,7 @@
                                 Interval="1"
                                 IsSnapToTickEnabled="True"
                                 Maximum="24"
-                                Minimum="10"
+                                Minimum="5"
                                 Orientation="Vertical"
                                 Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=rubyer:RubyerWindow}}" />
                     </MenuItem>

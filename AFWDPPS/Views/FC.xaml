@@ -140,7 +140,7 @@
 
                                 <rubyer:Description Style="{StaticResource BorderDescription}" Name="allsenddata"
                                Grid.Row="0"
-                                                    FontSize="12"
+                                                  
                                Margin="1"
                                Columns="4">
 
@@ -292,7 +292,7 @@
                                 </ToolBarTray>
 
                                 <rubyer:Description Style="{StaticResource BorderDescription}"
-                               Grid.Row="0"  FontSize="12"
+                               Grid.Row="0"  
                                Margin="1"
                                Columns="4">
                                     <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_0"       Description="【0】同步字1" />
