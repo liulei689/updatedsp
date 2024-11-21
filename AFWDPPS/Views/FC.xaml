@@ -44,7 +44,7 @@
                             <!-- 第二个TextBox的列宽，自适应剩余空间 -->
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="        状态:   "/>
-                        <TextBox Grid.Column="1" MaxHeight="400"  Margin="10,0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
+                        <TextBox Grid.Column="1" MaxHeight="400"   Margin="10,0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
                          HorizontalAlignment="Stretch"   
                          rubyer:InputBoxHelper.IsClearable="True"   
                          rubyer:InputBoxHelper.Watermark="消息通知" Cursor="IBeam" >

@@ -162,7 +162,7 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_0.Content = buffer[0].ToString("X2");
                     IDC_EDIT_CHECKA_1.Content = buffer[1].ToString("X2");
                     IDC_EDIT_CHECKA_2.Content = buffer[2].ToString("X2");
-                    IDC_EDIT_CHECKA_3.Content = buffer[3].ToString("X2");
+                    IDC_EDIT_CHECKA_3.Content = buffer[3].GetGateStatus3();
                     IDC_EDIT_CHECKA_4.Content = buffer[4].ToString("X2");
                     IDC_EDIT_CHECKA_5.Content = buffer[5].ToString("X2");
                     IDC_EDIT_CHECKA_6.Content = buffer[6].ToString("X2");
@@ -203,7 +203,7 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_66_69.Content = BitConverter.ToSingle(buffer, 66);
                     IDC_EDIT_CHECKA_71.Content = buffer[71].ToString("X2");
                     IDC_EDIT_CHECKA_72.Content = buffer[72].ToString("X2");
-                    if (txlog.LineCount > 500)
+                    if (txlog.LineCount > 10000)
                         txlog.Clear();
                     txlog.AppendText(strs);
 
@@ -428,6 +428,11 @@ namespace AFWDPP.Views
 
             Application.Current.Dispatcher.Invoke(() =>
             {
+                if (rtbLog.LineCount > 10000)
+                {
+                    rtbLog.Clear();
+                }
+
                 rtbLog.AppendText(strs);
 
                 rtbLog.AppendText(" " + hexString);
@@ -692,8 +697,8 @@ namespace AFWDPP.Views
             {
                 var SelectedFrameType = (FrameType)Enum.GetValues(typeof(FrameType)).GetValue(comboBoxFrameType.SelectedIndex);
                 testdata1[3] = (byte)SelectedFrameType;
-                Array.Clear(testdata1, 4, testdata1.Length-1);
-                if (SelectedFrameType == FrameType.控制数据帧) 
+                Array.Clear(testdata1, 4, testdata1.Length - 4 - 1);
+                if (SelectedFrameType == FrameType.控制数据帧)
                 {
                     allsenddata.Visibility = Visibility.Visible;
                     allsenddata2.Visibility = Visibility.Collapsed;
@@ -751,7 +756,23 @@ namespace AFWDPP.Views
                 // 获取选中的ControlInstruction对象
                 ControlInstruction selectedInstruction = comboBox.SelectedItem as ControlInstruction;
                 IDC_EDIT_FC_5.Content = selectedInstruction.Code.ToString("X2");
-                InputBoxHelper.SetPreContent(IDC_EDIT_FC_6_16, "数据长度(HEX)" + selectedInstruction.DataLength);
+                if (selectedInstruction.DataLength == 0)
+                {
+                    IDC_EDIT_FC_6_16.IsReadOnly = true;
+                    InputBoxHelper.SetPreContent(IDC_EDIT_FC_6_16, "无参数" + selectedInstruction.DataLength);
+                    IDC_EDIT_FC_6_16.Text = "00";
+                }
+                else
+                {
+                    IDC_EDIT_FC_6_16.IsReadOnly = false;
+
+                    InputBoxHelper.SetPreContent(IDC_EDIT_FC_6_16, "数据长度(HEX)" + selectedInstruction.DataLength);
+                    //IDC_EDIT_FC_6_16.Text = "";
+                    //for (int i = 0; i < selectedInstruction.DataLength; i++)
+                    //{
+                    //    IDC_EDIT_FC_6_16.Text += "00";
+                    //}
+                }
                 IDC_EDIT_FC_6_16.Tag = selectedInstruction;
                 testdata1[4] = selectedInstruction.Code;
                 testdata1[5] = selectedInstruction.Code;

@@ -139,6 +139,20 @@ namespace AFWDPP.Common
             }
         }
 
+        public static string GetGateStatus3(this byte input)
+        {
+            if (IsShowSource) return input.ToString("X2");
+
+            switch (input)
+            {
+                case 0x13:
+                    return "自检正常";
+                case 0x15:
+                    return "自检异常";
+                default:
+                    return "无效";
+            }
+        }
         public static string GetGateStatus7(this byte input)
         {
             if (IsShowSource) return input.ToString("X2");
