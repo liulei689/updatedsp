@@ -123,7 +123,7 @@ namespace AFWDPP.Common
         public static bool IsShowSource = false; //是否显示原始值
         public static string GetGateStatus65(this byte input)
         {
-            if (IsShowSource) return input.ToString("X2");
+            if (IsShowSource) return "0x" + input.ToString("X2");
             switch (input)
             {
                 case 0:
@@ -138,10 +138,23 @@ namespace AFWDPP.Common
                     return "未知";
             }
         }
+        public static string GetGateStatus6(this byte input)
+        {
+            if (IsShowSource) return "0x" + input.ToString("X2");
 
+            switch (input)
+            {
+                case 0x13:
+                    return "宽视场";
+                case 0x15:
+                    return "窄视场";
+                default:
+                    return "无效";
+            }
+        }
         public static string GetGateStatus3(this byte input)
         {
-            if (IsShowSource) return input.ToString("X2");
+            if (IsShowSource) return "0x" + input.ToString("X2");
 
             switch (input)
             {
@@ -155,7 +168,7 @@ namespace AFWDPP.Common
         }
         public static string GetGateStatus7(this byte input)
         {
-            if (IsShowSource) return input.ToString("X2");
+            if (IsShowSource) return "0x" + input.ToString("X2");
 
             switch (input)
             {
@@ -171,7 +184,7 @@ namespace AFWDPP.Common
         // 扩展方法，用于获取目标跟踪状态的描述
         public static string GetGateStatus10(this byte input)
         {
-            if (IsShowSource) return input.ToString("X2");
+            if (IsShowSource) return "0x" + input.ToString("X2");
             switch (input)
             {
                 case 0x13:
@@ -191,7 +204,7 @@ namespace AFWDPP.Common
 
         public static string GetGateStatus51(this byte input)
         {
-            if (IsShowSource) return input.ToString("X2");
+            if (IsShowSource) return "0x" + input.ToString("X2");
 
             switch (input)
             {
@@ -207,7 +220,7 @@ namespace AFWDPP.Common
         }
         public static string GetGateStatus52(this byte input)
         {
-            if (IsShowSource) return input.ToString("X2");
+            if (IsShowSource) return "0x" + input.ToString("X2");
 
             switch (input)
             {

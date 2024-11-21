@@ -641,6 +641,8 @@ namespace AFWDPP.Views
 
             Application.Current.Dispatcher.Invoke(() =>
             {
+                if (rtbLog.LineCount > 500)
+                    rtbLog.Clear();
                 rtbLog.AppendText(strs);
 
                 rtbLog.AppendText(" " + hexString);

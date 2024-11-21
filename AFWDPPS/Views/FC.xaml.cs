@@ -159,17 +159,17 @@ namespace AFWDPP.Views
                     if (!rx.IsEnabled)
                         rx.IsEnabled = true;
 
-                    IDC_EDIT_CHECKA_0.Content = buffer[0].ToString("X2");
-                    IDC_EDIT_CHECKA_1.Content = buffer[1].ToString("X2");
-                    IDC_EDIT_CHECKA_2.Content = buffer[2].ToString("X2");
+                    IDC_EDIT_CHECKA_0.Content = "0x" + buffer[0].ToString("X2");
+                    IDC_EDIT_CHECKA_1.Content = "0x" + buffer[1].ToString("X2");
+                    IDC_EDIT_CHECKA_2.Content = "0x" + buffer[2].ToString("X2");
                     IDC_EDIT_CHECKA_3.Content = buffer[3].GetGateStatus3();
-                    IDC_EDIT_CHECKA_4.Content = buffer[4].ToString("X2");
-                    IDC_EDIT_CHECKA_5.Content = buffer[5].ToString("X2");
-                    IDC_EDIT_CHECKA_6.Content = buffer[6].ToString("X2");
+                    IDC_EDIT_CHECKA_4.Content = "0x" + buffer[4].ToString("X2");
+                    IDC_EDIT_CHECKA_5.Content = "0x" + buffer[5].ToString("X2");
+                    IDC_EDIT_CHECKA_6.Content = buffer[6].GetGateStatus6();
                     IDC_EDIT_CHECKA_7.Content = buffer[7].GetGateStatus7();
                     IDC_EDIT_CHECKA_10.Content = buffer[10].GetGateStatus10();
                     IDC_EDIT_CHECKA_11_12.Content = BitConverter.ToInt16(buffer, 11);
-                    IDC_EDIT_CHECKA_13.Content = buffer[13].ToString("X2");
+                    IDC_EDIT_CHECKA_13.Content = "0x" + buffer[13].ToString("X2");
                     IDC_EDIT_CHECKA_14_15.Content = BitConverter.ToInt16(buffer, 14);
                     IDC_EDIT_CHECKA_16_17.Content = BitConverter.ToInt16(buffer, 16);
                     IDC_EDIT_CHECKA_18_19.Content = BitConverter.ToInt16(buffer, 18);
@@ -181,9 +181,9 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_30_31.Content = BitConverter.ToInt16(buffer, 30);
                     IDC_EDIT_CHECKA_32_33.Content = BitConverter.ToInt16(buffer, 32);
 
-                    IDC_EDIT_CHECKA_34.Content = buffer[34].ToString("X2");
-                    IDC_EDIT_CHECKA_35.Content = buffer[35].ToString("X2");
-                    IDC_EDIT_CHECKA_36.Content = buffer[36].ToString("X2");
+                    IDC_EDIT_CHECKA_34.Content = "0x" + buffer[34].ToString("X2");
+                    IDC_EDIT_CHECKA_35.Content = "0x" + buffer[35].ToString("X2");
+                    IDC_EDIT_CHECKA_36.Content = "0x" + buffer[36].ToString("X2");
                     IDC_EDIT_CHECKA_37_38.Content = BitConverter.ToInt16(buffer, 37);
                     IDC_EDIT_CHECKA_39_40.Content = BitConverter.ToInt16(buffer, 39);
                     IDC_EDIT_CHECKA_41_42.Content = BitConverter.ToInt16(buffer, 41);
@@ -193,17 +193,17 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_49_50.Content = BitConverter.ToInt16(buffer, 49);
                     IDC_EDIT_CHECKA_51.Content = buffer[51].GetGateStatus51();
                     IDC_EDIT_CHECKA_52.Content = buffer[52].GetGateStatus52();
-                    IDC_EDIT_CHECKA_53.Content = buffer[53].ToString("X2");
-                    IDC_EDIT_CHECKA_54.Content = buffer[54].ToString("X2");
-                    IDC_EDIT_CHECKA_56.Content = buffer[56].ToString("X2");
+                    IDC_EDIT_CHECKA_53.Content = "0x" + buffer[53].ToString("X2");
+                    IDC_EDIT_CHECKA_54.Content = "0x" + buffer[54].ToString("X2");
+                    IDC_EDIT_CHECKA_56.Content = "0x" + buffer[56].ToString("X2");
                     IDC_EDIT_CHECKA_57_58.Content = BitConverter.ToInt16(buffer, 57);
                     IDC_EDIT_CHECKA_59_60.Content = BitConverter.ToInt16(buffer, 59);
                     IDC_EDIT_CHECKA_61_64.Content = BitConverter.ToSingle(buffer, 61);
                     IDC_EDIT_CHECKA_65.Content = buffer[65].GetGateStatus65();
                     IDC_EDIT_CHECKA_66_69.Content = BitConverter.ToSingle(buffer, 66);
-                    IDC_EDIT_CHECKA_71.Content = buffer[71].ToString("X2");
-                    IDC_EDIT_CHECKA_72.Content = buffer[72].ToString("X2");
-                    if (txlog.LineCount > 10000)
+                    IDC_EDIT_CHECKA_71.Content = "0x" + buffer[71].ToString("X2");
+                    IDC_EDIT_CHECKA_72.Content = "0x" + buffer[72].ToString("X2");
+                    if (txlog.LineCount > 500)
                         txlog.Clear();
                     txlog.AppendText(strs);
 
@@ -428,7 +428,7 @@ namespace AFWDPP.Views
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (rtbLog.LineCount > 10000)
+                if (rtbLog.LineCount > 500)
                 {
                     rtbLog.Clear();
                 }
@@ -472,36 +472,6 @@ namespace AFWDPP.Views
             });
         }
         int number = 0;
-        public void DisDataToDlg(byte raw)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                string str;
-
-
-
-                str = string.Format("{0:X2} ", raw);
-
-
-                if (txlog.Text.Length > 10000)
-                {
-                    txlog.Text = "";
-                }
-                string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
-
-                if (number == 0)
-                    txlog.AppendText(strs);
-                number++;
-                txlog.AppendText(" " + str);
-                if (number > 6)
-                {
-                    number = 0;
-                    txlog.AppendText("\r\n");
-                }
-                // 确保滚动到底部  
-                txlog.ScrollToEnd();
-            });
-        }
         double pres = 0;
 
         int timeout = 0;
