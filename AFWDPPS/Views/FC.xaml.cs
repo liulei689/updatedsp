@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using static AFWDPP.Common.Common;
+using Application = System.Windows.Application;
 
 namespace AFWDPP.Views
 {
@@ -46,7 +47,7 @@ namespace AFWDPP.Views
             timer.Start();
             //握手定时器
             timerhandshake = new DispatcherTimer();
-            timerhandshake.Interval = TimeSpan.FromMilliseconds(200);
+            timerhandshake.Interval = TimeSpan.FromMilliseconds(20);
             timerhandshake.IsEnabled = true;
             timerhandshake.Tick += timerhandshake_Tick;
             var ports = Common.Common.SearchPort();
@@ -151,7 +152,6 @@ namespace AFWDPP.Views
             if (Common.Common.CheckSPsum(buffer))
             {
                 string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
-                string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
 
                 // 使用BitConverter将字节数组转换为float
                 Application.Current.Dispatcher.Invoke(() =>
@@ -203,17 +203,13 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_66_69.Content = BitConverter.ToSingle(buffer, 66);
                     IDC_EDIT_CHECKA_71.Content = "0x" + buffer[71].ToString("X2");
                     IDC_EDIT_CHECKA_72.Content = "0x" + buffer[72].ToString("X2");
-                    if (txlog.LineCount > 500)
-                        txlog.Clear();
-                    txlog.AppendText(strs);
 
-                    txlog.AppendText(" " + hexString);
-                    txlog.AppendText("\r\n");
-                    // 确保滚动到底部  
-                    txlog.ScrollToEnd();
+                    rxlog.AddOne(hexString, "收←◆");
+
                 });
             }
         }
+        bool istoendd = false;
         public static (byte Hx, byte Lx) ConvertAngleToBytes(short angle)
         {
             // 假设 X 轴和 Y 轴的最大正值分别为 20.5° 和 30.5°，对应的指令值为 20500 和 30500
@@ -272,7 +268,7 @@ namespace AFWDPP.Views
                             //// 停止固件升级
                             UpdateFlag = false;
 
-                            AddTextToLog("固件升级功能强制退出！\r\n");
+
                             ////串口已经处于打开状态
                             serialPort2.Close();    //关闭串口
                             comlist.IsEnabled = true;
@@ -409,7 +405,7 @@ namespace AFWDPP.Views
         /// <returns></returns>
 
 
-
+        bool istoend = false;
         /// <summary>
         /// 打包并发送数据
         /// </summary>
@@ -421,25 +417,15 @@ namespace AFWDPP.Views
             Application.Current.Dispatcher.Invoke(() =>
             {
                 tx.IsEnabled = true;
+
+                // 将字节数组转换为十六进制字符串  
+                string hexString = BitConverter.ToString(databuf).Replace("-", " ").ToUpper();
+
+                txlog.AddOne(hexString, "发→◇");
+
             });
-            // 将字节数组转换为十六进制字符串  
-            string hexString = BitConverter.ToString(databuf).Replace("-", " ").ToUpper();
-            string strs = issxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]发→◇" : "";
 
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (rtbLog.LineCount > 500)
-                {
-                    rtbLog.Clear();
-                }
-
-                rtbLog.AppendText(strs);
-
-                rtbLog.AppendText(" " + hexString);
-                rtbLog.AppendText("\r\n");
-                // 确保滚动到底部  
-                rtbLog.ScrollToEnd();
-            });
+            //});
             try
             {
                 serialPort2.Write(databuf, 0, databuf.Length);
@@ -456,21 +442,7 @@ namespace AFWDPP.Views
             Thread.Sleep(1);
         }
 
-        private void AddTextToLog(string text)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                // 创建一个新的Paragraph来包含文本             
-                if (rtbLog.Text.Length > 5000)
-                {
-                    rtbLog.Text = "";
-                }
-                string str = issxcheck ? DateTime.Now.ToString("HH:mm:ss.fff") : "";
-                rtbLog.AppendText(str + ">>" + text + "\r\n");
-                // 确保滚动到底部  
-                rtbLog.ScrollToEnd();
-            });
-        }
+
         int number = 0;
         double pres = 0;
 
@@ -602,38 +574,6 @@ namespace AFWDPP.Views
 
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            string tempFilePath = System.IO.Path.GetTempFileName();
-            System.IO.File.WriteAllText(tempFilePath, rtbLog.Text);
-            Process.Start("notepad.exe", tempFilePath);
-        }
-        private void MenuItem_Click2(object sender, RoutedEventArgs e)
-        {
-            string tempFilePath = System.IO.Path.GetTempFileName();
-            System.IO.File.WriteAllText(tempFilePath, txlog.Text);
-            Process.Start("notepad.exe", tempFilePath);
-        }
-        bool isrxcheck = true;
-        private void MenuItem_Checked(object sender, RoutedEventArgs e)
-        {
-            isrxcheck = true;
-        }
-
-        private void MenuItem_Unchecked(object sender, RoutedEventArgs e)
-        {
-            isrxcheck = false;
-        }
-        bool issxcheck = true;
-        private void MenuItem_Checked2(object sender, RoutedEventArgs e)
-        {
-            issxcheck = true;
-        }
-
-        private void MenuItem_Unchecked2(object sender, RoutedEventArgs e)
-        {
-            issxcheck = false;
-        }
 
         private void yuanshishuju_Click(object sender, RoutedEventArgs e)
         {
