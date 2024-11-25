@@ -2,6 +2,7 @@
 
 using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
+using MiniExcelLibs;
 using Rubyer;
 using System;
 using System.Collections.Generic;
@@ -68,20 +69,13 @@ namespace AFWDPP.Views
 
         private void FC_Loaded(object sender, RoutedEventArgs e)
         {
-            var FrameTypeHexList = Enum.GetValues(typeof(FrameType));
-            comboBoxFrameType.ItemsSource = FrameTypeHexList;
-            comboBoxFrameType.SelectedIndex = 0;
-            // 将控制指令列表设置为ComboBox的ItemsSource
-            IDC_EDIT_FC_4.ItemsSource = controlInstructions;
-
-            // 设置DisplayMemberPath来指定要显示的属性
-            IDC_EDIT_FC_4.DisplayMemberPath = "Name";
+            List<Module> infoList = MiniExcel.Query<Module>("C:\\Users\\liu\\Desktop\\222222222222222.xlsx").ToList();
         }
 
         byte HEARTBEAT = 0;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
-            GetTextBoxes(allsenddata);
+
             //testdata1.ToByte(IDC_EDIT_FC_0);
             //testdata1.ToByte(IDC_EDIT_FC_1);
             //testdata1.ToByte(IDC_EDIT_FC_2);
@@ -97,19 +91,6 @@ namespace AFWDPP.Views
         }
 
         byte[] testdata1 = new byte[83];
-        byte[] d1 = { 0x05, 0x06, 0x00, 0x0d, 0x00, 0x01, 0xD8, 0x4D };
-        byte[] d2 = { 0x05, 0x06, 0x00, 0x0E, 0x00, 0x05, 0x29, 0x8E };
-        byte[] d3 = { 0x05, 0x03, 0xA0, 0x00, 0x00, 0x00, 0x66, 0x4E };
-        byte[] d4 = { 0x07, 0x03, 0x41, 0x3C, 0x0B, 0x00, 0x21 };
-        byte[] d5 = { 0x07, 0x03, 0x41, 0x4F, 0x0B, 0x00, 0x21 };
-        byte[] d6 = { 0x07, 0x03, 0x34, 0x00, 0x04, 0x00, 0x21 };
-        byte[] c1 = { 0x05, 0x06, 0x00, 0x0d, 0x00, 0x01, 0xD8, 0x4D };
-
-        byte[] c2 = { 0x05, 0x06, 0x00, 0x0E, 0x00, 0x05, 0x29, 0x8E };
-        byte[] c3 = { 0x05, 0x03, 0x2B, 0x35, 0x35, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x4F, 0x4B, 0x2C, 0x35, 0x39, 0x39, 0x35, 0x34, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x32, 0x34, 0x36, 0x30, 0x39, 0x37, 0x25 };
-        byte[] c4 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
-        byte[] c5 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
-        byte[] c6 = { 0x07, 0x03, 0x08, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0x37, 0x25 };
 
         public IEnumerable<T> FindChildrenOfType<T>(DependencyObject depObj) where T : DependencyObject
         {
@@ -158,51 +139,6 @@ namespace AFWDPP.Views
                 {
                     if (!rx.IsEnabled)
                         rx.IsEnabled = true;
-
-                    IDC_EDIT_CHECKA_0.Content = "0x" + buffer[0].ToString("X2");
-                    IDC_EDIT_CHECKA_1.Content = "0x" + buffer[1].ToString("X2");
-                    IDC_EDIT_CHECKA_2.Content = "0x" + buffer[2].ToString("X2");
-                    IDC_EDIT_CHECKA_3.Content = buffer[3].GetGateStatus3();
-                    IDC_EDIT_CHECKA_4.Content = "0x" + buffer[4].ToString("X2");
-                    IDC_EDIT_CHECKA_5.Content = "0x" + buffer[5].ToString("X2");
-                    IDC_EDIT_CHECKA_6.Content = buffer[6].GetGateStatus6();
-                    IDC_EDIT_CHECKA_7.Content = buffer[7].GetGateStatus7();
-                    IDC_EDIT_CHECKA_10.Content = buffer[10].GetGateStatus10();
-                    IDC_EDIT_CHECKA_11_12.Content = BitConverter.ToInt16(buffer, 11);
-                    IDC_EDIT_CHECKA_13.Content = "0x" + buffer[13].ToString("X2");
-                    IDC_EDIT_CHECKA_14_15.Content = BitConverter.ToInt16(buffer, 14);
-                    IDC_EDIT_CHECKA_16_17.Content = BitConverter.ToInt16(buffer, 16);
-                    IDC_EDIT_CHECKA_18_19.Content = BitConverter.ToInt16(buffer, 18);
-                    IDC_EDIT_CHECKA_20_21.Content = BitConverter.ToInt16(buffer, 20);
-                    IDC_EDIT_CHECKA_22_23.Content = BitConverter.ToInt16(buffer, 22);
-                    IDC_EDIT_CHECKA_24_25.Content = BitConverter.ToInt16(buffer, 24);
-                    IDC_EDIT_CHECKA_26_27.Content = BitConverter.ToInt16(buffer, 26);
-                    IDC_EDIT_CHECKA_28_29.Content = BitConverter.ToInt16(buffer, 28);
-                    IDC_EDIT_CHECKA_30_31.Content = BitConverter.ToInt16(buffer, 30);
-                    IDC_EDIT_CHECKA_32_33.Content = BitConverter.ToInt16(buffer, 32);
-
-                    IDC_EDIT_CHECKA_34.Content = "0x" + buffer[34].ToString("X2");
-                    IDC_EDIT_CHECKA_35.Content = "0x" + buffer[35].ToString("X2");
-                    IDC_EDIT_CHECKA_36.Content = "0x" + buffer[36].ToString("X2");
-                    IDC_EDIT_CHECKA_37_38.Content = BitConverter.ToInt16(buffer, 37);
-                    IDC_EDIT_CHECKA_39_40.Content = BitConverter.ToInt16(buffer, 39);
-                    IDC_EDIT_CHECKA_41_42.Content = BitConverter.ToInt16(buffer, 41);
-                    IDC_EDIT_CHECKA_43_44.Content = BitConverter.ToInt16(buffer, 43);
-                    IDC_EDIT_CHECKA_45_46.Content = BitConverter.ToInt16(buffer, 45);
-                    IDC_EDIT_CHECKA_47_48.Content = BitConverter.ToInt16(buffer, 47);
-                    IDC_EDIT_CHECKA_49_50.Content = BitConverter.ToInt16(buffer, 49);
-                    IDC_EDIT_CHECKA_51.Content = buffer[51].GetGateStatus51();
-                    IDC_EDIT_CHECKA_52.Content = buffer[52].GetGateStatus52();
-                    IDC_EDIT_CHECKA_53.Content = "0x" + buffer[53].ToString("X2");
-                    IDC_EDIT_CHECKA_54.Content = "0x" + buffer[54].ToString("X2");
-                    IDC_EDIT_CHECKA_56.Content = "0x" + buffer[56].ToString("X2");
-                    IDC_EDIT_CHECKA_57_58.Content = BitConverter.ToInt16(buffer, 57);
-                    IDC_EDIT_CHECKA_59_60.Content = BitConverter.ToInt16(buffer, 59);
-                    IDC_EDIT_CHECKA_61_64.Content = BitConverter.ToSingle(buffer, 61);
-                    IDC_EDIT_CHECKA_65.Content = buffer[65].GetGateStatus65();
-                    IDC_EDIT_CHECKA_66_69.Content = BitConverter.ToSingle(buffer, 66);
-                    IDC_EDIT_CHECKA_71.Content = "0x" + buffer[71].ToString("X2");
-                    IDC_EDIT_CHECKA_72.Content = "0x" + buffer[72].ToString("X2");
 
                     rxlog.AddOne(hexString, "收←◆");
 
@@ -603,121 +539,28 @@ namespace AFWDPP.Views
 
         private void comboBoxFrameType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (comboBoxFrameType.SelectedIndex >= 0)
-            {
-                var SelectedFrameType = (FrameType)Enum.GetValues(typeof(FrameType)).GetValue(comboBoxFrameType.SelectedIndex);
-                testdata1[3] = (byte)SelectedFrameType;
-                Array.Clear(testdata1, 4, testdata1.Length - 4 - 1);
-                if (SelectedFrameType == FrameType.控制数据帧)
-                {
-                    allsenddata.Visibility = Visibility.Visible;
-                    allsenddata2.Visibility = Visibility.Collapsed;
-                    allsenddata3.Visibility = Visibility.Collapsed;
-                }
-                if (SelectedFrameType == FrameType.目标参数装订帧)
-                {
-                    allsenddata.Visibility = Visibility.Collapsed;
-                    allsenddata2.Visibility = Visibility.Visible;
-                    allsenddata3.Visibility = Visibility.Collapsed;
-                }
-                if (SelectedFrameType == FrameType.图像模板装订帧)
-                {
-                    allsenddata.Visibility = Visibility.Collapsed;
-                    allsenddata2.Visibility = Visibility.Collapsed;
-                    allsenddata3.Visibility = Visibility.Visible;
-                }
-            }
+
         }
-        // 定义控制指令的类
-        public class ControlInstruction
+        public class Module
         {
-            public string Name { get; set; }
-            public byte Code { get; set; }
-            public int DataLength { get; set; }
-            public string ControlData { get; set; }
-            public string Remarks { get; set; }
-        }
-        // 初始化控制指令列表
-        List<ControlInstruction> controlInstructions = new List<ControlInstruction>
-            {
-                new ControlInstruction { Name = "IDLE", Code = 0xFF, DataLength = 0, ControlData = "无参数", Remarks = "空闲时发送" },
-                new ControlInstruction { Name = "无效指令", Code = 0x00, DataLength = 0, ControlData = "无参数", Remarks = "无效时发送" },
-                new ControlInstruction { Name = "自检", Code = 0x13, DataLength = 0, ControlData = "无参数", Remarks = "导引头上电后自动发送自检指令" },
-                new ControlInstruction { Name = "指向（随动）", Code = 0x15, DataLength = 0, ControlData = "无参数", Remarks = "导引头上电或自检完成后控制器将自动发送指向指令，导引头接收到该指令后将一直处于指向模式直到进入目标跟踪状态，指向模式的方位角和俯仰角实时采取表3中的66~69字节数据" },
-                new ControlInstruction { Name = "搜索/跟踪点微调", Code = 0x19, DataLength = 2, ControlData = "控制数据区第1字节：表示方位搜索值，8位有符号整数，数据范围为-127~127，分辨率1；控制数据区第2字节：表示俯仰搜索值，8位有符号整数，数据范围为-127~127，分辨率1；其余字节无效。", Remarks = "" },
-                new ControlInstruction { Name = "手动截获", Code = 0x1A, DataLength = 6, ControlData = "控制数据区第1-2字节：表示截获图像帧编号，16位无符号整数，数据范围为0~65535，分辨率1；控制数据区第3-4字节：表示方位截获像素位置，16位无符号整数，数据范围为0～1024，分辨率1；控制数据区5-6字节：表示俯仰截获像素位置，16位无符号整数，数据范围为0～1024，分辨率1；其余字节无效。", Remarks = "" },
-                new ControlInstruction { Name = "解除跟踪", Code = 0x23, DataLength = 0, ControlData = "无参数", Remarks = "" },
-                new ControlInstruction { Name = "视场调节", Code = 0x26, DataLength = 1, ControlData = "控制数据区第1字节：0x13-宽视场；0x15-窄视场；其余字节无效。", Remarks = "" },
-                new ControlInstruction { Name = "波门调节", Code = 0x28, DataLength = 4, ControlData = "控制数据区第1-2字节：表示波门宽度，16位无符号整数，数据范围为0~1024，分辨率1；控制数据区第3-4字节：表示波门高度，16位无符号整数，数据范围为0~1024，分辨率1；其余字节无效。", Remarks = "" },
-                new ControlInstruction { Name = "字符叠加", Code = 0x29, DataLength = 1, ControlData = "控制数据区第1字节：0x13-不叠加；0x15-叠加；其余字节无效。", Remarks = "" },
-                new ControlInstruction { Name = "目标类型选择", Code = 0x35, DataLength = 1, ControlData = "控制数据区第1字节：人员：0x11；车辆：0x12；工事：0x13；其余字节无效。", Remarks = "" },
-                new ControlInstruction { Name = "零位校准", Code = 0x36, DataLength = 0, ControlData = "无参数", Remarks = "" },
-                new ControlInstruction { Name = "对时指令", Code = 0x37, DataLength = 0, ControlData = "无参数", Remarks = "" }
-            };
-
-        private void IDC_EDIT_FC_4_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // 获取ComboBox控件
-            ComboBox comboBox = sender as ComboBox;
-
-            // 检查是否有选中的项
-            if (comboBox.SelectedItem != null)
-            {
-                // 获取选中的ControlInstruction对象
-                ControlInstruction selectedInstruction = comboBox.SelectedItem as ControlInstruction;
-                IDC_EDIT_FC_5.Content = selectedInstruction.Code.ToString("X2");
-                if (selectedInstruction.DataLength == 0)
-                {
-                    IDC_EDIT_FC_6_16.IsReadOnly = true;
-                    InputBoxHelper.SetPreContent(IDC_EDIT_FC_6_16, "无参数" + selectedInstruction.DataLength);
-                    IDC_EDIT_FC_6_16.Text = "00";
-                }
-                else
-                {
-                    IDC_EDIT_FC_6_16.IsReadOnly = false;
-
-                    InputBoxHelper.SetPreContent(IDC_EDIT_FC_6_16, "数据长度(HEX)" + selectedInstruction.DataLength);
-                    //IDC_EDIT_FC_6_16.Text = "";
-                    //for (int i = 0; i < selectedInstruction.DataLength; i++)
-                    //{
-                    //    IDC_EDIT_FC_6_16.Text += "00";
-                    //}
-                }
-                IDC_EDIT_FC_6_16.Tag = selectedInstruction;
-                testdata1[4] = selectedInstruction.Code;
-                testdata1[5] = selectedInstruction.Code;
-            }
+            public string 序号 { get; set; }
+            public string 模块 { get; set; }
+            public string 功能 { get; set; }
+            public string 方向 { get; set; }
+            public string 报头 { get; set; }
+            public string 设备 { get; set; }
+            public string 功能字节1 { get; set; }
+            public string 功能字节2 { get; set; }
+            // 如果需要，可以添加更多功能字节字段，例如功能字节2等
+            public string 数据长度 { get; set; }
+            public string 数据 { get; set; } // 由于数据字段可能包含多个字节，因此使用byte数组存储
+            public string 校验 { get; set; } // 校验字段也可能包含多个字节，因此使用byte数组存储（这里仅作为示例，实际校验可能需要根据特定算法计算）
+            public string 报尾 { get; set; }
+            public string 备注 { get; set; }
+            // 可以根据需要添加更多属性或方法
         }
 
-        private void IDC_EDIT_FC_6_16_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var data = IDC_EDIT_FC_6_16.Tag as ControlInstruction;
-            if (data != null)
-            {
-                if (data.DataLength == 0)
-                {
-                    Message.Error("该控制指令不需要参数");
-                    return;
-                }
-                if (IDC_EDIT_FC_6_16.Text.Trim().Length > data.DataLength * 2)
-                {
-                    Message.Error("数据长度超过" + data.DataLength + "控制指令：" + data.Name + "数据长度为：" + data.DataLength);
-                    return;
-                }
-                if (IDC_EDIT_FC_6_16.Text.Trim().Length == data.DataLength * 2)
-                {
-                    try
-                    {
-                        var data2 = HexStringToByteArray(IDC_EDIT_FC_6_16.Text.Trim());
-                        for (int i = 0; i < data2.Length; i++)
-                        {
-                            testdata1[6 + i] = data2[i];
-                        }
-                    }
-                    catch { }
-                }
-            }
-        }
+
 
         // 将HEX字符串转换为byte数组
         public static byte[] HexStringToByteArray(string hexString)
