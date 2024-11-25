@@ -149,7 +149,7 @@ namespace AFWDPP.Views
             if (nbrDataRead == 0)
                 return;
 
-            if (Common.Common.CheckSPsum(buffer))
+            if (Common.Common.CheckSPsum(buffer) && buffer.Length == 73)
             {
                 string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
 

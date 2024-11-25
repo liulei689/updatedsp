@@ -33,6 +33,7 @@ namespace AFWDPP.ViewModels
             [
                 new("控制台", "SCIA", new FC(), IconType.Home2Line),
                 new("稳定平台", "SCIB", new SP(), IconType.SendBackward),
+                new("追踪系统", "SCIC", new ZZ(), IconType.SendPlaneFill),
 
             ];
 
