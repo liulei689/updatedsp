@@ -69,7 +69,7 @@ namespace AFWDPP.Views
 
         private void FC_Loaded(object sender, RoutedEventArgs e)
         {
-            List<Module> infoList = MiniExcel.Query<Module>("C:\\Users\\liu\\Desktop\\222222222222222.xlsx").ToList();
+          //  List<Module> infoList = MiniExcel.Query<Module>("C:\\Users\\liu\\Desktop\\222222222222222.xlsx").ToList();
         }
 
         byte HEARTBEAT = 0;
