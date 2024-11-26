@@ -2,7 +2,6 @@
 
 using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
-using MiniExcelLibs;
 using Rubyer;
 using System;
 using System.Collections.Generic;
@@ -66,10 +65,19 @@ namespace AFWDPP.Views
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
             Loaded += FC_Loaded;
         }
-
+        Dictionary<string, List<string>> moduleFunctions;
         private void FC_Loaded(object sender, RoutedEventArgs e)
         {
-          //  List<Module> infoList = MiniExcel.Query<Module>("C:\\Users\\liu\\Desktop\\222222222222222.xlsx").ToList();
+            LoadData();
+            var moduleGroups = Mbslist.GroupBy(m => m.模块).ToList();
+            // 创建一个字典来快速查找每个模块下的功能
+            moduleFunctions = moduleGroups.ToDictionary(
+               g => g.Key,
+               g => g.Select(m => m.功能).ToList()
+           );
+            var moduleNames = moduleGroups.Select(g => g.Key).ToList();
+            IDC_EDIT_FC_1.ItemsSource = moduleNames;
+            IDC_EDIT_FC_1.SelectedIndex = 0;
         }
 
         byte HEARTBEAT = 0;
@@ -559,8 +567,34 @@ namespace AFWDPP.Views
             public string 备注 { get; set; }
             // 可以根据需要添加更多属性或方法
         }
+        List<Module> Mbslist = new List<Module>();
 
-
+        public void LoadData()
+        {
+            Mbslist.Clear();
+            Mbslist.Add(new Module { 序号 = "1", 模块 = "可见光控制", 功能 = "透雾", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x13", 功能字节2 = "0x01", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "2", 模块 = "可见光控制", 功能 = "变焦", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x10", 功能字节2 = "0x01", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "3", 模块 = "可见光控制", 功能 = "可见光电子放大", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x14", 功能字节2 = "0x01", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = "放大数值范围10-40 单位是0.1倍也就是1-4倍" });
+            Mbslist.Add(new Module { 序号 = "4", 模块 = "可见光控制", 功能 = "调焦", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x10", 功能字节2 = "0x02", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "5", 模块 = "可见光控制", 功能 = "设置焦位", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x11", 功能字节2 = "0x01", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = "走到设定焦位点位置" });
+            Mbslist.Add(new Module { 序号 = "6", 模块 = "可见光控制", 功能 = "焦位变化", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x11", 功能字节2 = "0x02", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = "走到设定焦位点位置" });
+            Mbslist.Add(new Module { 序号 = "7", 模块 = "可见光控制", 功能 = "自动对焦(单次)", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x12", 功能字节2 = "0x01", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "19", 模块 = "激光控制", 功能 = "测距  开关", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x30", 功能字节2 = "0x00", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "20", 模块 = "激光控制", 功能 = "测距  设置", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x30", 功能字节2 = "0x01", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "21", 模块 = "跟踪控制", 功能 = "视频  切换", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x40", 功能字节2 = "0x00", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "22", 模块 = "跟踪控制", 功能 = "波门引导控制", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x40", 功能字节2 = "0x01", 数据长度 = "0x05", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = "D3:0x01时只进行图像跟踪0xA1时不但进行图像跟踪，同时会激活伺服跟踪" });
+            Mbslist.Add(new Module { 序号 = "23", 模块 = "跟踪控制", 功能 = "跟踪  方式", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x40", 功能字节2 = "0x02", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "24", 模块 = "跟踪控制", 功能 = "质心跟踪目标特性", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x40", 功能字节2 = "0x03", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "25", 模块 = "跟踪控制", 功能 = "识别  开关", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x40", 功能字节2 = "0x04", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "26", 模块 = "跟踪控制", 功能 = "波门大小设置", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x40", 功能字节2 = "0x0A", 数据长度 = "0x05", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "27", 模块 = "跟踪控制", 功能 = "波门移动", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x40", 功能字节2 = "0x0B", 数据长度 = "0x02", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "28", 模块 = "伺服控制", 功能 = "伺服上下电", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0x00", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "29", 模块 = "伺服控制", 功能 = "模式设置", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0x01", 数据长度 = "0x01", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "30", 模块 = "伺服控制", 功能 = "伺服手动(百分比)", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0x02", 数据长度 = "0x08", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = "方位俯仰速度均为百分比,输入范围-100~100" });
+            Mbslist.Add(new Module { 序号 = "31", 模块 = "伺服控制", 功能 = "伺服手动(绝对值)", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0xA2", 数据长度 = "0x08", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = "方位俯仰速度均为绝对值,输入范围为-100~100" });
+            Mbslist.Add(new Module { 序号 = "32", 模块 = "伺服控制", 功能 = "目指设置", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0x03", 数据长度 = "0x0C", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "33", 模块 = "伺服控制", 功能 = "扇扫设置", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0x04", 数据长度 = "0x0D", 数据 = null, 校验 = "校验", 报尾 = "0x59", 备注 = null });
+        }
 
         // 将HEX字符串转换为byte数组
         public static byte[] HexStringToByteArray(string hexString)
@@ -585,6 +619,26 @@ namespace AFWDPP.Views
             }
 
             return byteArray;
+        }
+
+        private void IDC_EDIT_FC_1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (moduleFunctions.ContainsKey(IDC_EDIT_FC_1.SelectedValue.ToString()))
+            {
+                IDC_EDIT_FC_2.ItemsSource = moduleFunctions[IDC_EDIT_FC_1.SelectedValue.ToString()];
+                IDC_EDIT_FC_2.SelectedIndex = 0;
+            }
+            else
+            {
+                IDC_EDIT_FC_2.ItemsSource = null;
+            }
+        }
+
+        private void IDC_EDIT_FC_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var data = Mbslist.FindLast(o => o.模块 == IDC_EDIT_FC_1.SelectedValue.ToString() && o.功能 == IDC_EDIT_FC_2.SelectedValue.ToString());
+            IDC_EDIT_FC_3.Content = data.方向;
+            IDC_EDIT_FC_4.Content = data.备注;
         }
     }
 }

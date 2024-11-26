@@ -39,13 +39,13 @@
                                Margin="1"
                                Columns="4">
                         <rubyer:DescriptionItem  Description="模块"  >
-                            <ComboBox x:Name="IDC_EDIT_FC_1" MinWidth="100"  Text="90" SelectedIndex="0"/>
+                            <ComboBox x:Name="IDC_EDIT_FC_1" MinWidth="100"  Text="90" SelectedIndex="0" SelectionChanged="IDC_EDIT_FC_1_SelectionChanged"/>
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="功能"  >
-                            <ComboBox x:Name="IDC_EDIT_FC_2"  Text="90" SelectedIndex="0"/>
+                            <ComboBox x:Name="IDC_EDIT_FC_2"  Text="90" SelectedIndex="0" SelectionChanged="IDC_EDIT_FC_2_SelectionChanged"/>
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="方向"  />
-                        <rubyer:DescriptionItem  Description="备注"  />
+                        <rubyer:DescriptionItem  Description="方向"  x:Name="IDC_EDIT_FC_3"  />
+                        <rubyer:DescriptionItem  Description="备注"   x:Name="IDC_EDIT_FC_4" />
 
                     </rubyer:Description>
                     <Grid Grid.Row="4" Margin="1">
