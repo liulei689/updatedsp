@@ -83,18 +83,10 @@ namespace AFWDPP.Views
         byte HEARTBEAT = 0;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
-
-            //testdata1.ToByte(IDC_EDIT_FC_0);
-            //testdata1.ToByte(IDC_EDIT_FC_1);
-            //testdata1.ToByte(IDC_EDIT_FC_2);
-            //testdata1.ToByte(IDC_EDIT_FC_17_18);
-
-            if (HEARTBEAT > 255)
-            {
-                HEARTBEAT = 0;
-            }
-            testdata1[81] = HEARTBEAT++;
-            GetSPsum(testdata1, testdata1.Length);
+            var res = GetComboBoxSelectedValues();
+            for (int i = 0; i < res.Length; i++)
+                SendCache[5 + i] = res[i];
+            SendCache[SendCache[4] + 7 - 2] = SendCache.CalculateChecksum();
             sendData(SendCache, 7 + SendCache[4]);
         }
 
@@ -642,6 +634,8 @@ namespace AFWDPP.Views
             var data = Mbslist.FindLast(o => o.模块 == IDC_EDIT_FC_1.SelectedValue.ToString() && o.功能 == IDC_EDIT_FC_2.SelectedValue.ToString());
             IDC_EDIT_FC_3.Content = data.方向;
             IDC_EDIT_FC_4.Content = data.备注;
+            AddComboBoxes(data.数据长度.ToByte());
+            IDC_EDIT_FC_6.Content = data.数据;
             Array.Clear(SendCache, 0, SendCache.Length);
             SendCache[0] = data.报头.ToByte();
             SendCache[1] = data.设备.ToByte();
@@ -649,8 +643,53 @@ namespace AFWDPP.Views
             SendCache[3] = data.功能字节2.ToByte();
             SendCache[4] = data.数据长度.ToByte(); //7+长度等于帧总长度
             byte len = SendCache[4];
-            SendCache[5 + len] = 0xAA;
-            SendCache[6 + len] = 0xAB;
+            SendCache[5 + len] = 0; //校验
+            SendCache[6 + len] = data.报尾.ToByte();
+        }
+
+        private void AddComboBoxes(byte counts)
+        {
+            // 清除之前添加的 ComboBox
+            IDC_EDIT_FC_5.Children.Clear();
+            // 定义 ComboBox 的数据源
+            List<string> items = Enumerable.Range(1, counts).Select(i => $"0x{i:X2}").ToList();
+            items.Add("0x00"); // 在列表末尾添加 0x00
+            // 动态添加 ComboBox
+            for (int i = 0; i < counts; i++) // 假设你要添加 5 个 ComboBox
+            {
+                ComboBox comboBox = new ComboBox
+                {
+                    SelectedIndex = 0, // 默认选中第一个项
+                    IsEditable = true,
+                    ItemsSource = items,
+                    Tag = $"{i}", // 设置 Tag 属性以区分不同的 ComboBox
+                    Width = 100 // 你可以根据需要设置宽度
+                };
+
+                IDC_EDIT_FC_5.Children.Add(comboBox);
+            }
+        }
+
+
+        private byte[] GetComboBoxSelectedValues()
+        {
+            if (IDC_EDIT_FC_5.Children.Count == 0) return [];
+            var selectedValues = new byte[IDC_EDIT_FC_5.Children.Count];
+            foreach (var child in IDC_EDIT_FC_5.Children)
+            {
+                if (child is ComboBox comboBox)
+                {
+                    if (int.TryParse(comboBox.Tag.ToString(), out int tag))
+
+                        if (comboBox.Text != null)
+                        {
+                            if (comboBox.Text.Length == 4 && comboBox.Text.Contains("0x"))
+                                selectedValues[tag] = comboBox.Text.ToByte();
+                        }
+                }
+            }
+
+            return selectedValues;
         }
     }
 }

@@ -46,6 +46,10 @@
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="方向"  x:Name="IDC_EDIT_FC_3"  />
                         <rubyer:DescriptionItem  Description="备注"   x:Name="IDC_EDIT_FC_4" />
+                        <rubyer:DescriptionItem  Description="数据"   >
+                            <StackPanel Orientation="Horizontal" Name="IDC_EDIT_FC_5">  </StackPanel>
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="数据详情"   x:Name="IDC_EDIT_FC_6" />
 
                     </rubyer:Description>
                     <Grid Grid.Row="4" Margin="1">
