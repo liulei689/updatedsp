@@ -441,8 +441,8 @@ namespace AFWDPP.Views
             }
             else
             {
-                if (comlist.SelectedItem != null)
-                    OpenCloseCom();
+                //if (comlist.SelectedItem != null)
+                //   OpenCloseCom();
             }
         }
         private void ReleaseSerialPort()
@@ -633,7 +633,7 @@ namespace AFWDPP.Views
                 IDC_EDIT_FC_2.ItemsSource = null;
             }
         }
-
+        byte[] SendCache = new byte[16];
         private void IDC_EDIT_FC_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var data = Mbslist.FindLast(o => o.模块 == IDC_EDIT_FC_1.SelectedValue.ToString() && o.功能 == IDC_EDIT_FC_2.SelectedValue.ToString());
