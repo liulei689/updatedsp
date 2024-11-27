@@ -47,7 +47,7 @@ namespace AFWDPP.Views
             timer.Start();
             //握手定时器
             timerhandshake = new DispatcherTimer();
-            timerhandshake.Interval = TimeSpan.FromMilliseconds(20);
+            timerhandshake.Interval = TimeSpan.FromMilliseconds(100);
             timerhandshake.IsEnabled = true;
             timerhandshake.Tick += timerhandshake_Tick;
             var ports = Common.Common.SearchPort();
@@ -95,7 +95,7 @@ namespace AFWDPP.Views
             }
             testdata1[81] = HEARTBEAT++;
             GetSPsum(testdata1, testdata1.Length);
-            sendData(testdata1, testdata1.Length);
+            sendData(SendCache, 7 + SendCache[4]);
         }
 
         byte[] testdata1 = new byte[83];
@@ -372,7 +372,7 @@ namespace AFWDPP.Views
             //});
             try
             {
-                serialPort2.Write(databuf, 0, databuf.Length);
+                serialPort2.Write(databuf, 0, datalength);
 
             }
             catch (Exception ex)
@@ -625,6 +625,7 @@ namespace AFWDPP.Views
         {
             if (moduleFunctions.ContainsKey(IDC_EDIT_FC_1.SelectedValue.ToString()))
             {
+                IDC_EDIT_FC_2.ItemsSource = null;
                 IDC_EDIT_FC_2.ItemsSource = moduleFunctions[IDC_EDIT_FC_1.SelectedValue.ToString()];
                 IDC_EDIT_FC_2.SelectedIndex = 0;
             }
@@ -633,12 +634,23 @@ namespace AFWDPP.Views
                 IDC_EDIT_FC_2.ItemsSource = null;
             }
         }
-        byte[] SendCache = new byte[16];
+        byte[] SendCache = new byte[100];
         private void IDC_EDIT_FC_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (IDC_EDIT_FC_2.SelectedValue == null || IDC_EDIT_FC_1.SelectedValue == null)
+                return;
             var data = Mbslist.FindLast(o => o.模块 == IDC_EDIT_FC_1.SelectedValue.ToString() && o.功能 == IDC_EDIT_FC_2.SelectedValue.ToString());
             IDC_EDIT_FC_3.Content = data.方向;
             IDC_EDIT_FC_4.Content = data.备注;
+            Array.Clear(SendCache, 0, SendCache.Length);
+            SendCache[0] = data.报头.ToByte();
+            SendCache[1] = data.设备.ToByte();
+            SendCache[2] = data.功能字节1.ToByte();
+            SendCache[3] = data.功能字节2.ToByte();
+            SendCache[4] = data.数据长度.ToByte(); //7+长度等于帧总长度
+            byte len = SendCache[4];
+            SendCache[5 + len] = 0xAA;
+            SendCache[6 + len] = 0xAB;
         }
     }
 }

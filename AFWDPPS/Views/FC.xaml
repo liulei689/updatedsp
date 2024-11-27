@@ -30,7 +30,7 @@
                             </rubyer:ToggleButtonHelper.CheckedContent>
                         </ToggleButton>
 
-                        <rubyer:Loading Grid.Column="6" Name="rx" Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="False"/>
+                        <rubyer:Loading Grid.Column="5" Name="rx" Style="{StaticResource WaveLoading}" Margin="20 0"   FontSize="8" Content="接收" IsEnabled="False"/>
                         <rubyer:Loading Grid.Column="6" Name="tx" Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
 
                     </Grid>
