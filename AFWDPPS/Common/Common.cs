@@ -10,8 +10,9 @@ namespace AFWDPP.Common
         // 计算校验位的方法
         public static byte CalculateChecksum(this byte[] dataFrame)
         {
+            if (dataFrame.Length < 8) return 0;
             // 检查输入数据是否为空或长度小于等于dataFrame[4] + 5（至少需要这么多字节来包含命令头、长度信息和数据）
-            if (dataFrame == null || dataFrame.Length <= dataFrame[4] + 7)
+            if (dataFrame == null || dataFrame.Length < dataFrame[4] + 7)
             {
                 return 0;
             }

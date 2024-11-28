@@ -130,19 +130,24 @@ namespace AFWDPP.Views
             if (nbrDataRead == 0)
                 return;
 
-            if (Common.Common.CheckSPsum(buffer) && buffer.Length == 73)
+            if (buffer.Length > 4 && buffer.Length == buffer[4] + 7)
             {
-                string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
-
-                // 使用BitConverter将字节数组转换为float
-                Application.Current.Dispatcher.Invoke(() =>
+                var gres = buffer.CalculateChecksum();
+                var res = buffer[buffer[4] + 7 - 2];
+                if (gres == res)
                 {
-                    if (!rx.IsEnabled)
-                        rx.IsEnabled = true;
+                    string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
 
-                    rxlog.AddOne(hexString, "收←◆");
+                    // 使用BitConverter将字节数组转换为float
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (!rx.IsEnabled)
+                            rx.IsEnabled = true;
 
-                });
+                        rxlog.AddOne(hexString, "收←◆");
+
+                    });
+                }
             }
         }
         bool istoendd = false;
