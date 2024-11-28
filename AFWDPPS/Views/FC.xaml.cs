@@ -81,11 +81,15 @@ namespace AFWDPP.Views
         }
 
         byte HEARTBEAT = 0;
+        Module md = null;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
-            var res = GetComboBoxSelectedValues();
-            for (int i = 0; i < res.Length; i++)
-                SendCache[5 + i] = res[i];
+            if (md == null)
+                md = Mbslist.FindLast(o => o.功能 == "心跳  握手");
+            SetCacheByModel(md);
+            // var res = GetComboBoxSelectedValues();
+            //for (int i = 0; i < res.Length; i++)
+            //    SendCache[5 + i] = res[i];
             SendCache[SendCache[4] + 7 - 2] = SendCache.CalculateChecksum();
             sendData(SendCache, 7 + SendCache[4]);
         }
@@ -665,6 +669,10 @@ namespace AFWDPP.Views
             IDC_EDIT_FC_4.Content = data.备注;
             AddComboBoxes(data.数据长度.ToByte());
             IDC_EDIT_FC_6.Content = data.数据;
+            SetCacheByModel(data);
+        }
+        private void SetCacheByModel(Module data)
+        {
             Array.Clear(SendCache, 0, SendCache.Length);
             SendCache[0] = data.报头.ToByte();
             SendCache[1] = data.设备.ToByte();
