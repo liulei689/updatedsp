@@ -355,7 +355,7 @@ namespace AFWDPP.Views
                 tx.IsEnabled = true;
 
                 // 将字节数组转换为十六进制字符串  
-                string hexString = BitConverter.ToString(databuf).Replace("-", " ").ToUpper();
+                string hexString = BitConverter.ToString(databuf, 0, datalength).Replace("-", " ").ToUpper();
 
                 txlog.AddOne(hexString, "发→◇");
 
