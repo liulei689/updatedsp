@@ -40,7 +40,7 @@ namespace AFWDPP.Views
             // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
             botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
 
-            botelv.SelectedIndex = 7;
+            botelv.SelectedIndex = 6;
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -133,26 +133,27 @@ namespace AFWDPP.Views
             int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
             if (nbrDataRead == 0)
                 return;
+            var data = DSP28335.GetRecBufData_422(buffer, 0xEA);
+            if (data == null || data.Count == 0) return;
+            //if (buffer.Length > 4 && buffer.Length == buffer[4] + 7)
+            //{
+            //    var gres = buffer.CalculateChecksum();
+            //    var res = buffer[buffer[4] + 7 - 2];
+            //    if (gres == res)
+            //    {
+            string hexString = BitConverter.ToString(data.ToArray()).Replace("-", " ").ToUpper();
 
-            if (buffer.Length > 4 && buffer.Length == buffer[4] + 7)
+            // 使用BitConverter将字节数组转换为float
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                var gres = buffer.CalculateChecksum();
-                var res = buffer[buffer[4] + 7 - 2];
-                if (gres == res)
-                {
-                    string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
+                if (!rx.IsEnabled)
+                    rx.IsEnabled = true;
 
-                    // 使用BitConverter将字节数组转换为float
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        if (!rx.IsEnabled)
-                            rx.IsEnabled = true;
+                rxlog.AddOne(hexString, "收←◆");
 
-                        rxlog.AddOne(hexString, "收←◆");
-
-                    });
-                }
-            }
+            });
+            //  }
+            // }
         }
         bool istoendd = false;
         public static (byte Hx, byte Lx) ConvertAngleToBytes(short angle)
@@ -691,7 +692,7 @@ namespace AFWDPP.Views
             // 定义 ComboBox 的数据源
             List<string> items = Enumerable.Range(1, counts).Select(i => $"0x{i:X2}").ToList();
             items.Add("0x00"); // 在列表末尾添加 0x00
-            // 动态添加 ComboBox
+                               // 动态添加 ComboBox
             for (int i = 0; i < counts; i++) // 假设你要添加 5 个 ComboBox
             {
                 ComboBox comboBox = new ComboBox

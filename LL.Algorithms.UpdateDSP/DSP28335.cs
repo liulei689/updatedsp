@@ -7,7 +7,7 @@ namespace LL2024.Algorithms.UpdateDSP
     {
         public static readonly IGeneralAlgorithms _instance = new GeneralAlgorithms();
         public static readonly IQFXHAlgorithms _afxhinstance = new QFXHAlgorithms();
-
+        public static readonly IAFAlgorithms _afinstancel = new AFAlgorithms();
         /// <summary>
         /// 加载固件
         /// </summary>
@@ -451,6 +451,11 @@ namespace LL2024.Algorithms.UpdateDSP
             Array.Copy(BinFileData, tmp, SendData, 20, len);
             GetSumNomarl(SendData);
             return SendData;
+        }
+
+        public static List<byte> GetRecBufData_422(byte[] bt_RecBuf, byte deviceid)
+        {
+            return _afinstancel.GetRecBufData_422(bt_RecBuf, deviceid);
         }
     }
 }
