@@ -82,14 +82,34 @@ namespace AFWDPP.Views
 
         byte HEARTBEAT = 0;
         Module md = null;
+        private bool useSetCacheByModel = true;  // 标志变量，用于控制交替执行
+
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
             if (md == null)
+            {
                 md = Mbslist.FindLast(o => o.功能 == "心跳  握手");
-            SetCacheByModel(md);
-            // var res = GetComboBoxSelectedValues();
-            //for (int i = 0; i < res.Length; i++)
-            //    SendCache[5 + i] = res[i];
+            }
+
+            if (useSetCacheByModel)
+            {
+                if (headhe.IsChecked == true)
+                    SetCacheByModel(md);
+            }
+            else
+            {
+                IDC_EDIT_FC_2_SelectionChanged(null, null);
+                var res = GetComboBoxSelectedValues();
+                for (int i = 0; i < res.Length; i++)
+                {
+                    SendCache[5 + i] = res[i];
+                }
+            }
+
+            // 切换标志变量的状态
+            useSetCacheByModel = !useSetCacheByModel;
+
+            // 计算校验和并发送数据
             SendCache[SendCache[4] + 7 - 2] = SendCache.CalculateChecksum();
             sendData(SendCache, 7 + SendCache[4]);
         }
@@ -141,11 +161,33 @@ namespace AFWDPP.Views
             //    var res = buffer[buffer[4] + 7 - 2];
             //    if (gres == res)
             //    {
+
             string hexString = BitConverter.ToString(data.ToArray()).Replace("-", " ").ToUpper();
 
             // 使用BitConverter将字节数组转换为float
             Application.Current.Dispatcher.Invoke(() =>
             {
+                if (data[2] == 0xA0 && data[3] == 0x00 && data[4] == 0x02 && data.Count == 9) //心跳帧
+                {
+                    IDC_EDIT_CHECKA_0.Content = headcount++;
+                    IDC_EDIT_CHECKA_1.Content = DSP28335.GetVersionToString(data[5], data[4]);
+                }
+                if (data[2] == 0xF0 && data[3] == 0x01 && data[4] == 0x22) //光电数据
+                {
+                    IDC_EDIT_CHECKA_13.Content = headcount2++;
+                }
+                if (data[2] == 0xF0 && data[3] == 0x02 && data[4] == 0x0B) //光电信息
+                {
+                    IDC_EDIT_CHECKA_14.Content = headcount3++;
+                }
+                if (data[2] == 0xF0 && data[3] == 0x03 && data[4] == 0x07) //故障码
+                {
+                    IDC_EDIT_CHECKA_31.Content = headcount4++;
+                }
+                if (data[2] == 0xF0 && data[3] == 0x06) //识别物体
+                {
+                    IDC_EDIT_CHECKA_32.Content = headcount5++;
+                }
                 if (!rx.IsEnabled)
                     rx.IsEnabled = true;
 
@@ -155,37 +197,12 @@ namespace AFWDPP.Views
             //  }
             // }
         }
+        private int headcount = 0;
+        private int headcount2 = 0;
+        private int headcount3 = 0;
+        private int headcount4 = 0;
+        private int headcount5 = 0;
         bool istoendd = false;
-        public static (byte Hx, byte Lx) ConvertAngleToBytes(short angle)
-        {
-            // 假设 X 轴和 Y 轴的最大正值分别为 20.5° 和 30.5°，对应的指令值为 20500 和 30500
-            // 但由于我们只关心绝对值，并且知道要乘以 1000，所以这里直接使用 20500 和 30500 的最大值 30500 来判断是否需要处理溢出（尽管在这个特定例子中不会溢出）
-            // 实际上，由于我们分别处理 X 轴和 Y 轴，应该为每个轴设置不同的限制，但这里为了简化，我们假设输入是合法的
-
-            // 将角度乘以 1000（注意：这里假设输入的角度已经在允许范围内）
-            short commandValue = (short)(angle);
-
-            // 对于 X 轴，范围应该是 -20500 到 20500
-            // 对于 Y 轴，范围应该是 -30500 到 30500
-            // 但由于我们在这个方法中不区分轴，只是进行转换，所以这里不进行检查
-            // 如果需要区分轴并进行检查，可以在调用此方法之前或在方法内部添加额外的逻辑
-
-            // 处理负数（转换为补码，即二进制的反码加一）
-            //if (commandValue < 0)
-            //{
-            //    commandValue = (short)~commandValue; // 反码计算
-            //}
-
-            // 注意：这里我们假设转换后的值不会超过一个字节的范围（对于高字节来说是不可能的，因为我们是将整数分为两个字节）
-            // 但实际上，由于我们已经将角度乘以了 1000，所以转换后的值可能会超过一个字节（0-255）的范围
-            // 因此，我们正确地将其分为高字节和低字节
-
-            // 将整数拆分为高字节和低字节
-            byte Hx = (byte)((commandValue >> 8) & 0xFF); // 取高8位
-            byte Lx = (byte)(commandValue & 0xFF);        // 取低8位
-
-            return (Hx, Lx);
-        }
         void GetSPsum(byte[] data, int length)
         {
             int i = 0;
@@ -666,10 +683,13 @@ namespace AFWDPP.Views
             if (IDC_EDIT_FC_2.SelectedValue == null || IDC_EDIT_FC_1.SelectedValue == null)
                 return;
             var data = Mbslist.FindLast(o => o.模块 == IDC_EDIT_FC_1.SelectedValue.ToString() && o.功能 == IDC_EDIT_FC_2.SelectedValue.ToString());
-            IDC_EDIT_FC_3.Content = data.方向;
-            IDC_EDIT_FC_4.Content = data.备注;
-            AddComboBoxes(data.数据长度.ToByte());
-            IDC_EDIT_FC_6.Content = data.数据;
+            if (sender != null)
+            {
+                //IDC_EDIT_FC_3.Content = data.方向;
+                IDC_EDIT_FC_4.Content = data.备注;
+                AddComboBoxes(data.数据长度.ToByte());
+                IDC_EDIT_FC_6.Content = data.数据;
+            }
             SetCacheByModel(data);
         }
         private void SetCacheByModel(Module data)
@@ -730,4 +750,5 @@ namespace AFWDPP.Views
             return selectedValues;
         }
     }
+
 }
