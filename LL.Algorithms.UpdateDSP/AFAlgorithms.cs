@@ -5,10 +5,7 @@ namespace LL2024.Algorithms.UpdateDSP
     public class AFAlgorithms : IAFAlgorithms
     {
 
-        byte SendCount = 0;
         private const byte HEAD1 = 0x78;
-        private const byte HEAD2 = 0x55;
-
         /// <summary>
         /// 通讯数据接收状态机标志
         /// </summary>
@@ -93,35 +90,33 @@ namespace LL2024.Algorithms.UpdateDSP
                     case (int)enum_ComStatus.COM_STATUS_DATA:
                         G_btList_RecBuf.Add(tmpByte);
                         //数据接收完成后的有效性判断
-                        if (G_btList_RecBuf.Count == G_int_RecBufLen)  //包接收完成
+                        if (G_btList_RecBuf.Count == G_int_RecBufLen && G_btList_RecBuf[G_int_RecBufLen - 1] == 0x79)  //包接收完成
                         {
-                            G_btList_RecBuf_R.AddRange(G_btList_RecBuf);
+                            //检查校验和字节
+                            if (CheckChecksum(G_btList_RecBuf.ToArray()))
+                            {
+                                G_btList_RecBuf_R.Clear();
+                                G_btList_RecBuf_R.AddRange(G_btList_RecBuf);
+                            }
+                            else
+                            {
+                                G_btList_RecBuf.Clear();
+                                //string str_ErrorInfo = "“";
+                                //foreach (byte tmpbt in G_btList_RecBuf)
+                                //{
+                                //    str_ErrorInfo += tmpbt.ToString("X2") + " ";
+                                //}
+                                //str_ErrorInfo += "”帧校验和错误！";
 
-                            ////检查校验和字节
-                            //if ((DSP28335.CheckSumNomarl(G_btList_RecBuf.ToArray())))
-                            //{
-                            //    G_btList_RecBuf_R.AddRange(G_btList_RecBuf);
-                            //}
-
-                            //else
-                            //{
-                            //    G_btList_RecBuf.Clear();
-                            //    //string str_ErrorInfo = "“";
-                            //    //foreach (byte tmpbt in G_btList_RecBuf)
-                            //    //{
-                            //    //    str_ErrorInfo += tmpbt.ToString("X2") + " ";
-                            //    //}
-                            //    //str_ErrorInfo += "”帧校验和错误！";
-
-                            //}
+                            }
 
                             //切换协议解析状态
                             G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
-                            return G_btList_RecBuf_R;
+
                         }
 
                         //数据包长度超限检查
-                        if (G_btList_RecBuf.Count >= 128)
+                        if (G_btList_RecBuf.Count >= 512)
                         {
                             G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
 
@@ -143,6 +138,48 @@ namespace LL2024.Algorithms.UpdateDSP
                 }
             }
             return G_btList_RecBuf_R;
+        }
+
+        // 计算校验位的方法
+        public byte CalculateChecksum(byte[] dataFrame, bool flag = false)
+        {
+            if (dataFrame.Length < 8) return 0;
+            // 检查输入数据是否为空或长度小于等于dataFrame[4] + 5（至少需要这么多字节来包含命令头、长度信息和数据）
+            if (dataFrame == null || dataFrame.Length < dataFrame[4] + 7)
+            {
+                return 0;
+            }
+
+            // 获取数据长度（从字节5开始的数据个数）
+            int dataLength = dataFrame[4];
+            int n = dataLength + 5; // N是数据结束的位置（从0开始计数），包括命令头和长度字段，但不包括可能的校验位
+
+            // 初始化校验和为0
+            int checksumSum = 0;
+
+            // 从字节1开始到字节N（不包括可能存在的校验位或其他信息）求和
+            for (int i = 1; i < n; i++)
+            {
+                checksumSum += dataFrame[i];
+            }
+
+            // 对256求余得到校验位
+            byte checksum = (byte)(checksumSum % 256);
+            if (flag)
+                dataFrame[dataFrame[4] + 5] = checksum;
+            return checksum;
+        }
+        //检查校验是否通过
+        public bool CheckChecksum(byte[] dataFrame)
+        {
+            // 检查输入数据是否为空或长度不正确
+            if (dataFrame.Length < 8 || dataFrame == null || dataFrame.Length != dataFrame[4] + 7)
+            {
+                return false;
+            }
+            byte sumc = CalculateChecksum(dataFrame, false);
+            byte sum = dataFrame[dataFrame[4] + 5];
+            return sumc == sum;
         }
     }
 }

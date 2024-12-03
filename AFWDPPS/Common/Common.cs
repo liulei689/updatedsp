@@ -7,34 +7,7 @@ namespace AFWDPP.Common
 {
     public static class Common
     {
-        // 计算校验位的方法
-        public static byte CalculateChecksum(this byte[] dataFrame)
-        {
-            if (dataFrame.Length < 8) return 0;
-            // 检查输入数据是否为空或长度小于等于dataFrame[4] + 5（至少需要这么多字节来包含命令头、长度信息和数据）
-            if (dataFrame == null || dataFrame.Length < dataFrame[4] + 7)
-            {
-                return 0;
-            }
 
-            // 获取数据长度（从字节5开始的数据个数）
-            int dataLength = dataFrame[4];
-            int n = dataLength + 5; // N是数据结束的位置（从0开始计数），包括命令头和长度字段，但不包括可能的校验位
-
-            // 初始化校验和为0
-            int checksumSum = 0;
-
-            // 从字节1开始到字节N（不包括可能存在的校验位或其他信息）求和
-            for (int i = 1; i < n; i++)
-            {
-                checksumSum += dataFrame[i];
-            }
-
-            // 对256求余得到校验位
-            byte checksum = (byte)(checksumSum % 256);
-
-            return checksum;
-        }
 
         public static void ToByte(this byte[] bytes, TextBox textbox)
         {

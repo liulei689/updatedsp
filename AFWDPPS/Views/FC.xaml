@@ -74,6 +74,20 @@
             </GroupBox>
             <GroupBox Grid.Row="1" Header="" >
                 <StackPanel Orientation="Vertical">
+                    <Label Content="38、自动漂移反馈" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                        Margin="1"
+                        Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_0"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1"       Description="【5~6】漂移状态字" />
+                    </rubyer:Description>
+                    <Label Content="40、读取保存状态" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                        Margin="1"
+                        Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_3"       Description="【5~6】读取保存状态" />
+                    </rubyer:Description>
                     <Label Content="41、心跳反馈帧解析" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                                Margin="1"

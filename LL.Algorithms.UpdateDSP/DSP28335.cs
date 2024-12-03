@@ -457,5 +457,16 @@ namespace LL2024.Algorithms.UpdateDSP
         {
             return _afinstancel.GetRecBufData_422(bt_RecBuf, deviceid);
         }
+
+        public static void CalculateChecksum(byte[] bt_RecBuf)
+        {
+            _afinstancel.CalculateChecksum(bt_RecBuf, true);
+        }
+
+        public static bool CheckChecksum(byte[] dataFrame)
+        {
+            return _afinstancel.CheckChecksum(dataFrame);
+
+        }
     }
 }

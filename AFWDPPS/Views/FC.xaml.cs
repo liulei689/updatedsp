@@ -110,7 +110,8 @@ namespace AFWDPP.Views
             useSetCacheByModel = !useSetCacheByModel;
 
             // 计算校验和并发送数据
-            SendCache[SendCache[4] + 7 - 2] = SendCache.CalculateChecksum();
+            DSP28335.CalculateChecksum(SendCache);
+            //SendCache[SendCache[4] + 7 - 2] =  SendCache.CalculateChecksum();
             sendData(SendCache, 7 + SendCache[4]);
         }
 
@@ -143,6 +144,25 @@ namespace AFWDPP.Views
                 testdata1.ToByte(textBox);
             }
         }
+
+        private const byte HEAD1 = 0x78;
+        /// <summary>
+        /// 通讯数据接收状态机标志
+        /// </summary>
+        private int G_int_ComStatus = 0;
+        private List<byte> G_btList_RecBuf = new List<byte>();
+        private List<byte> G_btList_RecBuf_R = new List<byte>();
+        private int G_int_RecBufLen = 0;
+        private enum enum_ComStatus
+        {
+            COM_STATUS_HEAD1 = 0,
+            COM_STATUS_HEAD2,
+            COM_STATUS_DEVICE_ID,
+            COM_STATUS_DEVICE_FC1,
+            COM_STATUS_DEVICE_FC2,
+            COM_STATUS_LEN,
+            COM_STATUS_DATA
+        }
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -153,8 +173,156 @@ namespace AFWDPP.Views
             int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
             if (nbrDataRead == 0)
                 return;
-            var data = DSP28335.GetRecBufData_422(buffer, 0xEA);
-            if (data == null || data.Count == 0) return;
+
+
+            G_btList_RecBuf_R.Clear();
+            foreach (byte tmpByte in buffer)
+            {
+                switch (G_int_ComStatus)
+                {
+                    case (int)enum_ComStatus.COM_STATUS_HEAD1:
+                        G_btList_RecBuf.Clear();
+
+                        if (tmpByte == HEAD1)
+                        {
+                            // tmpHEAD1 = tmpByte;
+                            //切换协议解析状态
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
+                            G_btList_RecBuf.Add(tmpByte);
+                        }
+                        break;
+
+                    case (int)enum_ComStatus.COM_STATUS_HEAD2:
+                        if (tmpByte == 0xEA)
+                        {
+                            //切换协议解析状态
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DEVICE_FC1;
+                            G_btList_RecBuf.Add(tmpByte);
+                        }
+                        else if (tmpByte == HEAD1)  //此处代码起到保护帧头1的下一个字节不被本函数丢掉
+                        {
+                            G_btList_RecBuf.Clear();
+                            G_btList_RecBuf.Add(tmpByte);
+                        }
+                        else
+                        {
+                            //切换协议解析状态
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                        }
+                        break;
+
+                    //case (int)enum_ComStatus.COM_STATUS_DEVICE_ID: //设备ID
+                    //    G_btList_RecBuf.Add(tmpByte); //测试上位机不过滤设备ID
+                    //    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DEVICE_FC1;
+                    //    break;
+                    case (int)enum_ComStatus.COM_STATUS_DEVICE_FC1: //设备功能字节1
+                        G_btList_RecBuf.Add(tmpByte);
+                        G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DEVICE_FC2;
+                        break;
+                    case (int)enum_ComStatus.COM_STATUS_DEVICE_FC2: //设备功能字节2
+                        G_btList_RecBuf.Add(tmpByte);
+                        G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_LEN;
+                        break;
+                    case (int)enum_ComStatus.COM_STATUS_LEN://获取数据包长度
+                        G_btList_RecBuf.Add(tmpByte);
+                        G_int_RecBufLen = tmpByte + 7;
+                        G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
+                        break;
+
+                    case (int)enum_ComStatus.COM_STATUS_DATA:
+                        G_btList_RecBuf.Add(tmpByte);
+                        //数据接收完成后的有效性判断
+                        if (G_btList_RecBuf.Count == G_int_RecBufLen && G_btList_RecBuf[G_int_RecBufLen - 1] == 0x79)  //包接收完成
+                        {
+                            //检查校验和字节
+                            if (DSP28335.CheckChecksum(G_btList_RecBuf.ToArray()))
+                            {
+                                var data = G_btList_RecBuf.ToArray();
+                                string hexString = BitConverter.ToString(data).Replace("-", " ").ToUpper();
+
+                                // 使用BitConverter将字节数组转换为float
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    if (data[2] == 0xA0 && data[3] == 0x00 && data[4] == 0x02 && data.Length == 9) //心跳帧
+                                    {
+                                        IDC_EDIT_CHECKA_0.Content = headcount++;
+                                        IDC_EDIT_CHECKA_1.Content = DSP28335.GetVersionToString(data[5], data[4]);
+                                    }
+                                    if (data[2] == 0xF0 && data[3] == 0x01 && data[4] == 0x22) //光电数据
+                                    {
+                                        IDC_EDIT_CHECKA_13.Content = headcount2++;
+                                    }
+                                    if (data[2] == 0xF0 && data[3] == 0x02 && data[4] == 0x0B) //光电信息
+                                    {
+                                        IDC_EDIT_CHECKA_14.Content = headcount3++;
+                                    }
+                                    if (data[2] == 0xF0 && data[3] == 0x03 && data[4] == 0x07) //故障码
+                                    {
+                                        IDC_EDIT_CHECKA_31.Content = headcount4++;
+                                    }
+                                    if (data[2] == 0xF0 && data[3] == 0x06) //识别物体
+                                    {
+                                        IDC_EDIT_CHECKA_32.Content = headcount5++;
+                                    }
+                                    if (data[2] == 0x70 && data[3] == 0x02) //漂移
+                                    {
+                                        IDC_EDIT_CHECKB_0.Content = headcount6++;
+                                    }
+                                    if (data[2] == 0x70 && data[3] == 0xA0) //读取保存
+                                    {
+                                        IDC_EDIT_CHECKB_2.Content = headcount7++;
+                                    }
+                                    if (!rx.IsEnabled)
+                                        rx.IsEnabled = true;
+
+                                    rxlog.AddOne(hexString, "收←◆");
+
+                                });
+                            }
+                            else
+                            {
+                                G_btList_RecBuf.Clear();
+                                //string str_ErrorInfo = "“";
+                                //foreach (byte tmpbt in G_btList_RecBuf)
+                                //{
+                                //    str_ErrorInfo += tmpbt.ToString("X2") + " ";
+                                //}
+                                //str_ErrorInfo += "”帧校验和错误！";
+
+                            }
+
+                            //切换协议解析状态
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+                        }
+
+                        //数据包长度超限检查
+                        if (G_btList_RecBuf.Count >= 512)
+                        {
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+                            //str_ErrorInfo += "“";
+                            //for (int i = 0; i < 6; i++)
+                            //{
+                            //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
+                            //}
+                            //str_ErrorInfo += "......”该帧数据长度超限！";
+
+                            //清空相关缓存
+                            G_btList_RecBuf.Clear();
+                        }
+                        break;
+
+                    default:
+                        G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                        break;
+                }
+            }
+
+
+
+            //  var data = DSP28335.GetRecBufData_422(buffer, 0xEA);
+            //  if (data == null || data.Count == 0) return;
             //if (buffer.Length > 4 && buffer.Length == buffer[4] + 7)
             //{
             //    var gres = buffer.CalculateChecksum();
@@ -162,38 +330,7 @@ namespace AFWDPP.Views
             //    if (gres == res)
             //    {
 
-            string hexString = BitConverter.ToString(data.ToArray()).Replace("-", " ").ToUpper();
 
-            // 使用BitConverter将字节数组转换为float
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (data[2] == 0xA0 && data[3] == 0x00 && data[4] == 0x02 && data.Count == 9) //心跳帧
-                {
-                    IDC_EDIT_CHECKA_0.Content = headcount++;
-                    IDC_EDIT_CHECKA_1.Content = DSP28335.GetVersionToString(data[5], data[4]);
-                }
-                if (data[2] == 0xF0 && data[3] == 0x01 && data[4] == 0x22) //光电数据
-                {
-                    IDC_EDIT_CHECKA_13.Content = headcount2++;
-                }
-                if (data[2] == 0xF0 && data[3] == 0x02 && data[4] == 0x0B) //光电信息
-                {
-                    IDC_EDIT_CHECKA_14.Content = headcount3++;
-                }
-                if (data[2] == 0xF0 && data[3] == 0x03 && data[4] == 0x07) //故障码
-                {
-                    IDC_EDIT_CHECKA_31.Content = headcount4++;
-                }
-                if (data[2] == 0xF0 && data[3] == 0x06) //识别物体
-                {
-                    IDC_EDIT_CHECKA_32.Content = headcount5++;
-                }
-                if (!rx.IsEnabled)
-                    rx.IsEnabled = true;
-
-                rxlog.AddOne(hexString, "收←◆");
-
-            });
             //  }
             // }
         }
@@ -202,6 +339,9 @@ namespace AFWDPP.Views
         private int headcount3 = 0;
         private int headcount4 = 0;
         private int headcount5 = 0;
+
+        private int headcount6 = 0;
+        private int headcount7 = 0;
         bool istoendd = false;
         void GetSPsum(byte[] data, int length)
         {
@@ -625,12 +765,12 @@ namespace AFWDPP.Views
             Mbslist.Add(new Module { 序号 = "32", 模块 = "伺服控制", 功能 = "目指设置", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0x03", 数据长度 = "0x0C", 数据 = "D5~D8：float数据方位目指；,D9~D12：float数据俯仰目指；,D13~D16：float数据距离目指；", 校验 = "校验", 报尾 = "0x59", 备注 = null });
             Mbslist.Add(new Module { 序号 = "33", 模块 = "伺服控制", 功能 = "扇扫设置", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x50", 功能字节2 = "0x04", 数据长度 = "0x0D", 数据 = "D5：0x00停止， 0x01方位扇扫开始，0xF1设置方位扇扫,D6~D9：float数据最小位置,D10~D13：float数据最大位置,D14~D17：float数据扇扫速度", 校验 = "校验", 报尾 = "0x59", 备注 = null });
             Mbslist.Add(new Module { 序号 = "34", 模块 = "伺服控制", 功能 = "自动跟踪模式", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x51", 功能字节2 = "0x10", 数据长度 = "0x01", 数据 = "D5：0x00关     0x01开", 校验 = "校验", 报尾 = "0x59", 备注 = "如无跟踪目标则自动开启识别后，进行跟踪" });
-            Mbslist.Add(new Module { 序号 = "35", 模块 = "参数设置", 功能 = "零位修正", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x00", 数据长度 = "0x06", 数据 = "D5：0x00清零， 0x01方位，0x02俯仰；,D6：0x00绝对值， 0x01变化值；,D7~D10：float数据（-360~360度）", 校验 = "校验", 报尾 = "0x59", 备注 = null });
-            Mbslist.Add(new Module { 序号 = "36", 模块 = "参数设置", 功能 = "陀螺漂移手动修正", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x01", 数据长度 = "0x05", 数据 = "D5：0x00清零，0x01方位，0x02俯仰；,D6~D9：陀螺漂移修正值float数据（0~3°/s）", 校验 = "校验", 报尾 = "0x59", 备注 = null });
-            Mbslist.Add(new Module { 序号 = "37", 模块 = "参数设置", 功能 = "漂移自动修正", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x02", 数据长度 = "0x01", 数据 = "0x00强行结束,,0x01开始自动校漂,,0xA0退出校漂模式,,0xA1校漂模式", 校验 = "校验", 报尾 = "0x59", 备注 = null });
-            Mbslist.Add(new Module { 序号 = "38", 模块 = "参数设置", 功能 = "自动漂移反馈", 方向 = "设备反馈", 报头 = "0x78", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x02", 数据长度 = "0x01", 数据 = "0x00未开始自动校漂，,0x01自动校漂中，,0x02自动校漂完毕，,0x11伺服未上电，,0x12图像跟踪不正常，,0x13不在跟踪模式下，,0xA0退出校漂模式，,0xA1校漂模式", 校验 = "校验", 报尾 = "0x79", 备注 = null });
-            Mbslist.Add(new Module { 序号 = "39", 模块 = "参数设置", 功能 = "读取保存参数", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0xA0", 数据长度 = "0x01", 数据 = "0x00读取，,0x01保存", 校验 = "校验", 报尾 = "0x59", 备注 = null });
-            Mbslist.Add(new Module { 序号 = "40", 模块 = "参数设置", 功能 = "读取保存参数反馈", 方向 = "设备反馈", 报头 = "0x78", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0xA0", 数据长度 = "0x01", 数据 = "0x00读取异常，,0x01读取成功,,0x10保存异常,,0x11保存成功", 校验 = "校验", 报尾 = "0x79", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "35", 模块 = "伺服控制", 功能 = "零位修正", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x00", 数据长度 = "0x06", 数据 = "D5：0x00清零， 0x01方位，0x02俯仰；,D6：0x00绝对值， 0x01变化值；,D7~D10：float数据（-360~360度）", 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "36", 模块 = "伺服控制", 功能 = "陀螺漂移手动修正", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x01", 数据长度 = "0x05", 数据 = "D5：0x00清零，0x01方位，0x02俯仰；,D6~D9：陀螺漂移修正值float数据（0~3°/s）", 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "37", 模块 = "伺服控制", 功能 = "漂移自动修正", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x02", 数据长度 = "0x01", 数据 = "0x00强行结束,,0x01开始自动校漂,,0xA0退出校漂模式,,0xA1校漂模式", 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "38", 模块 = "伺服控制", 功能 = "自动漂移反馈", 方向 = "设备反馈", 报头 = "0x78", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0x02", 数据长度 = "0x01", 数据 = "0x00未开始自动校漂，,0x01自动校漂中，,0x02自动校漂完毕，,0x11伺服未上电，,0x12图像跟踪不正常，,0x13不在跟踪模式下，,0xA0退出校漂模式，,0xA1校漂模式", 校验 = "校验", 报尾 = "0x79", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "39", 模块 = "伺服控制", 功能 = "读取保存参数", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0xA0", 数据长度 = "0x01", 数据 = "0x00读取，,0x01保存", 校验 = "校验", 报尾 = "0x59", 备注 = null });
+            Mbslist.Add(new Module { 序号 = "40", 模块 = "伺服控制", 功能 = "读取保存参数反馈", 方向 = "设备反馈", 报头 = "0x78", 设备 = "0xEA", 功能字节1 = "0x70", 功能字节2 = "0xA0", 数据长度 = "0x01", 数据 = "0x00读取异常，,0x01读取成功,,0x10保存异常,,0x11保存成功", 校验 = "校验", 报尾 = "0x79", 备注 = null });
             Mbslist.Add(new Module { 序号 = "41", 模块 = "其他报文", 功能 = "心跳  握手", 方向 = "设备接收", 报头 = "0x58", 设备 = "0xEA", 功能字节1 = "0xA0", 功能字节2 = "0x00", 数据长度 = "0x01", 数据 = "0x00", 校验 = "校验", 报尾 = "0x59", 备注 = null });
             Mbslist.Add(new Module { 序号 = "42", 模块 = "其他报文", 功能 = "心跳  反馈", 方向 = "设备反馈", 报头 = "0x78", 设备 = "0xEA", 功能字节1 = "0xA0", 功能字节2 = "0x00", 数据长度 = "0x02", 数据 = "D5：版本号整数(2位)；,D6：版本号小数(2位)", 校验 = "校验", 报尾 = "0x79", 备注 = "心跳反馈数据为软件版本号" });
             Mbslist.Add(new Module { 序号 = "43", 模块 = "反馈      报文", 功能 = "光电  数据", 方向 = "设备反馈", 报头 = "0x78", 设备 = "0xEA", 功能字节1 = "0xF0", 功能字节2 = "0x01", 数据长度 = "0x22", 数据 = "D5~D8: 方位角float数据；,D9~D12：俯仰角float数据；,D13~D16：陀螺方位角速度float数据；,D17~D20：陀螺俯仰角速度float数据；,D21~D24：测角方位角速度float数据；,D25~D28：测角俯仰角速度float数据；,D29：测偏量有效标志；0x00无效，0x01有效；,D30~D31：int16_t左右偏差(单位0.1个像素),D32~D33：int16_t高低偏差(单位0.1个像素),D34：激光数据有效标志；0x00无效，0x01有效；,D35~D38：目标距离float数据；", 校验 = "校验", 报尾 = "0x79", 备注 = "持续反馈，频率可调，默认反馈频率 为：50Hz" });
