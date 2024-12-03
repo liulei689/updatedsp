@@ -98,11 +98,14 @@ namespace AFWDPP.Views
             }
             else
             {
-                IDC_EDIT_FC_2_SelectionChanged(null, null);
-                var res = GetComboBoxSelectedValues();
-                for (int i = 0; i < res.Length; i++)
+                if (sendermodel.IsChecked == true)
                 {
-                    SendCache[5 + i] = res[i];
+                    IDC_EDIT_FC_2_SelectionChanged(null, null);
+                    var res = GetComboBoxSelectedValues();
+                    for (int i = 0; i < res.Length; i++)
+                    {
+                        SendCache[5 + i] = res[i];
+                    }
                 }
             }
 
@@ -888,6 +891,21 @@ namespace AFWDPP.Views
             }
 
             return selectedValues;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+            IDC_EDIT_FC_2_SelectionChanged(null, null);
+            var res = GetComboBoxSelectedValues();
+            for (int i = 0; i < res.Length; i++)
+            {
+                SendCache[5 + i] = res[i];
+            }
+            // 计算校验和并发送数据
+            DSP28335.CalculateChecksum(SendCache);
+            //SendCache[SendCache[4] + 7 - 2] =  SendCache.CalculateChecksum();
+            sendData(SendCache, 7 + SendCache[4]);
         }
     }
 
