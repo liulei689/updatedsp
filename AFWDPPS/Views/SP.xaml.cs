@@ -66,8 +66,9 @@ namespace AFWDPP.Views
             //握手定时器
             timerhandshake = new DispatcherTimer();
             timerhandshake.Interval = TimeSpan.FromMilliseconds(200);
-            // timerhandshake.IsEnabled = false;
+            timerhandshake.IsEnabled = true;
             timerhandshake.Tick += timerhandshake_Tick;
+            timerhandshake.Start();
             var ports = Common.Common.SearchPort();
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
             {
@@ -83,20 +84,7 @@ namespace AFWDPP.Views
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
 
         }
-        byte[] testdata1 = new byte[83];
-        byte[] d1 = { 0x05, 0x06, 0x00, 0x0d, 0x00, 0x01, 0xD8, 0x4D };
-        byte[] d2 = { 0x05, 0x06, 0x00, 0x0E, 0x00, 0x05, 0x29, 0x8E };
-        byte[] d3 = { 0x05, 0x03, 0xA0, 0x00, 0x00, 0x00, 0x66, 0x4E };
-        byte[] d4 = { 0x07, 0x03, 0x41, 0x3C, 0x0B, 0x00, 0x21 };
-        byte[] d5 = { 0x07, 0x03, 0x41, 0x4F, 0x0B, 0x00, 0x21 };
-        byte[] d6 = { 0x07, 0x03, 0x34, 0x00, 0x04, 0x00, 0x21 };
-        byte[] c1 = { 0x05, 0x06, 0x00, 0x0d, 0x00, 0x01, 0xD8, 0x4D };
 
-        byte[] c2 = { 0x05, 0x06, 0x00, 0x0E, 0x00, 0x05, 0x29, 0x8E };
-        byte[] c3 = { 0x05, 0x03, 0x2B, 0x35, 0x35, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x4F, 0x4B, 0x2C, 0x35, 0x39, 0x39, 0x35, 0x34, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x30, 0x2C, 0x32, 0x34, 0x36, 0x30, 0x39, 0x37, 0x25 };
-        byte[] c4 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
-        byte[] c5 = { 0x07, 0x03, 0x16, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0xff, 0xf5, 0xff, 0xf6, 0xff, 0xf7, 0xff, 0xf8, 0xff, 0xf9, 0xff, 0xfa, 0xff, 0xfb, 0x37, 0x25 };
-        byte[] c6 = { 0x07, 0x03, 0x08, 0xff, 0xf1, 0xff, 0xf2, 0xff, 0xf3, 0xff, 0xf4, 0x37, 0x25 };
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -109,57 +97,8 @@ namespace AFWDPP.Views
                 return;
 
             //// 将字节数组转换为十六进制字符串  
-            //if (buffer.SequenceEqual(d1))
-            //{
-            //    sendData(c1, c1.Length);
 
-            //}
-            //else if (buffer.SequenceEqual(d2))
-            //{
-            //    sendData(c2, c2.Length);
 
-            //}
-            //else if (buffer.SequenceEqual(d3))
-            //{
-            //    sendData(c3, c3.Length);
-
-            //}
-            //else if (buffer.SequenceEqual(d4))
-            //{
-            //    sendData(c4, c4.Length);
-
-            //}
-            //else if (buffer.SequenceEqual(d5))
-            //{
-            //    sendData(c5, c5.Length);
-
-            //}
-            //else if (buffer.SequenceEqual(d6))
-            //{
-            //    sendData(c6, c6.Length);
-
-            //}
-            testdata1[0] = 0xEB;
-            testdata1[1] = 0x90;
-            testdata1[3] = 0x13;
-            byte[] buffer3 = new byte[7];
-            buffer3[0] = 0xA5;
-            buffer3[1] = 0x02;
-
-            // 示例用法
-            short xAxisAngle = 1500;  // X 轴示例角度
-            short yAxisAngle = -2500; // Y 轴示例角度
-
-            // 调用方法并获取结果
-            var (Hx_X, Lx_X) = ConvertAngleToBytes(xAxisAngle);
-            var (Hx_Y, Lx_Y) = ConvertAngleToBytes(yAxisAngle);
-
-            buffer3[2] = Hx_X;
-            buffer3[3] = Lx_X;
-            buffer3[4] = Hx_Y;
-            buffer3[5] = Lx_Y;
-            GetSPsum(buffer3, 7);
-            sendData(buffer3, 7);
             string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
             string strs = isrxcheck ? "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]收←◆" : "";
 
@@ -176,6 +115,7 @@ namespace AFWDPP.Views
                 txlog.ScrollToEnd();
             });
         }
+        byte heda = 0;
         public static (byte Hx, byte Lx) ConvertAngleToBytes(short angle)
         {
             // 假设 X 轴和 Y 轴的最大正值分别为 20.5° 和 30.5°，对应的指令值为 20500 和 30500
@@ -238,7 +178,7 @@ namespace AFWDPP.Views
                             serialPort2.Close();    //关闭串口
                             comlist.IsEnabled = true;
                             botelv.IsEnabled = true;
-                            RecDataDeal.Abort();
+                            // RecDataDeal.Abort();
                         }
                         else
                         {
@@ -606,10 +546,29 @@ namespace AFWDPP.Views
         {
             if (serialPort2.IsOpen == false)
             {
-                timerhandshake.Stop();
                 return;
             }
-            SendPackStart();
+            byte[] buffer3 = new byte[40];
+            buffer3[0] = 0x78;
+            buffer3[1] = 0xEA;
+            buffer3[2] = 0xF0;
+            buffer3[3] = 0x01;
+            buffer3[4] = 0x21;
+
+            buffer3[29] = 0x01;
+            buffer3[30] = 0x01;
+            buffer3[31] = 0x01;
+            buffer3[32] = 0x01;
+            buffer3[33] = 0x01;
+            buffer3[34] = 0x12;
+            buffer3[35] = 0x34;
+            buffer3[36] = 0x01;
+            if (heda > 255) heda = 0;
+            buffer3[37] = heda++;
+            DSP28335.CalculateChecksum(buffer3);
+            buffer3[39] = 0x79;
+            sendData(buffer3, buffer3.Length);
+            // SendPackStart();
         }
         /// <summary>
         /// 发送握手数据包
