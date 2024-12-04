@@ -1,5 +1,4 @@
 ﻿using AFWDPP.Common;
-
 using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
@@ -277,8 +276,8 @@ namespace AFWDPP.Views
                                     }
                                     if (!rx.IsEnabled)
                                         rx.IsEnabled = true;
-
-                                    rxlog.AddOne(hexString, "收←◆");
+                                    if (rxtxshow.IsChecked == true)
+                                        rxlog.AddOne(hexString, "收←◆");
 
                                 });
                             }
@@ -373,8 +372,6 @@ namespace AFWDPP.Views
                         {
                             //// 停止固件升级
                             UpdateFlag = false;
-
-
                             ////串口已经处于打开状态
                             serialPort2.Close();    //关闭串口
                             comlist.IsEnabled = true;
@@ -421,7 +418,6 @@ namespace AFWDPP.Views
                     RecDataDeal = new Thread(new ThreadStart(ProtocolParsing));
                     RecDataDeal.IsBackground = true;
                     RecDataDeal.Start();
-
                 }
             }
             catch (Exception ex)
@@ -448,8 +444,6 @@ namespace AFWDPP.Views
         /// </summary>
         public void ProtocolParsing()
         {
-
-
 
         }
         bool issend = false;
@@ -482,7 +476,6 @@ namespace AFWDPP.Views
         /// 发送二进制数据包
         /// </summary>
         /// <param name="packorder"></param>
-
         #endregion
         #region 串口读取数据
         /// <summary>
@@ -497,11 +490,7 @@ namespace AFWDPP.Views
         private void openclosecom_Click(object sender, RoutedEventArgs e)
         {
             OpenCloseCom();
-            HandyControl.Controls.NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
-
         }
-
-
 
         /// <summary>
         /// 对数据进行分包,并启动升级
@@ -509,7 +498,6 @@ namespace AFWDPP.Views
         /// <param name="data"></param>
         /// <param name="datalen"></param>
         /// <returns></returns>
-
 
         bool istoend = false;
         /// <summary>
@@ -523,11 +511,12 @@ namespace AFWDPP.Views
             Application.Current.Dispatcher.Invoke(() =>
             {
                 tx.IsEnabled = true;
-
-                // 将字节数组转换为十六进制字符串  
-                string hexString = BitConverter.ToString(databuf, 0, datalength).Replace("-", " ").ToUpper();
-
-                txlog.AddOne(hexString, "发→◇");
+                if (rxtxshow.IsChecked == true)
+                {
+                    // 将字节数组转换为十六进制字符串  
+                    string hexString = BitConverter.ToString(databuf, 0, datalength).Replace("-", " ").ToUpper();
+                    txlog.AddOne(hexString, "发→◇");
+                }
 
             });
 
@@ -895,7 +884,6 @@ namespace AFWDPP.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
             IDC_EDIT_FC_2_SelectionChanged(null, null);
             var res = GetComboBoxSelectedValues();
             for (int i = 0; i < res.Length; i++)
@@ -906,6 +894,11 @@ namespace AFWDPP.Views
             DSP28335.CalculateChecksum(SendCache);
             //SendCache[SendCache[4] + 7 - 2] =  SendCache.CalculateChecksum();
             sendData(SendCache, 7 + SendCache[4]);
+        }
+
+        private void ShowNotify()
+        {
+            HandyControl.Controls.NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
         }
     }
 

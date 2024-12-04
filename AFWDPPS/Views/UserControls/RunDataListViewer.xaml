@@ -32,14 +32,25 @@
                         </MenuItem>
                         <Separator />
                         <MenuItem Header="时间显示" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked"/>
+                        <MenuItem Header="清空" Click="MenuItem_Click_5">
+                            <MenuItem.Icon>
+                                <rubyer:Icon Type="MoonClearFill" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="以文本查看" Click="MenuItem_Click">
                             <MenuItem.Icon>
                                 <rubyer:Icon Type="Book2Fill" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
-                        <MenuItem Header="更多">
-                            <MenuItem Header="..." />
+                        <MenuItem Header="缓冲区大小">
+                            <MenuItem.Icon>
+                                <rubyer:Icon Type="Coupon2Fill" />
+                            </MenuItem.Icon>
+                            <MenuItem Header="50条" Click="MenuItem_Click_1"/>
+                            <MenuItem Header="100条" Click="MenuItem_Click_2"/>
+                            <MenuItem Header="500条" Click="MenuItem_Click_3" />
+                            <MenuItem Header="1000条" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </ContextMenu>
                 </ListView.ContextMenu>

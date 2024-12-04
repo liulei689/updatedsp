@@ -77,22 +77,17 @@ namespace 导引头上位机程序.Views.UserControls
                 Content = contentTextBlock
             };
             listViewItem.Width = rtbLog.ActualWidth - 5;
-            // 将ListViewItem添加到ListView的Items集合中  
-            rtbLog.Items.Add(listViewItem);
-            if (rtbLog.Items.Count > 0)
-            {
-                if (rtbLog.Items.Count >= 50)
-                {
-                    // 如果项数超过100，移除最上面的一项  
-                    rtbLog.Items.RemoveAt(0);
-                    if (!istoend)
-                    {
-                        istoend = true;
-                        rtbLog.ScrollIntoView(rtbLog.Items[rtbLog.Items.Count - 1]);
-                    }
+            // 将ListViewItem插入到ListView的Items集合中的最前面
+            rtbLog.Items.Insert(0, listViewItem);
 
-                }
+            // 如果项数超过最大值，移除最下面的一项（现在是最旧的一项）
+            if (rtbLog.Items.Count > maxcount)
+            {
+                rtbLog.Items.RemoveAt(rtbLog.Items.Count - 1);
             }
+
+            // 可选：滚动到顶部显示最新添加的项
+            rtbLog.ScrollIntoView(listViewItem);
         }
 
         private void MenuItem_Checked(object sender, RoutedEventArgs e)
@@ -105,5 +100,34 @@ namespace 导引头上位机程序.Views.UserControls
             issxcheck = false;
         }
 
+        private int maxcount = 50;
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            rtbLog.Items.Clear();
+            maxcount = 50;
+        }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            rtbLog.Items.Clear();
+            maxcount = 100;
+        }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            rtbLog.Items.Clear();
+            maxcount = 500;
+        }
+
+        private void MenuItem_Click_4(object sender, RoutedEventArgs e)
+        {
+            rtbLog.Items.Clear();
+            maxcount = 1000;
+        }
+
+        private void MenuItem_Click_5(object sender, RoutedEventArgs e)
+        {
+            rtbLog.Items.Clear();
+        }
     }
 }
