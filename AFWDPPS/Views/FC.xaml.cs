@@ -85,15 +85,22 @@ namespace AFWDPP.Views
 
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
-            if (md == null)
-            {
-                md = Mbslist.FindLast(o => o.功能 == "心跳  握手");
-            }
-
             if (useSetCacheByModel)
             {
-                if (headhe.IsChecked == true)
-                    SetCacheByModel(md);
+                if (useSetCacheByModel)
+                {
+                    if (headhe.IsChecked == true)
+                    {
+                        if (md == null)
+                        {
+                            md = Mbslist.FindLast(o => o.功能 == "心跳  握手");
+
+
+                        }
+                        else
+                            SetCacheByModel(md);
+                    }
+                }
             }
             else
             {
