@@ -94,16 +94,20 @@ namespace AFWDPP.Views
             buffer3.FloatStringToBytes(IDC_EDIT_FC_17_20.Text, 17);
             buffer3.FloatStringToBytes(IDC_EDIT_FC_21_24.Text, 21);
             buffer3.FloatStringToBytes(IDC_EDIT_FC_25_28.Text, 25);
-            buffer3[29] = 0x01;
-            buffer3[30] = 0x01;
-            buffer3[31] = 0x01;
-            buffer3[32] = 0x01;
-            buffer3[33] = 0x01;
-            buffer3[34] = 0x12;
-            buffer3[35] = 0x34;
-            buffer3[36] = 0x01;
+            buffer3[29] = IDC_EDIT_FC_29.Text.ToByte();
+            buffer3[30] = IDC_EDIT_FC_30.Text.ToByte();
+            buffer3[31] = IDC_EDIT_FC_31.Text.ToByte();
+            buffer3[32] = IDC_EDIT_FC_32.Text.ToByte();
+            buffer3[33] = IDC_EDIT_FC_33.Text.ToByte();
+            buffer3[34] = IDC_EDIT_FC_34.Text.ToByte();
+            buffer3[35] = IDC_EDIT_FC_35.Text.ToByte();
+            buffer3[36] = IDC_EDIT_FC_36.Text.ToByte();
             if (heda > 255) heda = 0;
             buffer3[37] = heda++;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                IDC_EDIT_FC_37.Text = buffer3[37].ToString();
+            });
             DSP28335.CalculateChecksum(buffer3);
             buffer3[39] = 0x79;
             sendData(buffer3, buffer3.Length);
@@ -194,7 +198,7 @@ namespace AFWDPP.Views
                             G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DEVICE_FC1;
                             G_btList_RecBuf.Add(tmpByte);
                         }
-                        else if (tmpByte == HEAD1)  //此处代码起到保护帧头1的下一个字节不被本函数丢掉
+                        else if (tmpByte == 0x58)  //此处代码起到保护帧头1的下一个字节不被本函数丢掉
                         {
                             G_btList_RecBuf.Clear();
                             G_btList_RecBuf.Add(tmpByte);
@@ -238,34 +242,64 @@ namespace AFWDPP.Views
                                 // 使用BitConverter将字节数组转换为float
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
-                                    if (data[2] == 0xA0 && data[3] == 0x00 && data[4] == 0x02 && data.Length == 9) //心跳帧
+                                    if (data[2] == 0x50 && data[3] == 0x00 && data[4] == 0x01)  //1
                                     {
-                                        IDC_EDIT_CHECKA_0.Content = headcount++;
-                                        IDC_EDIT_CHECKA_1.Content = DSP28335.GetVersionToString(data[5], data[4]);
+                                        IDC_EDIT_CHECKB_1.Content = countshead[0]++;
+                                        IDC_EDIT_CHECKB_1_5.Content = data[5].ToString("X2");
                                     }
-                                    if (data[2] == 0xF0 && data[3] == 0x01 && data[4] == 0x22) //光电数据
+                                    if (data[2] == 0x50 && data[3] == 0x01 && data[4] == 0x01) //2
                                     {
-                                        IDC_EDIT_CHECKA_13.Content = headcount2++;
+                                        IDC_EDIT_CHECKB_2.Content = countshead[1]++;
+                                        IDC_EDIT_CHECKB_2_5.Content = data[5].ToString("X2");
+
                                     }
-                                    if (data[2] == 0xF0 && data[3] == 0x02 && data[4] == 0x0B) //光电信息
+                                    if (data[2] == 0x50 && data[3] == 0x02 && data[4] == 0x08) //3
                                     {
-                                        IDC_EDIT_CHECKA_14.Content = headcount3++;
+                                        IDC_EDIT_CHECKA_3.Content = countshead[2]++;
+                                        IDC_EDIT_CHECKA_3_5.Content = data[5].ToString("X2");
+
                                     }
-                                    if (data[2] == 0xF0 && data[3] == 0x03 && data[4] == 0x07) //故障码
+                                    if (data[2] == 0x50 && data[3] == 0xA2 && data[4] == 0x08) //4
                                     {
-                                        IDC_EDIT_CHECKA_31.Content = headcount4++;
+                                        IDC_EDIT_CHECKA_4.Content = countshead[3]++;
+                                        IDC_EDIT_CHECKA_4_5.Content = data[5].ToString("X2");
+
                                     }
-                                    if (data[2] == 0xF0 && data[3] == 0x06) //识别物体
+                                    if (data[2] == 0x50 && data[3] == 0x03 && data[4] == 0x0C) //5
                                     {
-                                        IDC_EDIT_CHECKA_32.Content = headcount5++;
+                                        IDC_EDIT_CHECKA_5.Content = countshead[4]++;
+                                        IDC_EDIT_CHECKA_5_5.Content = data[5].ToString("X2");
+
                                     }
-                                    if (data[2] == 0x70 && data[3] == 0x02) //漂移
+                                    if (data[2] == 0x50 && data[3] == 0x04 && data[4] == 0x0D) //6
                                     {
-                                        IDC_EDIT_CHECKB_0.Content = headcount6++;
+                                        IDC_EDIT_CHECKA_6.Content = countshead[5]++;
+                                        IDC_EDIT_CHECKA_6_5.Content = data[5].ToString("X2");
+
                                     }
-                                    if (data[2] == 0x70 && data[3] == 0xA0) //读取保存
+                                    if (data[2] == 0x51 && data[3] == 0x10 && data[4] == 0x01) //7
                                     {
-                                        IDC_EDIT_CHECKB_2.Content = headcount7++;
+                                        IDC_EDIT_CHECKA_7.Content = countshead[6]++;
+                                        IDC_EDIT_CHECKA_7_5.Content = data[5].ToString("X2");
+
+                                    }
+                                    if (data[2] == 0x70 && data[3] == 0x00 && data[4] == 0x06) //8
+                                    {
+                                        IDC_EDIT_CHECKA_8.Content = countshead[7]++;
+                                        IDC_EDIT_CHECKA_8_5.Content = data[5].ToString("X2");
+
+                                    }
+                                    if (data[2] == 0x70 && data[3] == 0x01 && data[4] == 0x05) //9
+                                    {
+                                        IDC_EDIT_CHECKA_9.Content = countshead[8]++;
+                                        IDC_EDIT_CHECKA_9_5.Content = data[5].ToString("X2");
+
+                                    }
+                                    if (data[2] == 0x70 && data[3] == 0x02 && data[4] == 0x01) //10
+                                    {
+                                        IDC_EDIT_CHECKA_10.Content = countshead[9]++;
+                                        IDC_EDIT_CHECKA_10_5.Content = data[5].ToString("X2");
+
                                     }
                                     if (!rx.IsEnabled)
                                         rx.IsEnabled = true;
@@ -330,13 +364,7 @@ namespace AFWDPP.Views
             // }
         }
         private int headcount = 0;
-        private int headcount2 = 0;
-        private int headcount3 = 0;
-        private int headcount4 = 0;
-        private int headcount5 = 0;
-
-        private int headcount6 = 0;
-        private int headcount7 = 0;
+        int[] countshead = new int[20];
         bool istoendd = false;
         void GetSPsum(byte[] data, int length)
         {
