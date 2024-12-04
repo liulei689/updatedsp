@@ -63,10 +63,6 @@ namespace AFWDPP.Views
             serialPort2.RtsEnable = true;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
             Loaded += FC_Loaded;
-        }
-        Dictionary<string, List<string>> moduleFunctions;
-        private void FC_Loaded(object sender, RoutedEventArgs e)
-        {
             LoadData();
             var moduleGroups = Mbslist.GroupBy(m => m.模块).ToList();
             // 创建一个字典来快速查找每个模块下的功能
@@ -77,6 +73,11 @@ namespace AFWDPP.Views
             var moduleNames = moduleGroups.Select(g => g.Key).ToList();
             IDC_EDIT_FC_1.ItemsSource = moduleNames;
             IDC_EDIT_FC_1.SelectedIndex = 0;
+        }
+        Dictionary<string, List<string>> moduleFunctions;
+        private void FC_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
 
         byte HEARTBEAT = 0;
@@ -860,7 +861,7 @@ namespace AFWDPP.Views
                     IsEditable = true,
                     ItemsSource = items,
                     Tag = $"{i}", // 设置 Tag 属性以区分不同的 ComboBox
-                    Width = 100 // 你可以根据需要设置宽度
+                    Width = 50 // 你可以根据需要设置宽度
                 };
 
                 IDC_EDIT_FC_5.Children.Add(comboBox);

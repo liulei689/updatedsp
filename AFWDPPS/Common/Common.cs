@@ -7,7 +7,17 @@ namespace AFWDPP.Common
 {
     public static class Common
     {
-
+        public static void FloatStringToBytes(this byte[] bytes, string floatvalue, int startindex)
+        {
+            if (int.TryParse(floatvalue, out int re3))
+            {
+                var data3 = FloatToLittleEndianBytes(re3);
+                bytes[startindex] = data3[0];
+                bytes[startindex + 1] = data3[1];
+                bytes[startindex + 2] = data3[2];
+                bytes[startindex + 3] = data3[3];
+            }
+        }
 
         public static void ToByte(this byte[] bytes, TextBox textbox)
         {

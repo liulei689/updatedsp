@@ -10,7 +10,7 @@
         <Grid Margin="5" 
                   rubyer:GridHelper.RowDefinitions="Auto,Auto, Auto,*"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Stretch">
-            <GroupBox Grid.Row="0" Header="模拟飞空平台-操作区域"  >
+            <GroupBox Grid.Row="0" Header="模拟伺服平台-操作区域"  >
                 <Grid  rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,Auto,*">
                     <Grid  rubyer:GridHelper.ColumnDefinitions="Auto,*, Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Margin="5">
                         <TextBlock Grid.Column="0"  Text="串口号:"  />
@@ -37,28 +37,58 @@
                                Grid.Row="3"                                        
                                Margin="1"
                                Columns="4">
-                        <rubyer:DescriptionItem  Description="模块"  >
-                            <ComboBox x:Name="IDC_EDIT_FC_1" MinWidth="100"  Text="90" SelectedIndex="0" SelectionChanged="IDC_EDIT_FC_1_SelectionChanged"/>
+                        <rubyer:DescriptionItem  Description="【5~8】方位角float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_5_8"  Text="0" Tag="Hex" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="功能"  >
-                            <ComboBox x:Name="IDC_EDIT_FC_2"  Text="90" SelectedIndex="0" SelectionChanged="IDC_EDIT_FC_2_SelectionChanged"/>
+                        <rubyer:DescriptionItem  Description="【9~12】俯仰角float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_9_12"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="开启心跳"  >
-                            <ToggleButton  x:Name="headhe" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
+                        <rubyer:DescriptionItem  Description="【13~16】陀螺方位角速度float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_13_16"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【17~20】陀螺俯仰角速度float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_17_20"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【21~24】测角方位角速度float数据" >
+                            <TextBox x:Name="IDC_EDIT_FC_21_24"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【25~28】测角俯仰角速度float数据" >
+                            <TextBox x:Name="IDC_EDIT_FC_25_28"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【29】伺服模块状态字" >
+                            <TextBox x:Name="IDC_EDIT_FC_29"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【30】伺服模块故障字反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_30"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【31】陀螺故障字反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_31"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【32】参数装调反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_32"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【33】校漂状态字反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_33"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【34】版本号整数(2位)" >
+                            <TextBox x:Name="IDC_EDIT_FC_34"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【35】版本号小数" >
+                            <TextBox x:Name="IDC_EDIT_FC_35"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【36】测跟踪模式" >
+                            <TextBox x:Name="IDC_EDIT_FC_36"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【37】帧计数" >
+                            <TextBox x:Name="IDC_EDIT_FC_37"  Text="90" IsReadOnly="True" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="开启接发数据显示"  >
-                            <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
+                            <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
                         </rubyer:DescriptionItem>
-                        <!--<rubyer:DescriptionItem  Description="方向"  x:Name="IDC_EDIT_FC_3"  />-->
-                        <rubyer:DescriptionItem  Description="备注"   x:Name="IDC_EDIT_FC_4" />
-                        <rubyer:DescriptionItem  Description="数据"   >
-                            <StackPanel Orientation="Horizontal" Name="IDC_EDIT_FC_5"></StackPanel>
-                        </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="数据详情"   x:Name="IDC_EDIT_FC_6" />
                         <rubyer:DescriptionItem  Description="自动发送"  >
                             <StackPanel Orientation="Horizontal" >
-                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
-                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click"  Cursor="Hand">
+                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
+                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Cursor="Hand">
 
                                 </Button>
                             </StackPanel>

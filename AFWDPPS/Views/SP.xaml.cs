@@ -74,51 +74,40 @@ namespace AFWDPP.Views
                g => g.Key,
                g => g.Select(m => m.功能).ToList()
            );
-            var moduleNames = moduleGroups.Select(g => g.Key).ToList();
-            IDC_EDIT_FC_1.ItemsSource = moduleNames;
-            IDC_EDIT_FC_1.SelectedIndex = 0;
         }
 
         byte HEARTBEAT = 0;
         Module md = null;
         private bool useSetCacheByModel = true;  // 标志变量，用于控制交替执行
-
+        private byte heda = 0;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
+            byte[] buffer3 = new byte[40];
+            buffer3[0] = 0x78;
+            buffer3[1] = 0xEA;
+            buffer3[2] = 0xF0;
+            buffer3[3] = 0x01;
+            buffer3[4] = 0x21;
+            buffer3.FloatStringToBytes(IDC_EDIT_FC_5_8.Text, 5);
+            buffer3.FloatStringToBytes(IDC_EDIT_FC_9_12.Text, 9);
+            buffer3.FloatStringToBytes(IDC_EDIT_FC_13_16.Text, 13);
+            buffer3.FloatStringToBytes(IDC_EDIT_FC_17_20.Text, 17);
+            buffer3.FloatStringToBytes(IDC_EDIT_FC_21_24.Text, 21);
+            buffer3.FloatStringToBytes(IDC_EDIT_FC_25_28.Text, 25);
+            buffer3[29] = 0x01;
+            buffer3[30] = 0x01;
+            buffer3[31] = 0x01;
+            buffer3[32] = 0x01;
+            buffer3[33] = 0x01;
+            buffer3[34] = 0x12;
+            buffer3[35] = 0x34;
+            buffer3[36] = 0x01;
+            if (heda > 255) heda = 0;
+            buffer3[37] = heda++;
+            DSP28335.CalculateChecksum(buffer3);
+            buffer3[39] = 0x79;
+            sendData(buffer3, buffer3.Length);
 
-
-            if (useSetCacheByModel)
-            {
-                if (headhe.IsChecked == true)
-                {
-                    if (md == null)
-                    {
-                        md = Mbslist.FindLast(o => o.功能 == "心跳  握手");
-                    }
-                    else
-                        SetCacheByModel(md);
-                }
-            }
-            else
-            {
-                if (sendermodel.IsChecked == true)
-                {
-                    IDC_EDIT_FC_2_SelectionChanged(null, null);
-                    var res = GetComboBoxSelectedValues();
-                    for (int i = 0; i < res.Length; i++)
-                    {
-                        SendCache[5 + i] = res[i];
-                    }
-                }
-            }
-
-            // 切换标志变量的状态
-            useSetCacheByModel = !useSetCacheByModel;
-
-            // 计算校验和并发送数据
-            DSP28335.CalculateChecksum(SendCache);
-            //SendCache[SendCache[4] + 7 - 2] =  SendCache.CalculateChecksum();
-            sendData(SendCache, 7 + SendCache[4]);
         }
 
         byte[] testdata1 = new byte[83];
@@ -189,7 +178,7 @@ namespace AFWDPP.Views
                     case (int)enum_ComStatus.COM_STATUS_HEAD1:
                         G_btList_RecBuf.Clear();
 
-                        if (tmpByte == HEAD1)
+                        if (tmpByte == 0x58)
                         {
                             // tmpHEAD1 = tmpByte;
                             //切换协议解析状态
@@ -238,7 +227,7 @@ namespace AFWDPP.Views
                     case (int)enum_ComStatus.COM_STATUS_DATA:
                         G_btList_RecBuf.Add(tmpByte);
                         //数据接收完成后的有效性判断
-                        if (G_btList_RecBuf.Count == G_int_RecBufLen && G_btList_RecBuf[G_int_RecBufLen - 1] == 0x79)  //包接收完成
+                        if (G_btList_RecBuf.Count == G_int_RecBufLen && G_btList_RecBuf[G_int_RecBufLen - 1] == 0x59)  //包接收完成
                         {
                             //检查校验和字节
                             if (DSP28335.CheckChecksum(G_btList_RecBuf.ToArray()))
@@ -800,34 +789,9 @@ namespace AFWDPP.Views
             return byteArray;
         }
 
-        private void IDC_EDIT_FC_1_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (moduleFunctions.ContainsKey(IDC_EDIT_FC_1.SelectedValue.ToString()))
-            {
-                IDC_EDIT_FC_2.ItemsSource = null;
-                IDC_EDIT_FC_2.ItemsSource = moduleFunctions[IDC_EDIT_FC_1.SelectedValue.ToString()];
-                IDC_EDIT_FC_2.SelectedIndex = 0;
-            }
-            else
-            {
-                IDC_EDIT_FC_2.ItemsSource = null;
-            }
-        }
+
         byte[] SendCache = new byte[100];
-        private void IDC_EDIT_FC_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (IDC_EDIT_FC_2.SelectedValue == null || IDC_EDIT_FC_1.SelectedValue == null)
-                return;
-            var data = Mbslist.FindLast(o => o.模块 == IDC_EDIT_FC_1.SelectedValue.ToString() && o.功能 == IDC_EDIT_FC_2.SelectedValue.ToString());
-            if (sender != null)
-            {
-                //IDC_EDIT_FC_3.Content = data.方向;
-                IDC_EDIT_FC_4.Content = data.备注;
-                AddComboBoxes(data.数据长度.ToByte());
-                IDC_EDIT_FC_6.Content = data.数据;
-            }
-            SetCacheByModel(data);
-        }
+
         private void SetCacheByModel(Module data)
         {
             Array.Clear(SendCache, 0, SendCache.Length);
@@ -841,64 +805,11 @@ namespace AFWDPP.Views
             SendCache[6 + len] = data.报尾.ToByte();
         }
 
-        private void AddComboBoxes(byte counts)
-        {
-            // 清除之前添加的 ComboBox
-            IDC_EDIT_FC_5.Children.Clear();
-            // 定义 ComboBox 的数据源
-            List<string> items = Enumerable.Range(1, counts).Select(i => $"0x{i:X2}").ToList();
-            items.Add("0x00"); // 在列表末尾添加 0x00
-                               // 动态添加 ComboBox
-            for (int i = 0; i < counts; i++) // 假设你要添加 5 个 ComboBox
-            {
-                ComboBox comboBox = new ComboBox
-                {
-                    SelectedIndex = 0, // 默认选中第一个项
-                    IsEditable = true,
-                    ItemsSource = items,
-                    Tag = $"{i}", // 设置 Tag 属性以区分不同的 ComboBox
-                    Width = 100 // 你可以根据需要设置宽度
-                };
-
-                IDC_EDIT_FC_5.Children.Add(comboBox);
-            }
-        }
 
 
-        private byte[] GetComboBoxSelectedValues()
-        {
-            if (IDC_EDIT_FC_5.Children.Count == 0) return [];
-            var selectedValues = new byte[IDC_EDIT_FC_5.Children.Count];
-            foreach (var child in IDC_EDIT_FC_5.Children)
-            {
-                if (child is ComboBox comboBox)
-                {
-                    if (int.TryParse(comboBox.Tag.ToString(), out int tag))
 
-                        if (comboBox.Text != null)
-                        {
-                            if (comboBox.Text.Length == 4 && comboBox.Text.Contains("0x"))
-                                selectedValues[tag] = comboBox.Text.ToByte();
-                        }
-                }
-            }
 
-            return selectedValues;
-        }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            IDC_EDIT_FC_2_SelectionChanged(null, null);
-            var res = GetComboBoxSelectedValues();
-            for (int i = 0; i < res.Length; i++)
-            {
-                SendCache[5 + i] = res[i];
-            }
-            // 计算校验和并发送数据
-            DSP28335.CalculateChecksum(SendCache);
-            //SendCache[SendCache[4] + 7 - 2] =  SendCache.CalculateChecksum();
-            sendData(SendCache, 7 + SendCache[4]);
-        }
 
         private void ShowNotify()
         {

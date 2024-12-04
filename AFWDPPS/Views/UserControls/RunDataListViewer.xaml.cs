@@ -87,7 +87,7 @@ namespace 导引头上位机程序.Views.UserControls
             }
 
             // 可选：滚动到顶部显示最新添加的项
-            rtbLog.ScrollIntoView(listViewItem);
+            //rtbLog.ScrollIntoView(listViewItem);
         }
 
         private void MenuItem_Checked(object sender, RoutedEventArgs e)
