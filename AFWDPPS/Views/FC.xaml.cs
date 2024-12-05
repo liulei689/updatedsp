@@ -908,6 +908,19 @@ namespace AFWDPP.Views
         {
             HandyControl.Controls.NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+            SP._SP.ShowBusByMS(SendCache);
+
+        }
+
+        private async void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            var view = new SP();
+            await Dialog.Show(view);
+        }
     }
 
 }

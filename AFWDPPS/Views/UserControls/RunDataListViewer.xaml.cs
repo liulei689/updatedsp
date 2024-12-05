@@ -76,7 +76,8 @@ namespace 导引头上位机程序.Views.UserControls
             {
                 Content = contentTextBlock
             };
-            listViewItem.Width = rtbLog.ActualWidth - 5;
+            if (rtbLog.ActualWidth > 5)
+                listViewItem.Width = rtbLog.ActualWidth - 5;
             // 将ListViewItem插入到ListView的Items集合中的最前面
             rtbLog.Items.Insert(0, listViewItem);
 

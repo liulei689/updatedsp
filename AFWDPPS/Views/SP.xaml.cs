@@ -30,6 +30,7 @@ namespace AFWDPP.Views
         public Thread RecDataDeal;
         DispatcherTimer timerhandshake;
         DispatcherTimer timer;
+        public static SP _SP;
         #endregion
         public SP()
         {
@@ -63,6 +64,7 @@ namespace AFWDPP.Views
             serialPort2.RtsEnable = true;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
             Loaded += FC_Loaded;
+            _SP = this;
         }
         Dictionary<string, List<string>> moduleFunctions;
         private void FC_Loaded(object sender, RoutedEventArgs e)
@@ -142,6 +144,79 @@ namespace AFWDPP.Views
             {
                 testdata1.ToByte(textBox);
             }
+        }
+
+        public void ShowBusByMS(byte[] data)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (data[2] == 0x50 && data[3] == 0x00 && data[4] == 0x01)  //1
+                {
+                    IDC_EDIT_CHECKB_1.Content = countshead[0]++;
+                    IDC_EDIT_CHECKB_1_5.Content = data[5].ToString("X2");
+                }
+                if (data[2] == 0x50 && data[3] == 0x01 && data[4] == 0x01) //2
+                {
+                    IDC_EDIT_CHECKB_2.Content = countshead[1]++;
+                    IDC_EDIT_CHECKB_2_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x50 && data[3] == 0x02 && data[4] == 0x08) //3
+                {
+                    IDC_EDIT_CHECKA_3.Content = countshead[2]++;
+                    IDC_EDIT_CHECKA_3_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x50 && data[3] == 0xA2 && data[4] == 0x08) //4
+                {
+                    IDC_EDIT_CHECKA_4.Content = countshead[3]++;
+                    IDC_EDIT_CHECKA_4_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x50 && data[3] == 0x03 && data[4] == 0x0C) //5
+                {
+                    IDC_EDIT_CHECKA_5.Content = countshead[4]++;
+                    IDC_EDIT_CHECKA_5_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x50 && data[3] == 0x04 && data[4] == 0x0D) //6
+                {
+                    IDC_EDIT_CHECKA_6.Content = countshead[5]++;
+                    IDC_EDIT_CHECKA_6_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x51 && data[3] == 0x10 && data[4] == 0x01) //7
+                {
+                    IDC_EDIT_CHECKA_7.Content = countshead[6]++;
+                    IDC_EDIT_CHECKA_7_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x70 && data[3] == 0x00 && data[4] == 0x06) //8
+                {
+                    IDC_EDIT_CHECKA_8.Content = countshead[7]++;
+                    IDC_EDIT_CHECKA_8_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x70 && data[3] == 0x01 && data[4] == 0x05) //9
+                {
+                    IDC_EDIT_CHECKA_9.Content = countshead[8]++;
+                    IDC_EDIT_CHECKA_9_5.Content = data[5].ToString("X2");
+
+                }
+                if (data[2] == 0x70 && data[3] == 0x02 && data[4] == 0x01) //10
+                {
+                    IDC_EDIT_CHECKA_10.Content = countshead[9]++;
+                    IDC_EDIT_CHECKA_10_5.Content = data[5].ToString("X2");
+
+                }
+                var hexString = BitConverter.ToString(data).Replace("-", " ").ToUpper();
+                if (!rx.IsEnabled)
+                    rx.IsEnabled = true;
+                if (rxtxshow.IsChecked == true)
+                    rxlog.AddOne(hexString, "收←◆");
+
+            });
+
         }
 
         private const byte HEAD1 = 0x78;
@@ -237,76 +312,8 @@ namespace AFWDPP.Views
                             if (DSP28335.CheckChecksum(G_btList_RecBuf.ToArray()))
                             {
                                 var data = G_btList_RecBuf.ToArray();
-                                string hexString = BitConverter.ToString(data).Replace("-", " ").ToUpper();
-
+                                ShowBusByMS(data);
                                 // 使用BitConverter将字节数组转换为float
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    if (data[2] == 0x50 && data[3] == 0x00 && data[4] == 0x01)  //1
-                                    {
-                                        IDC_EDIT_CHECKB_1.Content = countshead[0]++;
-                                        IDC_EDIT_CHECKB_1_5.Content = data[5].ToString("X2");
-                                    }
-                                    if (data[2] == 0x50 && data[3] == 0x01 && data[4] == 0x01) //2
-                                    {
-                                        IDC_EDIT_CHECKB_2.Content = countshead[1]++;
-                                        IDC_EDIT_CHECKB_2_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x50 && data[3] == 0x02 && data[4] == 0x08) //3
-                                    {
-                                        IDC_EDIT_CHECKA_3.Content = countshead[2]++;
-                                        IDC_EDIT_CHECKA_3_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x50 && data[3] == 0xA2 && data[4] == 0x08) //4
-                                    {
-                                        IDC_EDIT_CHECKA_4.Content = countshead[3]++;
-                                        IDC_EDIT_CHECKA_4_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x50 && data[3] == 0x03 && data[4] == 0x0C) //5
-                                    {
-                                        IDC_EDIT_CHECKA_5.Content = countshead[4]++;
-                                        IDC_EDIT_CHECKA_5_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x50 && data[3] == 0x04 && data[4] == 0x0D) //6
-                                    {
-                                        IDC_EDIT_CHECKA_6.Content = countshead[5]++;
-                                        IDC_EDIT_CHECKA_6_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x51 && data[3] == 0x10 && data[4] == 0x01) //7
-                                    {
-                                        IDC_EDIT_CHECKA_7.Content = countshead[6]++;
-                                        IDC_EDIT_CHECKA_7_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x70 && data[3] == 0x00 && data[4] == 0x06) //8
-                                    {
-                                        IDC_EDIT_CHECKA_8.Content = countshead[7]++;
-                                        IDC_EDIT_CHECKA_8_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x70 && data[3] == 0x01 && data[4] == 0x05) //9
-                                    {
-                                        IDC_EDIT_CHECKA_9.Content = countshead[8]++;
-                                        IDC_EDIT_CHECKA_9_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (data[2] == 0x70 && data[3] == 0x02 && data[4] == 0x01) //10
-                                    {
-                                        IDC_EDIT_CHECKA_10.Content = countshead[9]++;
-                                        IDC_EDIT_CHECKA_10_5.Content = data[5].ToString("X2");
-
-                                    }
-                                    if (!rx.IsEnabled)
-                                        rx.IsEnabled = true;
-                                    if (rxtxshow.IsChecked == true)
-                                        rxlog.AddOne(hexString, "收←◆");
-
-                                });
                             }
                             else
                             {

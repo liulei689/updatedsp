@@ -58,8 +58,11 @@
                         <rubyer:DescriptionItem  Description="自动发送"  >
                             <StackPanel Orientation="Horizontal" >
                                 <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
-                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click"  Cursor="Hand">
-                                
+                                <Button Style="{StaticResource TextButton}" Width="80" Content="单次发送" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click"  Cursor="Hand">
+                                </Button>
+                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送到模拟伺服平台SCIB" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_1"  Cursor="Hand">
+                                </Button>
+                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送到模拟追踪平台SCIC" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_5"  Cursor="Hand">
                                 </Button>
                             </StackPanel>
                         </rubyer:DescriptionItem>
