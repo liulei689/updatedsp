@@ -83,11 +83,11 @@
                             <TextBox x:Name="IDC_EDIT_FC_37"  Text="90" IsReadOnly="True" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="开启接发数据显示"  >
-                            <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
+                            <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="自动发送"  >
                             <StackPanel Orientation="Horizontal" >
-                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
+                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
                                 <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Cursor="Hand">
 
                                 </Button>

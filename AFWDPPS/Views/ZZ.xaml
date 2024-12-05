@@ -80,24 +80,24 @@
                             <TextBox x:Name="IDC_EDIT_FC_22_23"  Text="90" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="【24~25】int16_t高低偏差(单位0.1个像素)" >
-                            <TextBox x:Name="IDC_EDIT_FC_24_25"  Text="90" IsReadOnly="True" />
+                            <TextBox x:Name="IDC_EDIT_FC_24_25"  Text="90"  />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="【26】激光数据有效标志" >
                             <TextBox x:Name="IDC_EDIT_FC_26"  Text="90" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="【27~30】目标距离float数据；（无）" >
-                            <TextBox x:Name="IDC_EDIT_FC_27_30"  Text="90" IsReadOnly="True" />
+                            <TextBox x:Name="IDC_EDIT_FC_27_30"  Text="90"  />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="【31】识别到的目标数N" >
-                            <TextBox x:Name="IDC_EDIT_FC_31"  Text="90" IsReadOnly="True" />
+                            <TextBox x:Name="IDC_EDIT_FC_31"  Text="01" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="开启接发数据显示"  >
-                            <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
+                            <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="自动发送"  >
                             <StackPanel Orientation="Horizontal" >
-                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
-                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Cursor="Hand">
+                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
+                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Cursor="Hand" Click="Button_Click">
 
                                 </Button>
                             </StackPanel>
