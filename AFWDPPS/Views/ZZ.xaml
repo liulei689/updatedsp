@@ -107,75 +107,118 @@
             </GroupBox>
             <GroupBox Grid.Row="1" Header="接受数据解析">
                 <StackPanel Orientation="Vertical">
-                    <Label Content="1、伺服上下电" />
+                    <Label Content="1、透雾" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                        Margin="1"
-                        Columns="2">
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1_5"       Description="【5】上下电状态" />
+             Margin="1"
+             Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_1"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_1_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="2、模式设置" />
+                    <Label Content="2、变焦" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                        Margin="1"
-                        Columns="2">
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2_5"       Description="【5】模式设置" />
+             Margin="1"
+             Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_2"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_2_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="3、伺服手动(百分比)" />
+                    <Label Content="3、可见光电子放大" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                               Margin="1"
-                               Columns="2">
+                    Margin="1"
+                    Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3_5"       Description="【5】伺服手动(百分比)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="4、伺服手动(绝对值)" />
+                    <Label Content="4、调焦" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                       Margin="1"
-                       Columns="2">
+            Margin="1"
+            Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4_5"       Description="【5】伺服手动(绝对值)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="5、目指设置" />
+                    <Label Content="5、设置焦位"  />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                       Margin="1"
-                       Columns="2">
+            Margin="1"
+            Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5_5"       Description="【5】目指设置" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="6、扇扫设置" />
+                    <Label Content="6、焦位变化" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                       Margin="1"
-                       Columns="2">
+            Margin="1"
+            Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_5"       Description="【5】扇扫设置" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="7、自动跟踪模式" />
+                    <Label Content="7、自动对焦(单次)" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                       Margin="1"
-                       Columns="2">
+            Margin="1"
+            Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7_5"       Description="【5】自动跟踪模式" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="8、零位修正" />
+                    <Label Content="8、测距开关" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                       Margin="1"
-                       Columns="2">
+            Margin="1"
+            Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8_5"       Description="【5】零位修正" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="9、陀螺漂移手动修正" />
+                    <Label Content="9、测距设置" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                       Margin="1"
-                       Columns="2">
+            Margin="1"
+            Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9_5"       Description="【5】陀螺漂移手动修正" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9_5"       Description="【5】数据" />
                     </rubyer:Description>
-                    <Label Content="10、漂移自动修正" />
+                    <Label Content="10、视频切换" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
-                       Margin="1"
-                       Columns="2">
+            Margin="1"
+            Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10_5"       Description="【5】漂移自动修正" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10_5"       Description="【5】数据" />
+                    </rubyer:Description>
+                    <Label Content="11、波门引导控制" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+            Margin="1"
+            Columns="3">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_11"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_11_3"       Description="【3】帧类型" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_11_5"       Description="【5】数据" />
+                    </rubyer:Description>
+                    <Label Content="12、跟踪方式" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+            Margin="1"
+            Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_12"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_12_5"       Description="【5】数据" />
+                    </rubyer:Description>
+                    <Label Content="13、质心跟踪目标特性" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+            Margin="1"
+            Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_13"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_13_5"       Description="【5】数据" />
+                    </rubyer:Description>
+                    <Label Content="14、识别开关" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+            Margin="1"
+            Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_14"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_14_5"       Description="【5】数据" />
+                    </rubyer:Description>
+                    <Label Content="15、波门大小设置" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+            Margin="1"
+            Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_15"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_15_5"       Description="【5】数据" />
+                    </rubyer:Description>
+                    <Label Content="16、波门移动" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+            Margin="1"
+            Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_16"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_16_5"       Description="【5】数据" />
                     </rubyer:Description>
                 </StackPanel>
             </GroupBox>

@@ -154,64 +154,86 @@ namespace AFWDPP.Views
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (data[2] == 0x50 && data[3] == 0x00 && data[4] == 0x01)  //1
+                if (data[2] == 0x13 && data[3] == 0x01 && data[4] == 0x01)  //1
                 {
-                    IDC_EDIT_CHECKB_1.Content = countshead[0]++;
-                    IDC_EDIT_CHECKB_1_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_1.Content = countshead[0]++;
+                    IDC_EDIT_CHECKA_1_5.Content = data[5].ToString("X2");
                 }
-                if (data[2] == 0x50 && data[3] == 0x01 && data[4] == 0x01) //2
+                if (data[2] == 0x10 && data[3] == 0x01 && data[4] == 0x01) //2
                 {
-                    IDC_EDIT_CHECKB_2.Content = countshead[1]++;
-                    IDC_EDIT_CHECKB_2_5.Content = data[5].ToString("X2");
-
+                    IDC_EDIT_CHECKA_2.Content = countshead[1]++;
+                    IDC_EDIT_CHECKA_2_5.Content = data[5].ToString("X2");
                 }
-                if (data[2] == 0x50 && data[3] == 0x02 && data[4] == 0x08) //3
+                if (data[2] == 0x14 && data[3] == 0x01 && data[4] == 0x01) //3
                 {
                     IDC_EDIT_CHECKA_3.Content = countshead[2]++;
                     IDC_EDIT_CHECKA_3_5.Content = data[5].ToString("X2");
-
                 }
-                if (data[2] == 0x50 && data[3] == 0xA2 && data[4] == 0x08) //4
+                if (data[2] == 0x10 && data[3] == 0x02 && data[4] == 0x01) //4
                 {
                     IDC_EDIT_CHECKA_4.Content = countshead[3]++;
                     IDC_EDIT_CHECKA_4_5.Content = data[5].ToString("X2");
-
                 }
-                if (data[2] == 0x50 && data[3] == 0x03 && data[4] == 0x0C) //5
+                if (data[2] == 0x11 && data[3] == 0x01 && data[4] == 0x01) //5
                 {
                     IDC_EDIT_CHECKA_5.Content = countshead[4]++;
                     IDC_EDIT_CHECKA_5_5.Content = data[5].ToString("X2");
-
                 }
-                if (data[2] == 0x50 && data[3] == 0x04 && data[4] == 0x0D) //6
+                if (data[2] == 0x11 && data[3] == 0x02 && data[4] == 0x01) //6
                 {
                     IDC_EDIT_CHECKA_6.Content = countshead[5]++;
                     IDC_EDIT_CHECKA_6_5.Content = data[5].ToString("X2");
-
                 }
-                if (data[2] == 0x51 && data[3] == 0x10 && data[4] == 0x01) //7
+                if (data[2] == 0x12 && data[3] == 0x01 && data[4] == 0x01) //7
                 {
                     IDC_EDIT_CHECKA_7.Content = countshead[6]++;
                     IDC_EDIT_CHECKA_7_5.Content = data[5].ToString("X2");
-
                 }
-                if (data[2] == 0x70 && data[3] == 0x00 && data[4] == 0x06) //8
+                if (data[2] == 0x30 && data[3] == 0x00 && data[4] == 0x01) //8
                 {
                     IDC_EDIT_CHECKA_8.Content = countshead[7]++;
                     IDC_EDIT_CHECKA_8_5.Content = data[5].ToString("X2");
-
                 }
-                if (data[2] == 0x70 && data[3] == 0x01 && data[4] == 0x05) //9
+                if (data[2] == 0x30 && data[3] == 0x01 && data[4] == 0x01) //9
                 {
                     IDC_EDIT_CHECKA_9.Content = countshead[8]++;
                     IDC_EDIT_CHECKA_9_5.Content = data[5].ToString("X2");
-
                 }
-                if (data[2] == 0x70 && data[3] == 0x02 && data[4] == 0x01) //10
+                if (data[2] == 0x40 && data[3] == 0x00 && data[4] == 0x01) //10
                 {
                     IDC_EDIT_CHECKA_10.Content = countshead[9]++;
                     IDC_EDIT_CHECKA_10_5.Content = data[5].ToString("X2");
-
+                }
+                if (data[2] == 0x40 && data[3] == 0x01 && data[4] == 0x05) //11
+                {
+                    IDC_EDIT_CHECKA_11.Content = countshead[10]++;
+                    IDC_EDIT_CHECKA_11_3.Content = data[3].ToString("X2");
+                    IDC_EDIT_CHECKA_11_5.Content = data[5].ToString("X2");
+                }
+                if (data[2] == 0x40 && data[3] == 0x02 && data[4] == 0x01) //12
+                {
+                    IDC_EDIT_CHECKA_12.Content = countshead[11]++;
+                    IDC_EDIT_CHECKA_12_5.Content = data[5].ToString("X2");
+                }
+                if (data[2] == 0x40 && data[3] == 0x03 && data[4] == 0x01) //13
+                {
+                    IDC_EDIT_CHECKA_13.Content = countshead[12]++;
+                    IDC_EDIT_CHECKA_13_5.Content = data[5].ToString("X2");
+                }
+                if (data[2] == 0x40 && data[3] == 0x04 && data[4] == 0x01) //14
+                {
+                    IDC_EDIT_CHECKA_14.Content = countshead[13]++;
+                    IDC_EDIT_CHECKA_14_5.Content = data[5].ToString("X2");
+                }
+                if (data[2] == 0x40 && data[3] == 0x0A && data[4] == 0x05) //15
+                {
+                    IDC_EDIT_CHECKA_15.Content = countshead[14]++;
+                    IDC_EDIT_CHECKA_15_5.Content = data[5].ToString("X2");
+                }
+                if (data[2] == 0x40 && data[3] == 0x0B && data[4] == 0x02) //16
+                {
+                    IDC_EDIT_CHECKA_16.Content = countshead[15]++;
+                    IDC_EDIT_CHECKA_16_5.Content = data[5].ToString("X2");
                 }
                 var hexString = BitConverter.ToString(data).Replace("-", " ").ToUpper();
                 if (!rx.IsEnabled)
