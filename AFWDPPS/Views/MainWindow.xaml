@@ -50,6 +50,22 @@
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem>
+                    <MenuItem.Header>
+                        <StackPanel rubyer:PanelHelper.Spacing="8" Orientation="Horizontal">
+                            <rubyer:Icon Type="RefreshLine" />
+                            <TextBlock Text="伺服模拟窗口" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"/>
+                        </StackPanel>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
+                    <MenuItem.Header>
+                        <StackPanel rubyer:PanelHelper.Spacing="8" Orientation="Horizontal">
+                            <rubyer:Icon Type="RefreshLine" />
+                            <TextBlock Text="追踪模拟窗口" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"/>
+                        </StackPanel>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem>
                     
                     <MenuItem.Header>
                         <StackPanel rubyer:PanelHelper.Spacing="8" Orientation="Horizontal">

@@ -90,25 +90,29 @@ namespace AFWDPP.Views
             buffer3[2] = 0xF0;
             buffer3[3] = 0x01;
             buffer3[4] = 0x21;
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_5_8.Text, 5);
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_9_12.Text, 9);
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_13_16.Text, 13);
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_17_20.Text, 17);
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_21_24.Text, 21);
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_25_28.Text, 25);
-            buffer3[29] = IDC_EDIT_FC_29.Text.ToByte();
-            buffer3[30] = IDC_EDIT_FC_30.Text.ToByte();
+            buffer3.String2ToBytes(IDC_EDIT_FC_6_7.Text, 6);
+            buffer3.String2ToBytes(IDC_EDIT_FC_8_9.Text, 8);
+            buffer3.String2ToBytes(IDC_EDIT_FC_10_11.Text, 10);
+            buffer3.String2ToBytes(IDC_EDIT_FC_12_13.Text, 12);
+            buffer3[14] = IDC_EDIT_FC_14.Text.ToByte();
+            buffer3[15] = IDC_EDIT_FC_15.Text.ToByte();
+            buffer3[16] = IDC_EDIT_FC_16.Text.ToByte();
+            buffer3[17] = IDC_EDIT_FC_17.Text.ToByte();
+            buffer3[18] = IDC_EDIT_FC_18.Text.ToByte();
+            buffer3[19] = IDC_EDIT_FC_19.Text.ToByte();
+            buffer3[20] = IDC_EDIT_FC_20.Text.ToByte();
+            buffer3[21] = IDC_EDIT_FC_21.Text.ToByte();
+            buffer3.String2ToBytes(IDC_EDIT_FC_22_23.Text, 22);
+            buffer3.String2ToBytes(IDC_EDIT_FC_24_25.Text, 24);
+            buffer3[26] = IDC_EDIT_FC_26.Text.ToByte();
+            buffer3.FloatStringToBytes(IDC_EDIT_FC_27_30.Text, 27);
             buffer3[31] = IDC_EDIT_FC_31.Text.ToByte();
-            buffer3[32] = IDC_EDIT_FC_32.Text.ToByte();
-            buffer3[33] = IDC_EDIT_FC_33.Text.ToByte();
-            buffer3[34] = IDC_EDIT_FC_34.Text.ToByte();
-            buffer3[35] = IDC_EDIT_FC_35.Text.ToByte();
-            buffer3[36] = IDC_EDIT_FC_36.Text.ToByte();
+
             if (heda > 255) heda = 0;
             buffer3[37] = heda++;
             Application.Current.Dispatcher.Invoke(() =>
             {
-                IDC_EDIT_FC_37.Text = buffer3[37].ToString();
+                IDC_EDIT_FC_5.Text = buffer3[37].ToString();
             });
             DSP28335.CalculateChecksum(buffer3);
             buffer3[39] = 0x79;

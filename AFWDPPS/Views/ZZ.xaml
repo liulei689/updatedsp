@@ -6,11 +6,11 @@
              xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
              xmlns:viewmodels="clr-namespace:AFWDPP.ViewModels" xmlns:usercontrols="clr-namespace:导引头上位机程序.Views.UserControls"
              mc:Ignorable="d">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+    <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
         <Grid Margin="5" 
                   rubyer:GridHelper.RowDefinitions="Auto,Auto, Auto,*"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Stretch">
-            <GroupBox Grid.Row="0" Header="模拟伺服平台-操作区域"  >
+            <GroupBox Grid.Row="0" Header="模拟追踪平台-操作区域"  >
                 <Grid  rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,Auto,*">
                     <Grid  rubyer:GridHelper.ColumnDefinitions="Auto,*, Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Margin="5">
                         <TextBlock Grid.Column="0"  Text="串口号:"  />
@@ -37,50 +37,59 @@
                                Grid.Row="3"                                        
                                Margin="1"
                                Columns="4">
-                        <rubyer:DescriptionItem  Description="【5~8】方位角float数据"  >
-                            <TextBox x:Name="IDC_EDIT_FC_5_8"  Text="0" Tag="Hex" />
+                        <rubyer:DescriptionItem  Description="【5】帧计数"  >
+                            <TextBox x:Name="IDC_EDIT_FC_5"  Text="0" Tag="Hex" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【9~12】俯仰角float数据"  >
-                            <TextBox x:Name="IDC_EDIT_FC_9_12"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【6~7】版本号整数"  >
+                            <TextBox x:Name="IDC_EDIT_FC_6_7"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【13~16】陀螺方位角速度float数据"  >
-                            <TextBox x:Name="IDC_EDIT_FC_13_16"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【8~9】版本号小数"  >
+                            <TextBox x:Name="IDC_EDIT_FC_8_9"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【17~20】陀螺俯仰角速度float数据"  >
-                            <TextBox x:Name="IDC_EDIT_FC_17_20"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【10~11】水平视场uint16_t(单位0.1度)"  >
+                            <TextBox x:Name="IDC_EDIT_FC_10_11"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【21~24】测角方位角速度float数据" >
-                            <TextBox x:Name="IDC_EDIT_FC_21_24"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【12~13】垂直视场uint16_t(单位0.1度)" >
+                            <TextBox x:Name="IDC_EDIT_FC_12_13"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【25~28】测角俯仰角速度float数据" >
-                            <TextBox x:Name="IDC_EDIT_FC_25_28"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【14】电子变倍uint8_t(单位0.1)" >
+                            <TextBox x:Name="IDC_EDIT_FC_14"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【29】伺服模块状态字" >
-                            <TextBox x:Name="IDC_EDIT_FC_29"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【15】可见光模块状态字" >
+                            <TextBox x:Name="IDC_EDIT_FC_15"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【30】伺服模块故障字反馈" >
-                            <TextBox x:Name="IDC_EDIT_FC_30"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【16】红外模块状态字（无）" >
+                            <TextBox x:Name="IDC_EDIT_FC_16"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【31】陀螺故障字反馈" >
-                            <TextBox x:Name="IDC_EDIT_FC_31"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【17】激光测距模块状态字（无）" >
+                            <TextBox x:Name="IDC_EDIT_FC_17"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【32】参数装调反馈" >
-                            <TextBox x:Name="IDC_EDIT_FC_32"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【18】跟踪模块状态字；（跟踪）" >
+                            <TextBox x:Name="IDC_EDIT_FC_18"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【33】校漂状态字反馈" >
-                            <TextBox x:Name="IDC_EDIT_FC_33"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【19】可见光故障字反馈；（跟踪" >
+                            <TextBox x:Name="IDC_EDIT_FC_19"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【34】版本号整数(2位)" >
-                            <TextBox x:Name="IDC_EDIT_FC_34"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【20】跟踪模块故障字反馈；（跟踪）" >
+                            <TextBox x:Name="IDC_EDIT_FC_20"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【35】版本号小数" >
-                            <TextBox x:Name="IDC_EDIT_FC_35"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【21】测偏量有效标志" >
+                            <TextBox x:Name="IDC_EDIT_FC_21"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【36】测跟踪模式" >
-                            <TextBox x:Name="IDC_EDIT_FC_36"  Text="90" />
+                        <rubyer:DescriptionItem  Description="【22~23】int16_t左右偏差(单位0.1个像素)" >
+                            <TextBox x:Name="IDC_EDIT_FC_22_23"  Text="90" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="【37】帧计数" >
-                            <TextBox x:Name="IDC_EDIT_FC_37"  Text="90" IsReadOnly="True" />
+                        <rubyer:DescriptionItem  Description="【24~25】int16_t高低偏差(单位0.1个像素)" >
+                            <TextBox x:Name="IDC_EDIT_FC_24_25"  Text="90" IsReadOnly="True" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【26】激光数据有效标志" >
+                            <TextBox x:Name="IDC_EDIT_FC_26"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【27~30】目标距离float数据；（无）" >
+                            <TextBox x:Name="IDC_EDIT_FC_27_30"  Text="90" IsReadOnly="True" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【31】识别到的目标数N" >
+                            <TextBox x:Name="IDC_EDIT_FC_31"  Text="90" IsReadOnly="True" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="开启接发数据显示"  >
                             <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />

@@ -13,7 +13,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using 导引头上位机程序.Views;
 using static AFWDPP.Common.Common;
 using Application = System.Windows.Application;
 
@@ -918,10 +917,7 @@ namespace AFWDPP.Views
         }
         private async void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            // 创建并显示窗口
-            SPDialog popupWindow = new SPDialog("伺服平台", SP._SP);
-            // 对于非模式化窗口，使用 Show() 方法
-            popupWindow.Show();
+
         }
     }
 

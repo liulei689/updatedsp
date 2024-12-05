@@ -64,7 +64,7 @@
                                 </Button>
                                 <Button Style="{StaticResource TextButton}" Width="80" Content="发送到模拟追踪平台SCIC" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_5"  Cursor="Hand">
                                 </Button>
-                            </StackPanel>
+                                     </StackPanel>
                         </rubyer:DescriptionItem>
                     </rubyer:Description>
                 </Grid>

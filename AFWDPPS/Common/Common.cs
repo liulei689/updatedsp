@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Windows.Controls;
@@ -16,6 +17,15 @@ namespace AFWDPP.Common
                 bytes[startindex + 1] = data3[1];
                 bytes[startindex + 2] = data3[2];
                 bytes[startindex + 3] = data3[3];
+            }
+        }
+        public static void String2ToBytes(this byte[] bytes, string value, int startindex)
+        {
+            if (int.TryParse(value, out int re2))
+            {
+                var data2 = IntToTwoByteArrayLittleEndian(re2);
+                bytes[startindex] = data2[0];
+                bytes[startindex + 1] = data2[1];
             }
         }
 

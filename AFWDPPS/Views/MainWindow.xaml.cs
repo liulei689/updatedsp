@@ -1,10 +1,13 @@
 ﻿using AFWDPP.ViewModels;
+using AFWDPP.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Rubyer;
 using Rubyer.Enums;
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
+using 导引头上位机程序.Views;
 
 namespace AFWDPP
 {
@@ -104,7 +107,24 @@ namespace AFWDPP
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            RestartApplication();
+            var bc = sender as TextBlock;
+            if (bc != null)
+            {
+                if (bc.Text == "重启软件")
+                {
+                    RestartApplication();
+                }
+                else if (bc.Text == "伺服模拟窗口")
+                {
+                    SPDialog popupWindow = new SPDialog("伺服平台", new SP());
+                    popupWindow.Show();
+                }
+                else if (bc.Text == "追踪模拟窗口")
+                {
+                    SPDialog popupWindow = new SPDialog("追踪平台", new ZZ());
+                    popupWindow.Show();
+                }
+            }
         }
         private void RestartApplication()
         {
