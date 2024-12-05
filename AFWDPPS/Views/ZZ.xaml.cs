@@ -791,7 +791,7 @@ namespace AFWDPP.Views
             buffer3[0] = 0x78;
             buffer3[1] = 0xEA;
             buffer3[2] = 0xF0;
-            buffer3[3] = 0x01;
+            buffer3[3] = 0x06;
 
             buffer3.String2ToBytes(IDC_EDIT_FC_6_7.Text, 6);
             buffer3.String2ToBytes(IDC_EDIT_FC_8_9.Text, 8);

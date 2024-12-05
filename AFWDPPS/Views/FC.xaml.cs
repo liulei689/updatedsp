@@ -253,6 +253,7 @@ namespace AFWDPP.Views
                                 // 使用BitConverter将字节数组转换为float
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
+                                    //if ((data[4] + 7) != data.Length) return;
                                     if (data[2] == 0xA0 && data[3] == 0x00 && data[4] == 0x02 && data.Length == 9) //心跳帧
                                     {
                                         IDC_EDIT_CHECKA_0.Content = headcount++;
@@ -273,6 +274,15 @@ namespace AFWDPP.Views
                                     if (data[2] == 0xF0 && data[3] == 0x06) //识别物体
                                     {
                                         IDC_EDIT_CHECKA_32.Content = headcount5++;
+                                        if (data[4] > 0)
+                                        {
+                                            int len = (int)((data[4] - 27) / 11);
+                                            IDC_EDIT_CHECKA_33.Content = "目标数：" + len;
+                                            for (int i = 0; i < len * 11; i++)
+                                            {
+                                                IDC_EDIT_CHECKA_33.Content += data[5 + i].ToString("X2") + " ";
+                                            }
+                                        }
                                     }
                                     if (data[2] == 0x70 && data[3] == 0x02) //漂移
                                     {

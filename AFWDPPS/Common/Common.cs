@@ -2,12 +2,45 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
+using System.Linq;
 using System.Windows.Controls;
 
 namespace AFWDPP.Common
 {
     public static class Common
     {
+        /// <summary>
+        /// 将十六进制字符串转换为字节数组。
+        /// </summary>
+        /// <param name="hex">要转换的十六进制字符串。</param>
+        /// <returns>表示十六进制字符串的字节数组。</returns>
+        /// <exception cref="ArgumentNullException">当输入字符串为空时抛出。</exception>
+        /// <exception cref="ArgumentException">当输入字符串长度不是偶数或包含非十六进制字符时抛出。</exception>
+        public static byte[] HexStringToByteArray(this string hex)
+        {
+            if (hex == null)
+                throw new ArgumentNullException(nameof(hex), "输入字符串不能为空。");
+
+            // 移除字符串中的所有空白字符以确保灵活性。
+            var cleanHex = new string(hex.Where(c => !char.IsWhiteSpace(c)).ToArray());
+
+            // 检查清理后的字符串长度是否为偶数（因为每个字节由两个十六进制字符表示）。
+            if (cleanHex.Length % 2 != 0)
+                throw new ArgumentException("十六进制字符串必须包含偶数个字符。", nameof(hex));
+
+            try
+            {
+                return Enumerable.Range(0, cleanHex.Length)
+                                 .Where(x => x % 2 == 0)
+                                 .Select(x => Convert.ToByte(cleanHex.Substring(x, 2), 16))
+                                 .ToArray();
+            }
+            catch (Exception ex) when (ex is FormatException || ex is OverflowException)
+            {
+                throw new ArgumentException("十六进制字符串包含非十六进制字符。", nameof(hex), ex);
+            }
+        }
+
         public static void FloatStringToBytes(this byte[] bytes, string floatvalue, int startindex)
         {
             if (int.TryParse(floatvalue, out int re3))

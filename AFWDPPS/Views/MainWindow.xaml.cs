@@ -150,5 +150,12 @@ namespace AFWDPP
             // 退出当前进程  
             Environment.Exit(0);
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var c = new Tools();
+            c.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            c.Show();
+        }
     }
 }

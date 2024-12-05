@@ -73,7 +73,16 @@
                             <TextBlock Text="设置" />
                         </StackPanel>
                     </MenuItem.Header>
-
+                    <MenuItem 
+                       Click="MenuItem_Click"
+                       IsCheckable="True">
+                        <MenuItem.Header>
+                            <StackPanel rubyer:PanelHelper.Spacing="6" Orientation="Horizontal">
+                                <TextBlock Text="工具箱" />
+                                <rubyer:Icon Type="MoonFill" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
                     <MenuItem x:Name="darkMode"
                               Click="BlackSwitch_Click"
                               IsCheckable="True">

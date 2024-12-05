@@ -1,0 +1,17 @@
+﻿<rubyer:RubyerWindow  xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit" x:Class="导引头上位机程序.Views.Tools"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:导引头上位机程序.Views"
+        mc:Ignorable="d"
+        Title="工具箱" Height="450" Width="800">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <TextBox x:Name="IDC_EDIT_FC_1"  Text="0" Tag="Hex"  TextChanged="IDC_EDIT_FC_1_TextChanged"/>
+            <TextBox x:Name="IDC_EDIT_FC_2"  Text="0" Tag="Hex" />
+            <Label x:Name="statues" />
+        </StackPanel>
+
+    </Grid>
+</rubyer:RubyerWindow>

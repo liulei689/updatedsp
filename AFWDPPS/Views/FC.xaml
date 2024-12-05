@@ -134,7 +134,8 @@
                     <Label Content="45、识别物体" />
                     <rubyer:Description Style="{StaticResource BorderDescription}" Margin="1" Columns="3">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_32"       Description="【0】接受帧数" />
-                        
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_33"       Description="【1】目标信息" />
+
                     </rubyer:Description>
                 </StackPanel>
             </GroupBox>
