@@ -24,6 +24,7 @@ namespace AFWDPP
             ThemeManager.ThemeModeChanged += OnThemeModeChanged;
             Instance = this;
             this.StateChanged += MainWindow_StateChanged;
+
         }
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {

@@ -4,19 +4,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
-             xmlns:viewmodels="clr-namespace:AFWDPP.ViewModels"
-            
+             xmlns:viewmodels="clr-namespace:AFWDPP.ViewModels" xmlns:usercontrols="clr-namespace:导引头上位机程序.Views.UserControls"
              mc:Ignorable="d">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-        <Grid Margin="10" 
-                  rubyer:GridHelper.RowDefinitions="*,Auto, Auto"
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+        <Grid Margin="5" 
+                  rubyer:GridHelper.RowDefinitions="Auto,Auto, Auto,*"
                   rubyer:PanelHelper.Spacing="10" VerticalAlignment="Stretch">
-            <GroupBox Grid.Row="0" Header="操作区域"  >
-                <Grid  rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,*">
+            <GroupBox Grid.Row="0" Header="模拟伺服平台-操作区域"  >
+                <Grid  rubyer:GridHelper.RowDefinitions="Auto, Auto,Auto,Auto,*">
                     <Grid  rubyer:GridHelper.ColumnDefinitions="Auto,*, Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Margin="5">
-                        <TextBlock Grid.Column="0"  Text="    串口号:"  />
+                        <TextBlock Grid.Column="0"  Text="串口号:"  />
                         <ComboBox Grid.Column="1" Name="comlist"  Margin="20 0"  SelectionChanged="comlist_SelectionChanged"/>
-                        <TextBlock Grid.Column="2" Text="    波特率:"  />
+                        <TextBlock Grid.Column="2" Text="波特率:"  />
                         <ComboBox Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
                         <ToggleButton Grid.Column="4" x:Name="openclosecom" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False" Click="openclosecom_Click">
                             <StackPanel Orientation="Horizontal">
@@ -34,102 +33,168 @@
                         <rubyer:Loading Grid.Column="6" Name="tx" Style="{StaticResource WaveLoading}" Margin="20 0" FocusedBrush="{DynamicResource Success}" FontSize="8" Content="发送" IsEnabled="False"/>
 
                     </Grid>
-                                <Grid Grid.Row="3" Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <!-- TextBlock的列宽 -->
-                            <ColumnDefinition Width="*"/>
-                            <!-- 第二个TextBlock的列宽 -->
-                            <ColumnDefinition Width="*"/>
-                            <!-- 第二个TextBox的列宽，自适应剩余空间 -->
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="        状态:   "/>
-                        <TextBox Grid.Column="1"  Margin="10,0" Style="{StaticResource BigTextBox}"  x:Name="rtbLog"   VerticalScrollBarVisibility="Auto" 
-             HorizontalAlignment="Stretch"   
-             rubyer:InputBoxHelper.IsClearable="True"   
-             rubyer:InputBoxHelper.Watermark="消息通知" Cursor="IBeam" >
-                            <TextBox.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Command="Copy">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="FileCopyLine" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="Cut">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="Scissors2Line" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="Paste">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="SurveyLine" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator />
-                                    <MenuItem Header="时间显示" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked2" Unchecked="MenuItem_Unchecked2"/>
-                                    <MenuItem Header="以文本查看" Click="MenuItem_Click">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="Book2Fill" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator />
-                                    <MenuItem Header="更多">
-                                        <MenuItem Header="..." />
-                                    </MenuItem>
-                                </ContextMenu>
-                            </TextBox.ContextMenu>
-                        </TextBox>
-                        <TextBox Grid.Column="2"   Style="{StaticResource BigTextBox}"  x:Name="txlog"   VerticalScrollBarVisibility="Auto" 
-             HorizontalAlignment="Stretch" 
-             rubyer:InputBoxHelper.IsClearable="True"   
-             rubyer:InputBoxHelper.Watermark="接受数据">
-                            <TextBox.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Command="Copy">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="FileCopyLine" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="Cut">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="Scissors2Line" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="Paste">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="SurveyLine" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator />
-                                    <MenuItem Header="时间显示" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked"/>
-                                    <MenuItem Header="以文本查看" Click="MenuItem_Click2">
-                                        <MenuItem.Icon>
-                                            <rubyer:Icon Type="Book2Fill" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator />
-                                    <MenuItem Header="更多">
-                                        <MenuItem Header="..." />
-                                    </MenuItem>
-                                </ContextMenu>
-                            </TextBox.ContextMenu>
-                        </TextBox>
-                    </Grid>
+                    <rubyer:Description Style="{StaticResource BorderDescription}" Name="allsenddata"
+                               Grid.Row="3"                                        
+                               Margin="1"
+                               Columns="4">
+                        <rubyer:DescriptionItem  Description="【5~8】方位角float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_5_8"  Text="0" Tag="Hex" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【9~12】俯仰角float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_9_12"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【13~16】陀螺方位角速度float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_13_16"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【17~20】陀螺俯仰角速度float数据"  >
+                            <TextBox x:Name="IDC_EDIT_FC_17_20"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【21~24】测角方位角速度float数据" >
+                            <TextBox x:Name="IDC_EDIT_FC_21_24"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【25~28】测角俯仰角速度float数据" >
+                            <TextBox x:Name="IDC_EDIT_FC_25_28"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【29】伺服模块状态字" >
+                            <TextBox x:Name="IDC_EDIT_FC_29"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【30】伺服模块故障字反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_30"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【31】陀螺故障字反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_31"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【32】参数装调反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_32"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【33】校漂状态字反馈" >
+                            <TextBox x:Name="IDC_EDIT_FC_33"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【34】版本号整数(2位)" >
+                            <TextBox x:Name="IDC_EDIT_FC_34"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【35】版本号小数" >
+                            <TextBox x:Name="IDC_EDIT_FC_35"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【36】测跟踪模式" >
+                            <TextBox x:Name="IDC_EDIT_FC_36"  Text="90" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="【37】帧计数" >
+                            <TextBox x:Name="IDC_EDIT_FC_37"  Text="90" IsReadOnly="True" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="开启接发数据显示"  >
+                            <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
+                        </rubyer:DescriptionItem>
+                        <rubyer:DescriptionItem  Description="自动发送"  >
+                            <StackPanel Orientation="Horizontal" >
+                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
+                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Cursor="Hand">
+
+                                </Button>
+                            </StackPanel>
+                        </rubyer:DescriptionItem>
+                    </rubyer:Description>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="信息" >
-           
+            <GroupBox Grid.Row="1" Header="接受数据解析">
+                <StackPanel Orientation="Vertical">
+                    <Label Content="1、伺服上下电" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                        Margin="1"
+                        Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1_5"       Description="【5】上下电状态" />
+                    </rubyer:Description>
+                    <Label Content="2、模式设置" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                        Margin="1"
+                        Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2_5"       Description="【5】模式设置" />
+                    </rubyer:Description>
+                    <Label Content="3、伺服手动(百分比)" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                               Margin="1"
+                               Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3_5"       Description="【5】伺服手动(百分比)" />
+                    </rubyer:Description>
+                    <Label Content="4、伺服手动(绝对值)" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                       Margin="1"
+                       Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4_5"       Description="【5】伺服手动(绝对值)" />
+                    </rubyer:Description>
+                    <Label Content="5、目指设置" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                       Margin="1"
+                       Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5_5"       Description="【5】目指设置" />
+                    </rubyer:Description>
+                    <Label Content="6、扇扫设置" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                       Margin="1"
+                       Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_5"       Description="【5】扇扫设置" />
+                    </rubyer:Description>
+                    <Label Content="7、自动跟踪模式" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                       Margin="1"
+                       Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7_5"       Description="【5】自动跟踪模式" />
+                    </rubyer:Description>
+                    <Label Content="8、零位修正" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                       Margin="1"
+                       Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8_5"       Description="【5】零位修正" />
+                    </rubyer:Description>
+                    <Label Content="9、陀螺漂移手动修正" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                       Margin="1"
+                       Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9_5"       Description="【5】陀螺漂移手动修正" />
+                    </rubyer:Description>
+                    <Label Content="10、漂移自动修正" />
+                    <rubyer:Description Style="{StaticResource BorderDescription}"
+                       Margin="1"
+                       Columns="2">
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10"       Description="接受帧数" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10_5"       Description="【5】漂移自动修正" />
+                    </rubyer:Description>
+                </StackPanel>
             </GroupBox>
-            <StatusBar  Grid.Row="2" Background="#0F000000" DockPanel.Dock="Bottom" VerticalAlignment="Bottom"  >
-                    <StatusBarItem HorizontalAlignment="Left">
+            <GroupBox Grid.Row="2" Header="数据显示" >
+                <Grid  Margin="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <!-- 第二个TextBlock的列宽 -->
+                        <ColumnDefinition Width="*"/>
+                        <!-- 第二个TextBox的列宽，自适应剩余空间 -->
+                    </Grid.ColumnDefinitions>
+                    <usercontrols:RunDataListViewer Margin="2" Grid.Column="0" x:Name="txlog"   />
+                    <usercontrols:RunDataListViewer Margin="2" Grid.Column="1"   x:Name="rxlog"   />
+
+
+                </Grid>
+
+            </GroupBox>
+            <StatusBar  Grid.Row="3" Background="#0F000000" DockPanel.Dock="Bottom" VerticalAlignment="Bottom"  >
+                <StatusBarItem HorizontalAlignment="Left">
                     <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_2" Cursor="Hand">
                         <rubyer:Icon Type="TerminalBoxLine" Foreground="{DynamicResource Primary}" />
                     </Button>
                 </StatusBarItem>
-                    <Separator />
-                    <StatusBarItem HorizontalAlignment="Left" Content="就绪" />
-                    <StatusBarItem HorizontalAlignment="Right">
-                        <StackPanel Orientation="Horizontal">
+                <Separator />
+                <StatusBarItem HorizontalAlignment="Left" Content="就绪" />
+                <StatusBarItem HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
                         <Button Style="{StaticResource TextButton}" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click_3" Cursor="Hand">
                             <rubyer:Icon Margin="5 0" Type="UploadLine"  Foreground="{DynamicResource Primary}"/>
                         </Button>
@@ -138,9 +203,9 @@
                             <rubyer:Icon Margin="5 0" Type="Notification3Fill" Foreground="{DynamicResource Primary}"/>
                         </Button>
                     </StackPanel>
-                    </StatusBarItem>
-                </StatusBar>
-         
+                </StatusBarItem>
+            </StatusBar>
+
         </Grid>
     </ScrollViewer>
 </UserControl>
