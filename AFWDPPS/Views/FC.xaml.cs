@@ -256,28 +256,46 @@ namespace AFWDPP.Views
                                     //if ((data[4] + 7) != data.Length) return;
                                     if (data[2] == 0xA0 && data[3] == 0x00 && data[4] == 0x02 && data.Length == 9) //心跳帧
                                     {
-                                        IDC_EDIT_CHECKA_0.Content = headcount++;
-                                        IDC_EDIT_CHECKA_1.Content = DSP28335.GetVersionToString(data[5], data[4]);
+                                        IDC_EDIT_CHECKA_0_2.Content = headcount++;
+
                                     }
                                     if (data[2] == 0xF0 && data[3] == 0x01 && data[4] == 0x22) //光电数据
                                     {
-                                        IDC_EDIT_CHECKA_13.Content = headcount2++;
+                                        IDC_EDIT_CHECKA_0_3.Content = headcount2++;
+                                        IDC_EDIT_CHECKAV_5_6.Content = DSP28335.GetVersionToString(data[5], data[4]);
+                                        IDC_EDIT_CHECKA_5_8.Content = data.GetGateStatusHex(5, 8);
+                                        IDC_EDIT_CHECKA_9_12.Content = data.GetGateStatusHex(9, 12);
+                                        IDC_EDIT_CHECKA_13_16.Content = data.GetGateStatusHex(13, 16);
+                                        IDC_EDIT_CHECKA_17_20.Content = data.GetGateStatusHex(17, 20);
+                                        IDC_EDIT_CHECKA_21_24.Content = data.GetGateStatusHex(21, 24);
+                                        IDC_EDIT_CHECKA_25_28.Content = data.GetGateStatusHex(25, 28);
+                                        IDC_EDIT_CHECKA_29.Content = data.GetGateStatusHex(29);
+                                        IDC_EDIT_CHECKA_30_31.Content = data.GetGateStatusHex(30, 31);
+                                        IDC_EDIT_CHECKA_32_33.Content = data.GetGateStatusHex(32, 33);
+                                        IDC_EDIT_CHECKA_34.Content = data.GetGateStatusHex(34);
+                                        IDC_EDIT_CHECKA_35_38.Content = data.GetGateStatusHex(35, 38);
+
                                     }
                                     if (data[2] == 0xF0 && data[3] == 0x02 && data[4] == 0x0B) //光电信息
                                     {
-                                        IDC_EDIT_CHECKA_14.Content = headcount3++;
+                                        IDC_EDIT_CHECKA_0_4.Content = headcount3++;
+                                        IDC_EDIT_CHECKA_14.Content = data.GetGateStatusHex(14);
+
                                     }
                                     if (data[2] == 0xF0 && data[3] == 0x03 && data[4] == 0x07) //故障码
                                     {
-                                        IDC_EDIT_CHECKA_31.Content = headcount4++;
+                                        IDC_EDIT_CHECKA_0_5.Content = headcount4++;
+                                        IDC_EDIT_CHECKA_9.Content = data.GetGateStatusHex(9);
+                                        IDC_EDIT_CHECKA_10.Content = data.GetGateStatusHex(10);
+                                        IDC_EDIT_CHECKA_11.Content = data.GetGateStatusHex(11);
                                     }
                                     if (data[2] == 0xF0 && data[3] == 0x06) //识别物体
                                     {
-                                        IDC_EDIT_CHECKA_32.Content = headcount5++;
+                                        IDC_EDIT_CHECKA_0_6.Content = headcount5++;
                                         if (data[4] > 0)
                                         {
                                             int len = (int)((data[4] - 27) / 11);
-                                            IDC_EDIT_CHECKA_33.Content = "目标数：" + len;
+                                            IDC_EDIT_CHECKA_33.Content = "目标数：" + len + " 数据：";
                                             for (int i = 0; i < len * 11; i++)
                                             {
                                                 IDC_EDIT_CHECKA_33.Content += data[5 + i].ToString("X2") + " ";
@@ -286,11 +304,12 @@ namespace AFWDPP.Views
                                     }
                                     if (data[2] == 0x70 && data[3] == 0x02) //漂移
                                     {
-                                        IDC_EDIT_CHECKB_0.Content = headcount6++;
+                                        IDC_EDIT_CHECKA_0_0.Content = headcount6++;
+                                        IDC_EDIT_CHECKA_PY_5.Content = data.GetGateStatusHex(5);
                                     }
                                     if (data[2] == 0x70 && data[3] == 0xA0) //读取保存
                                     {
-                                        IDC_EDIT_CHECKB_2.Content = headcount7++;
+                                        IDC_EDIT_CHECKA_0_1.Content = headcount7++;
                                     }
                                     if (!rx.IsEnabled)
                                         rx.IsEnabled = true;

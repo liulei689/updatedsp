@@ -3,12 +3,61 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
+using System.Text;
 using System.Windows.Controls;
 
 namespace AFWDPP.Common
 {
     public static class Common
     {
+
+
+        public static string GetGateStatusHex(this byte[] input, int start, int end = 0)
+        {
+            // Null or empty check for input array
+            if (input == null || input.Length == 0)
+                return "";
+
+            // Validate start and end parameters
+            if (end != 0 && (start < 0 || end >= input.Length || start > end))
+                return "";
+            // Use StringBuilder for efficient string concatenation
+            var hexBuilder = new StringBuilder();
+            if (end - start == 3)
+            {
+                byte[] buff = new byte[4];
+                buff[1] = input[start];
+                buff[0] = input[start + 1];
+                buff[3] = input[start + 2];
+                buff[2] = input[start + 3];
+                var data = BitConverter.ToSingle(buff, 0);
+                hexBuilder.Append(data + "(");
+
+            }
+            if (end - start == 1)
+            {
+                byte[] buff = new byte[4];
+                buff[1] = input[start];
+                buff[0] = input[start + 1];
+                buff[2] = input[start];
+                buff[3] = input[start + 1];
+                var data = BitConverter.ToSingle(buff, 0);
+                hexBuilder.Append(data + "(");
+            }
+            else if (end == 0)
+            {
+                hexBuilder.Append(input[start] + "(0x" + input[start].ToString("X2"));
+            }
+            for (int i = start; i <= end; i++)
+            {
+                hexBuilder.Append(input[i].ToString("X2"));
+                if (i < end) // Avoid adding space after the last element
+                    hexBuilder.Append(" ");
+            }
+
+            return hexBuilder.ToString() + ")";
+        }
+
         /// <summary>
         /// 将十六进制字符串转换为字节数组。
         /// </summary>
@@ -43,13 +92,13 @@ namespace AFWDPP.Common
 
         public static void FloatStringToBytes(this byte[] bytes, string floatvalue, int startindex)
         {
-            if (int.TryParse(floatvalue, out int re3))
+            if (float.TryParse(floatvalue, out float re3))
             {
                 var data3 = FloatToLittleEndianBytes(re3);
-                bytes[startindex] = data3[0];
-                bytes[startindex + 1] = data3[1];
-                bytes[startindex + 2] = data3[2];
-                bytes[startindex + 3] = data3[3];
+                bytes[startindex] = data3[2];
+                bytes[startindex + 1] = data3[3];
+                bytes[startindex + 2] = data3[0];
+                bytes[startindex + 3] = data3[1];
             }
         }
         public static void String2ToBytes(this byte[] bytes, string value, int startindex)
@@ -115,17 +164,17 @@ namespace AFWDPP.Common
             byte[] bytes = BitConverter.GetBytes(value);
 
             // 检查系统是否使用大端序（通常Windows是小端序，但最好检查一下）
-            if (BitConverter.IsLittleEndian)
-            {
-                // 如果系统已经是小端序，则不需要转换
-                return bytes;
-            }
-            else
-            {
-                // 如果系统是大端序，则需要反转字节数组
-                Array.Reverse(bytes);
-                return bytes;
-            }
+            //if (BitConverter.IsLittleEndian)
+            //{
+            //    // 如果系统已经是小端序，则不需要转换
+            //    return bytes;
+            //}
+            //else
+            //{
+            // 如果系统是大端序，则需要反转字节数组
+            Array.Reverse(bytes);
+            return bytes;
+            //}
         }
         public static byte[] IntToTwoByteArrayLittleEndian(int value)
         {
