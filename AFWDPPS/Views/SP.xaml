@@ -88,7 +88,7 @@
                         <rubyer:DescriptionItem  Description="自动发送"  >
                             <StackPanel Orientation="Horizontal" >
                                 <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
-                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Cursor="Hand">
+                                <Button Style="{StaticResource TextButton}" Width="80" Content="发送" rubyer:ButtonHelper.Shape="Circle" Cursor="Hand" Click="Button_Click">
 
                                 </Button>
                             </StackPanel>

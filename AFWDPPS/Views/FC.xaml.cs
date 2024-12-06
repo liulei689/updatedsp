@@ -279,12 +279,20 @@ namespace AFWDPP.Views
                                     if (data[2] == 0xF0 && data[3] == 0x02 && data[4] == 0x0B) //光电信息
                                     {
                                         IDC_EDIT_CHECKA_0_4.Content = headcount3++;
+                                        IDC_EDIT_CHECK44_5_6.Content = data.GetGateStatusHex(5, 6);
+                                        IDC_EDIT_CHECK44_7_8.Content = data.GetGateStatusHex(7, 8);
+                                        IDC_EDIT_CHECK44_9.Content = data.GetGateStatusHex(9);
+                                        IDC_EDIT_CHECK44_10.Content = data.GetGateStatusHex(10);
+                                        IDC_EDIT_CHECK44_13.Content = data.GetGateStatusHex(13);
                                         IDC_EDIT_CHECKA_14.Content = data.GetGateStatusHex(14);
 
                                     }
                                     if (data[2] == 0xF0 && data[3] == 0x03 && data[4] == 0x07) //故障码
                                     {
                                         IDC_EDIT_CHECKA_0_5.Content = headcount4++;
+
+                                        IDC_EDIT_CHECK45_5.Content = data.GetGateStatusHex(5);
+                                        IDC_EDIT_CHECK45_8.Content = data.GetGateStatusHex(8);
                                         IDC_EDIT_CHECKA_9.Content = data.GetGateStatusHex(9);
                                         IDC_EDIT_CHECKA_10.Content = data.GetGateStatusHex(10);
                                         IDC_EDIT_CHECKA_11.Content = data.GetGateStatusHex(11);

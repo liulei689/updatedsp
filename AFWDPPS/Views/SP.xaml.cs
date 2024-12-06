@@ -801,6 +801,11 @@ namespace AFWDPP.Views
         {
             HandyControl.Controls.NotifyIcon.ShowBalloonTip("上位机", "上位机", NotifyIconInfoType.Info, "NotifyIconToken");
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            timerhandshake_Tick(null, null);
+        }
     }
 
 }

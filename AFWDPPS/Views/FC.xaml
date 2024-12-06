@@ -104,29 +104,29 @@
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_29"       Description="【29】测偏量有效标志0x00无效，0x01有效（跟踪）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_30_31"       Description="【30~31】int16_t左右偏差(单位0.1个像素)（跟踪）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_32_33"       Description="【32~33】int16_t高低偏差(单位0.1个像素)（跟踪）" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_34"       Description="【34】目标距离float数据" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_34"       Description="【34】激光数据有效标志" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_35_38"       Description="【35~38】目标距离float数据" />
                     </rubyer:Description>
                     <Label Content="44、光电信息" />
                     <rubyer:Description Style="{StaticResource BorderDescription}" Margin="1" Columns="3">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_0_4"    MinWidth="220"    Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_15"       Description="【5~6】水平视场uint16_t(单位0.1度)(跟踪)" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_16"       Description="【7~8】垂直视场uint16_t(单位0.1度)(跟踪)" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_17"       Description="【9】电子变倍uint8_t(单位0.1)；（跟踪)" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_18"       Description="【10】可见光模块状态字；（跟踪）" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_5_6"       Description="【5~6】水平视场uint16_t(单位0.1度)(跟踪)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_7_8"       Description="【7~8】垂直视场uint16_t(单位0.1度)(跟踪)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_9"       Description="【9】电子变倍uint8_t(单位0.1)；（跟踪)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_10"       Description="【10】可见光模块状态字；（跟踪）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_19"       Description="【11】红外模块状态字；（无）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_20"       Description="【12】激光测距模块状态字；（无)" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_21"       Description="【13】跟踪模块状态字；（跟踪）" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_13"       Description="【13】跟踪模块状态字；（跟踪）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_14"       Description="【14】伺服模块状态字；（伺服）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_23"       Description="【15】其他功能状态字"/>
                     </rubyer:Description>
                     <Label Content="45、故障码" />
                     <rubyer:Description Style="{StaticResource BorderDescription}" Margin="1" Columns="3">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_0_5"    MinWidth="220"   Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_24"       Description="【5】可见光故障字反馈；（跟踪）" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK45_5"       Description="【5】可见光故障字反馈；（跟踪）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_25"       Description="【6】红外故障字反馈；（无）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_26"       Description="【7】激光故障字反馈；（无）" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_27"       Description="【8】跟踪模块故障字反馈；（跟踪）" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK45_8"       Description="【8】跟踪模块故障字反馈；（跟踪）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9"       Description="【9】伺服模块故障字反馈；（伺服）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10"       Description="【10】陀螺故障字反馈；（伺服）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_11"       Description="【11】参数装调反馈；（伺服）" />
