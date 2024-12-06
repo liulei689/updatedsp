@@ -2,6 +2,8 @@
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
 using System;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -13,6 +15,44 @@ namespace 导引头上位机程序.Views
         {
             InitializeComponent();
 
+        }
+
+        private void SetHexCardNumbers(byte[] data) 
+        {
+            // 获取WrapPanel的引用
+            WrapPanel wrapPanel = this.HexContent.Children.OfType<WrapPanel>().FirstOrDefault();
+            if (wrapPanel != null)
+            {
+                // 清除WrapPanel上已有的所有控件
+                wrapPanel.Children.Clear();
+                // 动态生成Badge和Card控件
+                for (int i = 0; i < data.Length; i++) // 从2开始以避免与静态Badge重复
+                {
+                    // 创建Card控件
+                    Card card = new Card
+                    {
+                        Width = 30,
+                        Height = 30,
+                        Background = (Brush)this.FindResource("Primary"), // 使用资源字典中的PrimaryBrush
+                        Content = data[i].ToString("x2").ToUpper(), // 自定义内容
+                        Foreground = Brushes.White,
+                        HorizontalContentAlignment = HorizontalAlignment.Center
+                    };
+
+                    // 创建Badge控件
+                    Badge badge = new Badge
+                    {
+                        Margin = new Thickness(10),
+                        Text = i.ToString()
+                    };
+
+                    // 将Card控件设置为Badge控件的内容
+                    badge.Content = card;
+
+                    // 将Badge控件添加到WrapPanel中
+                    wrapPanel.Children.Add(badge);
+                }
+            }
         }
 
         private void IDC_EDIT_FC_1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -37,7 +77,7 @@ namespace 导引头上位机程序.Views
                     {
                         IDC_EDIT_CHECKB_5.Content = "正确帧";
                         IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Blue);
-
+                        SetHexCardNumbers(data2);
                     }
                     else
                     {

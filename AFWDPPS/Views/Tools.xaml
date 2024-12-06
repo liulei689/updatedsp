@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:导引头上位机程序.Views"
         mc:Ignorable="d"
-        Title="帧校验工具" Height="450" Width="800">
+        Title="帧校验工具" Height="600" Width="800">
     <Grid>
         <StackPanel Orientation="Vertical">
             <TextBox x:Name="IDC_EDIT_FC_1"  Margin="10" Style="{StaticResource BigTextBox}"    VerticalScrollBarVisibility="Auto" 
@@ -25,7 +25,19 @@
                 <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_4"       Description="识别目标数" />
                 <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_5"       Description="是否合法" />
             </rubyer:Description>
-        </StackPanel>
+            <StackPanel x:Name="HexContent" Width="750" rubyer:PanelHelper.Spacing="5" HorizontalAlignment="Left">
+                <!--<TextBlock Text="WrapPanel Horizontal:" />-->
+                <WrapPanel rubyer:PanelHelper.Spacing="{Binding Value, ElementName=spacingSlider}">
+                    <WrapPanel.Resources>
+                        <Style TargetType="rubyer:Card">
+                            <Setter Property="Width" Value="30" />
+                            <Setter Property="Height" Value="30" />
+                        </Style>
+                    </WrapPanel.Resources>
+            
+                </WrapPanel>
+            </StackPanel>
 
+        </StackPanel>
     </Grid>
 </rubyer:RubyerWindow>
