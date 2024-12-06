@@ -78,7 +78,7 @@
                        IsCheckable="True">
                         <MenuItem.Header>
                             <StackPanel rubyer:PanelHelper.Spacing="6" Orientation="Horizontal">
-                                <TextBlock Text="工具箱" />
+                                <TextBlock Text="帧校验工具" />
                                 <rubyer:Icon Type="MoonFill" />
                             </StackPanel>
                         </MenuItem.Header>
