@@ -103,70 +103,82 @@
                         Margin="1"
                         Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1_5"       Description="【5】上下电状态" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1_5"       Description="【5】上下电状态（0x00下电0x01上电）" />
                     </rubyer:Description>
                     <Label Content="2、模式设置" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                         Margin="1"
                         Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2_5"       Description="【5】模式设置" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2_5"       Description="【5】模式设置（0x00手动模式，0x01跟踪模式，0x02目指模式，0x03扇扫模式，0x04归零模式）" />
                     </rubyer:Description>
                     <Label Content="3、伺服手动(百分比)" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                                Margin="1"
-                               Columns="2">
+                               Columns="3">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3_5"       Description="【5】伺服手动(百分比)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3_5_8"       Description="【5~8】float数据手动方位速度" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_3_9_12"       Description="【9~12】float数据手动俯仰速度" />
+
                     </rubyer:Description>
                     <Label Content="4、伺服手动(绝对值)" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                        Margin="1"
-                       Columns="2">
+                       Columns="3">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4_5"       Description="【5】伺服手动(绝对值)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4_5_8"       Description="【5~8】float数据手动方位速度" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_4_9_12"       Description="【9~12】float数据手动俯仰速度" />
                     </rubyer:Description>
                     <Label Content="5、目指设置" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                        Margin="1"
-                       Columns="2">
+                       Columns="4">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5_5"       Description="【5】目指设置" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5_5_8"       Description="【5~8】float数据方位目指" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5_9_12"       Description="【9~12】float数据俯仰目指" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_5_13_16"       Description="【13~16】float数据距离目指" />
                     </rubyer:Description>
                     <Label Content="6、扇扫设置" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                        Margin="1"
-                       Columns="2">
+                       Columns="5">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_5"       Description="【5】扇扫设置" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_5"       Description="【5】状态（0x00停止0x01方位扇扫开始0xF1设置方位扇扫）" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_6_9"       Description="【6~9】float数据最小位置" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_10_13"       Description="【10~13】float数据最大位置" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_6_14_17"       Description="【14~17】float数据扇扫速度" />
                     </rubyer:Description>
                     <Label Content="7、自动跟踪模式" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                        Margin="1"
                        Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7_5"       Description="【5】自动跟踪模式" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_7_5"       Description="【5】自动跟踪模式(0x00关0x01开)" />
                     </rubyer:Description>
                     <Label Content="8、零位修正" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                        Margin="1"
-                       Columns="2">
+                       Columns="4">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8_5"       Description="【5】零位修正" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8_5"       Description="【5】属性(0x00清零0x01方位0x02俯仰)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8_6"       Description="【6】属性（0x00绝对值， 0x01变化值）" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_8_7_10"       Description="【7~10】float数据（-360~360度）" />
                     </rubyer:Description>
                     <Label Content="9、陀螺漂移手动修正" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                        Margin="1"
-                       Columns="2">
+                       Columns="3">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9_5"       Description="【5】陀螺漂移手动修正" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9_5"       Description="【5】属性(0x00清零0x01方位0x02俯仰)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_9_6_9"       Description="【6~9】陀螺漂移修正值float数据（0~3°/s）" />
+
                     </rubyer:Description>
                     <Label Content="10、漂移自动修正" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                        Margin="1"
                        Columns="2">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10"       Description="接受帧数" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10_5"       Description="【5】漂移自动修正" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_10_5"       Description="【5】0x00强行结束,0x01开始自动校漂,0xA0退出校漂模式,0xA1校漂模式" />
                     </rubyer:Description>
                 </StackPanel>
             </GroupBox>

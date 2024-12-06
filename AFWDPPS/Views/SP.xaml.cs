@@ -146,60 +146,70 @@ namespace AFWDPP.Views
                 if (data[2] == 0x50 && data[3] == 0x00 && data[4] == 0x01)  //1
                 {
                     IDC_EDIT_CHECKB_1.Content = countshead[0]++;
-                    IDC_EDIT_CHECKB_1_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKB_1_5.Content = data.GetGateStatusHex(5);
                 }
                 if (data[2] == 0x50 && data[3] == 0x01 && data[4] == 0x01) //2
                 {
                     IDC_EDIT_CHECKB_2.Content = countshead[1]++;
-                    IDC_EDIT_CHECKB_2_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKB_2_5.Content = data.GetGateStatusHex(5);
 
                 }
                 if (data[2] == 0x50 && data[3] == 0x02 && data[4] == 0x08) //3
                 {
                     IDC_EDIT_CHECKA_3.Content = countshead[2]++;
-                    IDC_EDIT_CHECKA_3_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_3_5_8.Content = data.GetGateStatusHex(5, 8);
+                    IDC_EDIT_CHECKA_3_9_12.Content = data.GetGateStatusHex(9, 12);
 
                 }
                 if (data[2] == 0x50 && data[3] == 0xA2 && data[4] == 0x08) //4
                 {
                     IDC_EDIT_CHECKA_4.Content = countshead[3]++;
-                    IDC_EDIT_CHECKA_4_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_4_5_8.Content = data.GetGateStatusHex(5, 8);
+                    IDC_EDIT_CHECKA_4_9_12.Content = data.GetGateStatusHex(9, 12);
 
                 }
                 if (data[2] == 0x50 && data[3] == 0x03 && data[4] == 0x0C) //5
                 {
                     IDC_EDIT_CHECKA_5.Content = countshead[4]++;
-                    IDC_EDIT_CHECKA_5_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_5_5_8.Content = data.GetGateStatusHex(5, 8);
+                    IDC_EDIT_CHECKA_5_9_12.Content = data.GetGateStatusHex(9, 12);
+                    IDC_EDIT_CHECKA_5_13_16.Content = data.GetGateStatusHex(13, 16);
 
                 }
                 if (data[2] == 0x50 && data[3] == 0x04 && data[4] == 0x0D) //6
                 {
                     IDC_EDIT_CHECKA_6.Content = countshead[5]++;
-                    IDC_EDIT_CHECKA_6_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_6_5.Content = data.GetGateStatusHex(5);
+                    IDC_EDIT_CHECKA_6_6_9.Content = data.GetGateStatusHex(6, 9);
+                    IDC_EDIT_CHECKA_6_10_13.Content = data.GetGateStatusHex(10, 13);
+                    IDC_EDIT_CHECKA_6_14_17.Content = data.GetGateStatusHex(14, 17);
 
                 }
                 if (data[2] == 0x51 && data[3] == 0x10 && data[4] == 0x01) //7
                 {
                     IDC_EDIT_CHECKA_7.Content = countshead[6]++;
-                    IDC_EDIT_CHECKA_7_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_7_5.Content = data.GetGateStatusHex(5);
 
                 }
                 if (data[2] == 0x70 && data[3] == 0x00 && data[4] == 0x06) //8
                 {
                     IDC_EDIT_CHECKA_8.Content = countshead[7]++;
-                    IDC_EDIT_CHECKA_8_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_8_5.Content = data.GetGateStatusHex(5);
+                    IDC_EDIT_CHECKA_8_6.Content = data.GetGateStatusHex(6);
+                    IDC_EDIT_CHECKA_8_7_10.Content = data.GetGateStatusHex(7, 10);
 
                 }
                 if (data[2] == 0x70 && data[3] == 0x01 && data[4] == 0x05) //9
                 {
                     IDC_EDIT_CHECKA_9.Content = countshead[8]++;
-                    IDC_EDIT_CHECKA_9_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_9_5.Content = data.GetGateStatusHex(5);
+                    IDC_EDIT_CHECKA_9_6_9.Content = data.GetGateStatusHex(6, 9);
 
                 }
                 if (data[2] == 0x70 && data[3] == 0x02 && data[4] == 0x01) //10
                 {
                     IDC_EDIT_CHECKA_10.Content = countshead[9]++;
-                    IDC_EDIT_CHECKA_10_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_10_5.Content = data.GetGateStatusHex(5);
 
                 }
                 var hexString = BitConverter.ToString(data).Replace("-", " ").ToUpper();

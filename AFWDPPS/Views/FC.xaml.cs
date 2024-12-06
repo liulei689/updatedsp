@@ -890,7 +890,7 @@ namespace AFWDPP.Views
                     IsEditable = true,
                     ItemsSource = items,
                     Tag = $"{i}", // 设置 Tag 属性以区分不同的 ComboBox
-                    Width = 50 // 你可以根据需要设置宽度
+                    Width = 70 // 你可以根据需要设置宽度
                 };
 
                 IDC_EDIT_FC_5.Children.Add(comboBox);
