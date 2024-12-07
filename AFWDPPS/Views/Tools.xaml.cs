@@ -67,23 +67,24 @@ namespace 导引头上位机程序.Views
                     IDC_EDIT_CHECKB_1.Content = data2.Length + "(0x" + data2.Length.ToString("X2") + ")"; ;
                     IDC_EDIT_CHECKB_2.Content = data2[4] + "(0x" + data2[4].ToString("X2") + ")"; ;
                     DSP28335.CalculateChecksum(data2);
-                    IDC_EDIT_FC_2.Text = "";
+                    string str = "";
                     for (int i = 0; i < data2.Length; i++)
                     {
-                        IDC_EDIT_FC_2.Text += data2[i].ToString("X2") + " ";
+                        str += data2[i].ToString("X2") + " ";
                     }
+                    IDC_EDIT_FC_2.Text = str;
                     IDC_EDIT_CHECKB_3.Content = data2[data2.Length - 2] + "(0x" + data2[data2.Length - 2].ToString("X2") + ")";
                     if (IDC_EDIT_FC_1.Text.Trim() == IDC_EDIT_FC_2.Text.Trim())
                     {
                         IDC_EDIT_CHECKB_5.Content = "正确帧";
                         IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Blue);
-                        SetHexCardNumbers(data2);
                     }
                     else
                     {
                         IDC_EDIT_CHECKB_5.Content = "错误帧";
                         IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Red);
                     }
+                    SetHexCardNumbers(data2);
                 }
                 catch (Exception ex)
                 {

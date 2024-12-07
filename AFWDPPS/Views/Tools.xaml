@@ -6,38 +6,40 @@
         xmlns:local="clr-namespace:导引头上位机程序.Views"
         mc:Ignorable="d"
         Title="帧校验工具" Height="600" Width="800">
-    <Grid>
-        <StackPanel Orientation="Vertical">
-            <TextBox x:Name="IDC_EDIT_FC_1"  Margin="10" Style="{StaticResource BigTextBox}"    VerticalScrollBarVisibility="Auto" 
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+        <Grid>
+            <StackPanel Orientation="Vertical">
+                <TextBox x:Name="IDC_EDIT_FC_1"  Margin="10" Style="{StaticResource BigTextBox}"    VerticalScrollBarVisibility="Auto" 
              HorizontalAlignment="Stretch"   Height="100"
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="待识别帧" Cursor="IBeam" TextChanged="IDC_EDIT_FC_1_TextChanged"/>
-            <TextBox x:Name="IDC_EDIT_FC_2"  Margin="10" Style="{StaticResource BigTextBox}"    VerticalScrollBarVisibility="Auto" 
+                <TextBox x:Name="IDC_EDIT_FC_2"  Margin="10" Style="{StaticResource BigTextBox}"    VerticalScrollBarVisibility="Auto" 
              HorizontalAlignment="Stretch"   Height="100"
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="结果" Cursor="IBeam" />
-            <rubyer:Description Style="{StaticResource BorderDescription}"
+                <rubyer:Description Style="{StaticResource BorderDescription}"
          Margin="1"
          Columns="1">
-                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1"       Description="帧长度（字节）" />
-                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2"       Description="数据长度" />
-                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_3"       Description="校验值" />
-                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_4"       Description="识别目标数" />
-                <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_5"       Description="是否合法" />
-            </rubyer:Description>
-            <StackPanel x:Name="HexContent" Width="750" rubyer:PanelHelper.Spacing="5" HorizontalAlignment="Left">
-                <!--<TextBlock Text="WrapPanel Horizontal:" />-->
-                <WrapPanel rubyer:PanelHelper.Spacing="{Binding Value, ElementName=spacingSlider}">
-                    <WrapPanel.Resources>
-                        <Style TargetType="rubyer:Card">
-                            <Setter Property="Width" Value="30" />
-                            <Setter Property="Height" Value="30" />
-                        </Style>
-                    </WrapPanel.Resources>
-            
-                </WrapPanel>
-            </StackPanel>
+                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_1"       Description="帧长度（字节）" />
+                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_2"       Description="数据长度" />
+                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_3"       Description="校验值" />
+                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_4"       Description="识别目标数" />
+                    <rubyer:DescriptionItem Name="IDC_EDIT_CHECKB_5"       Description="是否合法" />
+                </rubyer:Description>
+                <StackPanel x:Name="HexContent" Width="750" rubyer:PanelHelper.Spacing="5" HorizontalAlignment="Left">
+                    <!--<TextBlock Text="WrapPanel Horizontal:" />-->
+                    <WrapPanel rubyer:PanelHelper.Spacing="{Binding Value, ElementName=spacingSlider}">
+                        <WrapPanel.Resources>
+                            <Style TargetType="rubyer:Card">
+                                <Setter Property="Width" Value="30" />
+                                <Setter Property="Height" Value="30" />
+                            </Style>
+                        </WrapPanel.Resources>
 
-        </StackPanel>
-    </Grid>
+                    </WrapPanel>
+                </StackPanel>
+
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </rubyer:RubyerWindow>
