@@ -18,7 +18,7 @@ namespace 导引头上位机程序.Views
 
         }
 
-        private void SetHexCardNumbers(byte[] data) 
+        private void SetHexCardNumbers(byte[] data,bool ispass) 
         {
             Dispatcher.Invoke( () =>
             {
@@ -41,7 +41,16 @@ namespace 导引头上位机程序.Views
                             Foreground = Brushes.White,
                             HorizontalContentAlignment = HorizontalAlignment.Center
                         };
-
+                        if (data.Length - 2 == i)
+                        {
+                            if (data.Length < 8 || data == null || data.Length != data[4] + 7)
+                            {
+                                card.Width = 80;
+                                card.Content = "无法生成校验";
+                                card.Foreground = Brushes.Red;
+                            }
+                        }
+     
                         // 创建Badge控件
                         Badge badge = new Badge
                         {
@@ -68,29 +77,34 @@ namespace 导引头上位机程序.Views
                 {
                     if (data.Text.Length < 8) return;
                     var data2 = data.Text.HexStringToByteArray();
-                    IDC_EDIT_CHECKB_1.Content = data2.Length + "(0x" + data2.Length.ToString("X2") + ")"; ;
-                    IDC_EDIT_CHECKB_2.Content = data2[4] + "(0x" + data2[4].ToString("X2") + ")"; ;
-                    DSP28335.CalculateChecksum(data2);
-                    string str = "";
-                    for (int i = 0; i < data2.Length; i++)
-                    {
-                        str += data2[i].ToString("X2") + " ";
-                    }
-                    IDC_EDIT_FC_2.Text = str;
-                    IDC_EDIT_CHECKB_3.Content = data2[data2.Length - 2] + "(0x" + data2[data2.Length - 2].ToString("X2") + ")";
-                    if (IDC_EDIT_FC_1.Text.Trim() == IDC_EDIT_FC_2.Text.Trim())
+                    var chekc = DSP28335.CheckChecksum(data2);
+                    if(chekc)
                     {
                         IDC_EDIT_CHECKB_5.Content = "正确帧";
                         IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Blue);
                     }
                     else
                     {
-                        IDC_EDIT_CHECKB_5.Content = "错误帧";
-                        IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Red);
+                        if (data2.Length < 8 || data2 == null || data2.Length != data2[4] + 7)
+                        {
+                            IDC_EDIT_CHECKB_5.Content = "祯长度不合法，应为" + (data2[4] + 7);
+                            IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Red);
+                        }
+                        else 
+                        {
+                            IDC_EDIT_CHECKB_5.Content = "校验不通过";
+                            IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Red);
+
+                        }
                     }
+                    IDC_EDIT_CHECKB_1.Content = data2.Length + "(0x" + data2.Length.ToString("X2") + ")"; ;
+                    IDC_EDIT_CHECKB_2.Content = data2[4] + "(0x" + data2[4].ToString("X2") + ")";
+                    DSP28335.CalculateChecksum(data2);
+                    IDC_EDIT_CHECKB_3.Content = data2[data2.Length - 2] + "(0x" + data2[data2.Length - 2].ToString("X2") + ")";
+       
                     Task.Run(() =>
                     {
-                        SetHexCardNumbers(data2);
+                        SetHexCardNumbers(data2, chekc);
                     });
                 }
                 catch (Exception ex)
