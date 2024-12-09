@@ -795,8 +795,8 @@ namespace AFWDPP.Views
 
             buffer3.String2ToBytes(IDC_EDIT_FC_6_7.Text, 6);
             buffer3.String2ToBytes(IDC_EDIT_FC_8_9.Text, 8);
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_10_11.Text, 10);
-            buffer3.FloatStringToBytes(IDC_EDIT_FC_12_13.Text, 12);
+            buffer3.String2ToBytes(IDC_EDIT_FC_10_11.Text, 10);
+            buffer3.String2ToBytes(IDC_EDIT_FC_12_13.Text, 12);
             buffer3[14] = IDC_EDIT_FC_14.Text.ToByte();
             buffer3[15] = IDC_EDIT_FC_15.Text.ToByte();
             buffer3[16] = IDC_EDIT_FC_16.Text.ToByte();

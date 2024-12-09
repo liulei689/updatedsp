@@ -114,8 +114,8 @@
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_7_8"       Description="【7~8】垂直视场uint16_t(单位0.1度)(跟踪)" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_9"       Description="【9】电子变倍uint8_t(单位0.1)；（跟踪)" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_10"       Description="【10】可见光模块状态字；（跟踪）" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_19"       Description="【11】红外模块状态字；（无）" />
-                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_20"       Description="【12】激光测距模块状态字；（无)" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_11"       Description="【11】红外模块状态字；（无）" />
+                        <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_12"       Description="【12】激光测距模块状态字；（无)" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECK44_13"       Description="【13】跟踪模块状态字；（跟踪）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_14"       Description="【14】伺服模块状态字；（伺服）" />
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_23"       Description="【15】其他功能状态字"/>

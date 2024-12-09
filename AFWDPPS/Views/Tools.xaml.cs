@@ -15,12 +15,20 @@ namespace 导引头上位机程序.Views
         public Tools()
         {
             InitializeComponent();
+            // 检查剪贴板是否包含文本数据
+            if (Clipboard.ContainsText())
+            {
+                // 从剪贴板获取文本数据
+                string clipboardText = Clipboard.GetText();
+                IDC_EDIT_FC_1.Text = clipboardText;
+            }
+
 
         }
 
-        private void SetHexCardNumbers(byte[] data,bool ispass) 
+        private void SetHexCardNumbers(byte[] data, bool ispass)
         {
-            Dispatcher.Invoke( () =>
+            Dispatcher.Invoke(() =>
             {
                 // 获取WrapPanel的引用
                 WrapPanel wrapPanel = this.HexContent.Children.OfType<WrapPanel>().FirstOrDefault();
@@ -50,7 +58,7 @@ namespace 导引头上位机程序.Views
                                 card.Foreground = Brushes.Red;
                             }
                         }
-     
+
                         // 创建Badge控件
                         Badge badge = new Badge
                         {
@@ -65,7 +73,7 @@ namespace 导引头上位机程序.Views
                         wrapPanel.Children.Add(badge);
                     }
                 }
-            });  
+            });
         }
 
         private void IDC_EDIT_FC_1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -78,7 +86,7 @@ namespace 导引头上位机程序.Views
                     if (data.Text.Length < 8) return;
                     var data2 = data.Text.HexStringToByteArray();
                     var chekc = DSP28335.CheckChecksum(data2);
-                    if(chekc)
+                    if (chekc)
                     {
                         IDC_EDIT_CHECKB_5.Content = "正确帧";
                         IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Blue);
@@ -90,7 +98,7 @@ namespace 导引头上位机程序.Views
                             IDC_EDIT_CHECKB_5.Content = "祯长度不合法，应为" + (data2[4] + 7);
                             IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Red);
                         }
-                        else 
+                        else
                         {
                             IDC_EDIT_CHECKB_5.Content = "校验不通过";
                             IDC_EDIT_CHECKB_5.Foreground = new SolidColorBrush(Colors.Red);
@@ -101,7 +109,7 @@ namespace 导引头上位机程序.Views
                     IDC_EDIT_CHECKB_2.Content = data2[4] + "(0x" + data2[4].ToString("X2") + ")";
                     DSP28335.CalculateChecksum(data2);
                     IDC_EDIT_CHECKB_3.Content = data2[data2.Length - 2] + "(0x" + data2[data2.Length - 2].ToString("X2") + ")";
-       
+
                     Task.Run(() =>
                     {
                         SetHexCardNumbers(data2, chekc);

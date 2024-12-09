@@ -283,6 +283,8 @@ namespace AFWDPP.Views
                                         IDC_EDIT_CHECK44_7_8.Content = data.GetGateStatusHex(7, 8);
                                         IDC_EDIT_CHECK44_9.Content = data.GetGateStatusHex(9);
                                         IDC_EDIT_CHECK44_10.Content = data.GetGateStatusHex(10);
+                                        IDC_EDIT_CHECK44_11.Content = data.GetGateStatusHex(11);
+                                        IDC_EDIT_CHECK44_12.Content = data.GetGateStatusHex(12);
                                         IDC_EDIT_CHECK44_13.Content = data.GetGateStatusHex(13);
                                         IDC_EDIT_CHECKA_14.Content = data.GetGateStatusHex(14);
 

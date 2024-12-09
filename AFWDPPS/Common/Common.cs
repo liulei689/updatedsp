@@ -36,12 +36,13 @@ namespace AFWDPP.Common
             }
             if (end - start == 1)
             {
-                byte[] buff = new byte[4];
-                buff[1] = input[start];
-                buff[0] = input[start + 1];
-                buff[2] = input[start];
-                buff[3] = input[start + 1];
-                var data = BitConverter.ToSingle(buff, 0);
+                var data = BitConverter.ToInt16(input, start);
+                //byte[] buff = new byte[4];
+                //buff[1] = input[start];
+                //buff[0] = input[start + 1];
+                //buff[2] = input[start];
+                //buff[3] = input[start + 1];
+                //var data = BitConverter.ToSingle(buff, 0);
                 hexBuilder.Append(data + "(");
             }
             else if (end == 0)
