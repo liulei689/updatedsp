@@ -173,6 +173,10 @@ namespace AFWDPP.Views
                     IDC_EDIT_CHECKA_11.Content = countshead[10]++;
                     IDC_EDIT_CHECKA_11_3.Content = data[3].ToString("X2");
                     IDC_EDIT_CHECKA_11_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_11_6.Content = data[6].ToString("X2");
+                    IDC_EDIT_CHECKA_11_7.Content = data[7].ToString("X2");
+                    IDC_EDIT_CHECKA_11_8.Content = data[8].ToString("X2");
+                    IDC_EDIT_CHECKA_11_9.Content = data[9].ToString("X2");
                 }
                 if (data[2] == 0x40 && data[3] == 0x02 && data[4] == 0x01) //12
                 {
@@ -193,11 +197,16 @@ namespace AFWDPP.Views
                 {
                     IDC_EDIT_CHECKA_15.Content = countshead[14]++;
                     IDC_EDIT_CHECKA_15_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_15_6.Content = data[6].ToString("X2");
+                    IDC_EDIT_CHECKA_15_7.Content = data[7].ToString("X2");
+                    IDC_EDIT_CHECKA_15_8.Content = data[8].ToString("X2");
+                    IDC_EDIT_CHECKA_15_9.Content = data[9].ToString("X2");
                 }
                 if (data[2] == 0x40 && data[3] == 0x0B && data[4] == 0x02) //16
                 {
                     IDC_EDIT_CHECKA_16.Content = countshead[15]++;
                     IDC_EDIT_CHECKA_16_5.Content = data[5].ToString("X2");
+                    IDC_EDIT_CHECKA_16_6.Content = data[6].ToString("X2");
                 }
                 var hexString = BitConverter.ToString(data).Replace("-", " ").ToUpper();
                 if (!rx.IsEnabled)
