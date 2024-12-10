@@ -13,7 +13,7 @@
                    Source="../logo.ico" />
             <StackPanel Grid.Column="1" Margin="20 0">
                 <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-                    <TextBlock FontSize="20">油品检测模拟设备</TextBlock>
+                    <TextBlock FontSize="20">DHS模拟设备</TextBlock>
                     <TextBlock Margin="10 0">作者:昆明光博科技有限公司</TextBlock>
                 </StackPanel>
 

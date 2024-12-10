@@ -47,10 +47,10 @@
                             <MenuItem.Icon>
                                 <rubyer:Icon Type="Coupon2Fill" />
                             </MenuItem.Icon>
-                            <MenuItem Header="50条" Click="MenuItem_Click_1"/>
-                            <MenuItem Header="100条" Click="MenuItem_Click_2"/>
-                            <MenuItem Header="500条" Click="MenuItem_Click_3" />
-                            <MenuItem Header="1000条" Click="MenuItem_Click_4" />
+                            <MenuItem IsCheckable="True" IsChecked="True" Header="50条" Click="MenuItem_Click_1"/>
+                            <MenuItem IsCheckable="True" Header="100条" Click="MenuItem_Click_2"/>
+                            <MenuItem IsCheckable="True" Header="500条" Click="MenuItem_Click_3" />
+                            <MenuItem IsCheckable="True" Header="1000条" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </ContextMenu>
                 </ListView.ContextMenu>

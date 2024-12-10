@@ -865,9 +865,18 @@ namespace AFWDPP.Views
             if (sender != null)
             {
                 //IDC_EDIT_FC_3.Content = data.方向;
-                IDC_EDIT_FC_4.Content = data.备注;
+                //IDC_EDIT_FC_4.Content = data.备注;
                 AddComboBoxes(data.数据长度.ToByte());
-                IDC_EDIT_FC_6.Content = data.数据;
+                IDC_EDIT_FC_66.PopoverContent = data.数据 + Environment.NewLine + data.备注;
+                if (data.数据.Length <= 20)
+                {
+                    IDC_EDIT_FC_6.Content = data.数据;
+                }
+                else
+                {
+                    // 取前7个字符并添加"..."作为省略号
+                    IDC_EDIT_FC_6.Content = data.数据.Substring(0, 17) + "...";
+                }
             }
             SetCacheByModel(data);
         }

@@ -50,11 +50,15 @@
                             <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False" />
                         </rubyer:DescriptionItem>
                         <!--<rubyer:DescriptionItem  Description="方向"  x:Name="IDC_EDIT_FC_3"  />-->
-                        <rubyer:DescriptionItem  Description="备注"   x:Name="IDC_EDIT_FC_4" />
+                        <!--<rubyer:DescriptionItem  Description="备注"   x:Name="IDC_EDIT_FC_4" />-->
                         <rubyer:DescriptionItem  Description="数据"   >
                             <StackPanel Orientation="Horizontal" Name="IDC_EDIT_FC_5">  </StackPanel>
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="数据详情"   x:Name="IDC_EDIT_FC_6" />
+                        <rubyer:DescriptionItem  Description="数据详情"   >
+                            <rubyer:Popover Title="详情"  x:Name="IDC_EDIT_FC_66" PopoverContent="" TriggerMode="Hover">
+                                <Label  x:Name="IDC_EDIT_FC_6" Content="" />
+                            </rubyer:Popover>
+                        </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="自动发送"  >
                             <StackPanel Orientation="Horizontal" >
                                 <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
