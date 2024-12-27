@@ -433,7 +433,7 @@ namespace AFWDPP.Views
                     if (ccc++ > 10)
                     {
                         string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "发送数据");
-                        Logger.WriteLog("发送原始数据【" + hexString + "】 【方位角度】:" + x2.Content + "【俯仰角度】" + y2.Content, LogFolderPath);
+                        Logger.WriteLog("发送原始数据【" + hexString + "】 【方位角度】:" + x1.Value + "【俯仰角度】" + y1.Value, LogFolderPath);
                         ccc = 0;
                     }
 
@@ -739,12 +739,31 @@ namespace AFWDPP.Views
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
+            SendCacheToZhangPengFeiB[0] = 0xA5;
+            if (model.IsChecked == true)
+                SendCacheToZhangPengFeiB[1] = 0x01;
+            else
+                SendCacheToZhangPengFeiB[1] = 0x02;
+
+            // Step 1: Multiply by 1000 and cast to short.
+            short angleValue = (short)(x1.Value * 1000);
+
+            // Step 2: Extract high and low bytes.
+            SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
+            SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
+
+            short angleValue1 = (short)(y1.Value * 1000);
+
+            // Step 2: Extract high and low bytes.
+            SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
+            SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
 
 
-            // 计算校验和并发送数据
-            DSP28335.CalculateChecksum(SendCache);
-            //SendCache[SendCache[4] + 7 - 2] =  SendCache.CalculateChecksum();
-            sendData(SendCache, 7 + SendCache[4]);
+
+
+
+            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
+            sendData(SendCacheToZhangPengFeiB, 7);
         }
 
         private void ShowNotify()
