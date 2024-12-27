@@ -155,6 +155,7 @@ namespace AFWDPP
         {
             var c = new Tools();
             c.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            c.Topmost = true;
             c.Show();
         }
     }
