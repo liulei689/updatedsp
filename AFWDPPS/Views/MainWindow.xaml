@@ -49,7 +49,7 @@
                         </StackPanel>
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem>
+                <!--<MenuItem>
                     <MenuItem.Header>
                         <StackPanel rubyer:PanelHelper.Spacing="8" Orientation="Horizontal">
                             <rubyer:Icon Type="SendBackward" />
@@ -64,7 +64,7 @@
                             <TextBlock Text="追踪模拟窗口" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"/>
                         </StackPanel>
                     </MenuItem.Header>
-                </MenuItem>
+                </MenuItem>-->
                 <MenuItem>
                     
                     <MenuItem.Header>
@@ -73,7 +73,7 @@
                             <TextBlock Text="设置" />
                         </StackPanel>
                     </MenuItem.Header>
-                    <MenuItem 
+                    <!--<MenuItem 
                        Click="MenuItem_Click"
                        IsCheckable="True">
                         <MenuItem.Header>
@@ -82,7 +82,7 @@
                                 <TextBlock Text="帧校验工具" />
                             </StackPanel>
                         </MenuItem.Header>
-                    </MenuItem>
+                    </MenuItem>-->
                     <MenuItem x:Name="darkMode"
                               Click="BlackSwitch_Click"
                               IsCheckable="True">

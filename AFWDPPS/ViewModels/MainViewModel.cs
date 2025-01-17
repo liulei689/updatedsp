@@ -31,10 +31,10 @@ namespace AFWDPP.ViewModels
 
             ViewItems =
             [
-                new("水下平台", "SCIA", new WP(), IconType.Home2Line),
-                new("控制台", "SCIA", new FC(), IconType.Home2Line),
-                new("稳定平台", "SCIB", new SP(), IconType.SendBackward),
-                new("追踪系统", "SCIC", new ZZ(), IconType.SendPlaneFill),
+                new("水下平台", "上位机", new WP(), IconType.Home2Line),
+                //new("控制台", "SCIA", new FC(), IconType.Home2Line),
+                //new("稳定平台", "SCIB", new SP(), IconType.SendBackward),
+                //new("追踪系统", "SCIC", new ZZ(), IconType.SendPlaneFill),
 
             ];
 

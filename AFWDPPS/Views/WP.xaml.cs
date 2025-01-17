@@ -73,7 +73,7 @@ namespace AFWDPP.Views
             // this.DataContext = App.Current.Services.GetService<DescriptionViewModel>();
             botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
 
-            botelv.SelectedIndex = 6;
+            botelv.SelectedIndex = 5;
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -124,10 +124,8 @@ namespace AFWDPP.Views
             if (sendermodel.IsChecked == true)
             {
                 SendCacheToZhangPengFeiB[0] = 0xA5;
-                if (model.IsChecked == true)
-                    SendCacheToZhangPengFeiB[1] = 0x01;
-                else
-                    SendCacheToZhangPengFeiB[1] = 0x02;
+
+                SendCacheToZhangPengFeiB[1] = 0x02;
 
                 // Step 1: Multiply by 1000 and cast to short.
                 short angleValue = (short)(x1.Value * 1000);
@@ -739,12 +737,14 @@ namespace AFWDPP.Views
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            SendCacheToZhangPengFeiB[0] = 0xA5;
-            if (model.IsChecked == true)
-                SendCacheToZhangPengFeiB[1] = 0x01;
-            else
-                SendCacheToZhangPengFeiB[1] = 0x02;
 
+            SendCacheToZhangPengFeiB[0] = 0xA5;
+            if (searchtime.SelectedIndex == 0)
+                SendCacheToZhangPengFeiB[1] = 0x02;
+            else if (searchtime.SelectedIndex == 1)
+                SendCacheToZhangPengFeiB[1] = 0x01;
+            else if (searchtime.SelectedIndex == 2)
+                SendCacheToZhangPengFeiB[1] = 0x03;
             // Step 1: Multiply by 1000 and cast to short.
             short angleValue = (short)(x1.Value * 1000);
 
@@ -757,6 +757,11 @@ namespace AFWDPP.Views
             // Step 2: Extract high and low bytes.
             SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
             SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
+            if (searchtime.SelectedIndex == 2)
+            {
+                SendCacheToZhangPengFeiB[4] = 0;
+                SendCacheToZhangPengFeiB[5] = 0;
+            }
 
 
 
@@ -764,6 +769,7 @@ namespace AFWDPP.Views
 
             SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
             sendData(SendCacheToZhangPengFeiB, 7);
+
         }
 
         private void ShowNotify()
@@ -780,6 +786,51 @@ namespace AFWDPP.Views
         private async void Button_Click_5(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void Button_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            sendermodel.IsChecked = true;
+
+        }
+
+        private void Button_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            sendermodel.IsChecked = false;
+        }
+
+        private void searchtime_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (searchtime.SelectedIndex == 0)
+                {
+                    cmd.Visibility = Visibility.Collapsed;
+                    l1.Visibility = Visibility.Visible;
+                    l2.Visibility = Visibility.Visible;
+                    l3.Visibility = Visibility.Visible;
+                    l4.Visibility = Visibility.Visible;
+                }
+                else if (searchtime.SelectedIndex == 1)
+                {
+                    cmd.Visibility = Visibility.Visible;
+
+                    l1.Visibility = Visibility.Collapsed;
+                    l2.Visibility = Visibility.Collapsed;
+                    l3.Visibility = Visibility.Collapsed;
+                    l4.Visibility = Visibility.Collapsed;
+                }
+                else if (searchtime.SelectedIndex == 2)
+                {
+                    cmd.Visibility = Visibility.Visible;
+
+                    l1.Visibility = Visibility.Collapsed;
+                    l2.Visibility = Visibility.Collapsed;
+                    l3.Visibility = Visibility.Collapsed;
+                    l4.Visibility = Visibility.Collapsed;
+                }
+            }
+            catch { }
         }
     }
 

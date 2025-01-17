@@ -47,25 +47,26 @@
                             <rubyer:NumericBox x:Name="y1" Interval="5" MinValue="-30.5" MaxValue="30.5" rubyer:InputBoxHelper.PostContent="°" Style="{StaticResource FrontBackNumericBox}" MinWidth="120" Value="0" NumericType="Double" Cursor="IBeam" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="模式"  >
-                            <ToggleButton Grid.Column="4" x:Name="model" Style="{DynamicResource SwitchToggleButton}" Margin="10 0" IsChecked="False" >
-                                <StackPanel Orientation="Horizontal">
-                                    <rubyer:Icon Type="FocusMode" />
-                                    <TextBlock Margin="5 0 0 0" Text="稳定状态" />
-                                </StackPanel>
-                                <rubyer:ToggleButtonHelper.CheckedContent>
-                                    <StackPanel Orientation="Horizontal">
-                                        <rubyer:Icon Type="SafariFill" Foreground="{StaticResource Success}" />
-                                        <TextBlock Margin="5 0 0 0" Foreground="{StaticResource Success}" Text="锁定状态" />
-                                    </StackPanel>
-                                </rubyer:ToggleButtonHelper.CheckedContent>
-                            </ToggleButton>
+                            <TabControl x:Name="searchtime" SelectionChanged="searchtime_SelectionChanged"   Style="{StaticResource LineTabControl}">
+                                <TabItem Header="稳定状态" IsSelected="True" />
+                                <TabItem Header="锁定状态" />
+                                <TabItem Header="发送前置声呐控制指令" />
+                            </TabControl>
 
                         </rubyer:DescriptionItem>
 
-                        <rubyer:DescriptionItem  Description="定时发送"  >
+                        <rubyer:DescriptionItem  Description="操作"  >
                             <StackPanel Orientation="Horizontal" >
-                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
-                                <Button Style="{StaticResource TextButton}" Width="80" Content="单次发送" rubyer:ButtonHelper.Shape="Circle" Click="Button_Click"  Cursor="Hand">
+                                <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False"  Visibility="Collapsed"/>
+                                <Button Name="cmd" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="发送指令" rubyer:ButtonHelper.Shape="Circle"  Click="Button_Click" Cursor="Hand">
+                                </Button>
+                                <Button Name="l1" Style="{StaticResource TextButton}" Width="80" Content="向上" rubyer:ButtonHelper.Shape="Circle"  PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown"  Cursor="Hand">
+                                </Button>
+                                <Button Name="l2" Style="{StaticResource TextButton}" Width="80" Content="向下" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown" Cursor="Hand">
+                                </Button>
+                                <Button Name="l3" Style="{StaticResource TextButton}" Width="80" Content="向左" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown" Cursor="Hand">
+                                </Button>
+                                <Button Name="l4" Style="{StaticResource TextButton}" Width="80" Content="向右" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown"  Cursor="Hand">
                                 </Button>
                             </StackPanel>
                         </rubyer:DescriptionItem>

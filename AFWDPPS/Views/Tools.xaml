@@ -13,13 +13,13 @@
              HorizontalAlignment="Stretch"   Height="100"
              rubyer:InputBoxHelper.IsClearable="True"   
              rubyer:InputBoxHelper.Watermark="待识别帧" Cursor="IBeam" TextChanged="IDC_EDIT_FC_1_TextChanged"/>
-                <StackPanel x:Name="HexContent" Width="750" rubyer:PanelHelper.Spacing="5" HorizontalAlignment="Left">
+                <StackPanel x:Name="HexContent" Width="1000" rubyer:PanelHelper.Spacing="5" HorizontalAlignment="Left">
                     <!--<TextBlock Text="WrapPanel Horizontal:" />-->
                     <WrapPanel rubyer:PanelHelper.Spacing="{Binding Value, ElementName=spacingSlider}">
                         <WrapPanel.Resources>
                             <Style TargetType="rubyer:Card">
-                                <Setter Property="Width" Value="30" />
-                                <Setter Property="Height" Value="30" />
+                                <Setter Property="Width" Value="100" />
+                                <Setter Property="Height" Value="100" />
                             </Style>
                         </WrapPanel.Resources>
 
