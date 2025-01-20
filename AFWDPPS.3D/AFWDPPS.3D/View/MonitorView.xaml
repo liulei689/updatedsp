@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="WpfApp3D.MonitorView"
+      
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp3D"
+             xmlns:ht="http://helix-toolkit.org/wpf"
+        mc:Ignorable="d"
+        d:DesignHeight="850" d:DesignWidth="1500" Loaded="Page_Loaded">
+    
+    <Grid Margin="0,30">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1">
+            <ht:HelixViewport3D x:Name="htVp" ShowCoordinateSystem="True" ShowViewCube="False" Width="1500" Height="800" >
+                <!--相机-->
+                <ht:HelixViewport3D.Camera>
+                    <!--<PerspectiveCamera Position="150,-50,80" LookDirection="-150,100,-50" UpDirection="0,0,1" FieldOfView="60"/>-->
+                    <!--<PerspectiveCamera Position="150,-50,80" LookDirection="-150,100,-50" UpDirection="0,0,1" FieldOfView="120"/>-->
+                    <PerspectiveCamera Position="150,-50,80" LookDirection="-150,100,-50" UpDirection="0,0,1" FieldOfView="100"/>
+                </ht:HelixViewport3D.Camera>
+                <ht:SunLight/>
+
+                <!--<ht:TextVisual3D  Height="8" FontSize="48" 
+                   Position="2,1,0" UpDirection="-1,0,0" TextDirection="0,1,0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="2">
+                </ht:TextVisual3D>-->
+            </ht:HelixViewport3D> 
+        </StackPanel>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition /> 
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <!--上钻左-->
+            <TextBlock Text="Y1轴" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Slider Minimum="-360" Maximum="360" Value="0" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" ValueChanged="Slider_ValueChanged"></Slider>
+            <TextBlock Text="Z1轴" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" />
+            <Slider Minimum="-10" Maximum="20" Value="0" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" ValueChanged="SliderZ1_ValueChanged"></Slider>
+            <!--上钻右-->
+            <TextBlock Text="Y2轴" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2"/>
+            <Slider Minimum="-50" Maximum="50" Value="0" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" ValueChanged="SliderTR_ValueChanged"></Slider>
+            <TextBlock Text="Z2轴" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="3" />
+            <Slider Minimum="-10" Maximum="20" Value="0" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" ValueChanged="SliderZ2_ValueChanged"></Slider>
+            
+            <!--下钻包移动轴-->
+            <TextBlock Text="W1" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="4"/>
+            <Slider Minimum="-360" Maximum="360" Value="0" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" ValueChanged="SliderBL_ValueChanged"></Slider>
+            <TextBlock Text="Z3轴" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="5" />
+            <Slider Minimum="-20" Maximum="20" Value="0" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"  ValueChanged="SliderZ3_ValueChanged"></Slider>
+
+            <!--夹手-->
+            <TextBlock Text="U" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="6"/>
+            <Slider Minimum="-180" Maximum="180" Value="0" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center"  ValueChanged="SliderU_ValueChanged"></Slider>
+            <TextBlock Text="X" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="7"/>
+            <Slider Minimum="-40" Maximum="40" Value="0" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center"  ValueChanged="SliderX_ValueChanged"></Slider>
+
+            <!--A轴-->
+            <TextBlock Text="A" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="8"/>
+            <Slider Minimum="-180" Maximum="180" Value="0" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" ValueChanged="SliderA_ValueChanged"></Slider>
+
+            <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" >
+                <StackPanel Orientation="Horizontal">
+                <TextBlock Text="刀号" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,0,0"/>
+                <TextBox x:Name="TName" Text="181" Width="40" Height="20" Margin="10,0,10,0"/>
+                <TextBlock Text="Z" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,0,0" Visibility="Collapsed"/>
+                <TextBox x:Name="ToolZ" Text="10" Width="30" Height="20" Margin="10,0,10,0" IsReadOnly="True" Visibility="Collapsed"/>
+                <Button x:Name="ToolUpZ" Content="ON" Width="40" Height="25"  Margin="10,0,10,0" Click="ToolUpZ_Click" />
+                <Button x:Name="ToolDownZ" Content="OFF" Width="60" Height="25"  Margin="10,0,10,0" Click="ToolDownZ_Click" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBlock Text="使用中的刀：" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,0,0"/>
+                    <TextBlock x:Name="txtUseingTool" Text="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

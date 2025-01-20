@@ -1,0 +1,13 @@
+﻿<Application x:Class="WpfApp3D.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:WpfApp3D"
+             StartupUri="MainWindow.xaml">
+    <!--Plane3D  demo3 MainWindow SixDrill-->
+
+    <Application.Resources>
+        <FontFamily x:Key="Jinbuti">../Assets/Fonts/#钉钉进步体</FontFamily>
+        <FontFamily x:Key="Digital">../Assets/Fonts/#Digital Display</FontFamily>
+        <FontFamily x:Key="Iconfont">../Assets/Fonts/#iconfont</FontFamily>
+    </Application.Resources>
+</Application>

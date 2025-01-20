@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="WpfApp3D.Dome1"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:WpfApp3D"
+             xmlns:ht="http://helix-toolkit.org/wpf"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/> <!-- 左侧控制面板 -->
+            <ColumnDefinition Width="*"/>   <!-- 右侧3D视图 -->
+        </Grid.ColumnDefinitions>
+
+        <!-- 左侧控制面板 -->
+        <StackPanel Orientation="Vertical" Margin="10,70,0,0">
+            <TextBlock Text="俯仰角度:" VerticalAlignment="Center"/>
+            <TextBox Name="yawTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
+            <Button Content="俯仰+" Click="YawIncrease_Click" Margin="5,0"/>
+            <Button Content="俯仰-" Click="YawDecrease_Click" Margin="5,0"/>
+
+            <TextBlock Text="方向角度 (Pitch):" VerticalAlignment="Center"/>
+            <TextBox Name="pitchTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
+            <Button Content="方向+" Click="PitchIncrease_Click" Margin="5,0"/>
+            <Button Content="方向-" Click="PitchDecrease_Click" Margin="5,0"/>
+
+            <Button Content="启动/停止定时器" Click="ToggleTimer_Click" Margin="5,0"/>
+        </StackPanel>
+
+        <!-- 右侧3D视图 -->
+        <ht:HelixViewport3D Name="viewport" Grid.Column="1" ShowCoordinateSystem="True" ShowViewCube="True" ShowFrameRate="True">
+            <ht:HelixViewport3D.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF060A13" Offset="0"/>
+                    <GradientStop Color="#FF1D64FF" Offset="1"/>
+                </LinearGradientBrush>
+            </ht:HelixViewport3D.Background>
+            <ht:GridLinesVisual3D Width="500" Length="500" Thickness="0.1" MinorDistance="20" MajorDistance="100" Fill="#80DDDDDD" /> <!-- 浅灰色网格线，半透明 -->
+            <ht:DefaultLights/>
+            <ht:HelixViewport3D.Camera>
+                <PerspectiveCamera Position="-0.671713226056439,153.944354616116,36.0650035792227" x:Name="dssd" LookDirection="0.671713226056439,-153.944354616116,-36.0650035792227" UpDirection="-0.000399249862283209,0.091500747633941,0.995804927574662" FieldOfView="45"/>
+            </ht:HelixViewport3D.Camera>
+        </ht:HelixViewport3D>
+    </Grid>
+</UserControl>

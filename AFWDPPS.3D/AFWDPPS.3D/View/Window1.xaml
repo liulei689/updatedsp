@@ -1,0 +1,256 @@
+﻿<UserControl x:Class="WpfApp3D.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp3D"
+        mc:Ignorable="d"
+        xmlns:h="http://helix-toolkit.org/wpf"
+         d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <!--ShowViewCube="True" 属性用于关闭旋转控制3D互动的图标-->
+        <!--ViewCubeWidth="200" 设置旋转图标的宽度-->
+        <!--ViewCubeHeight="200" 设置旋转图标的高度-->
+        <!--ViewCubeHorizontalPosition="Left" 设置旋转图标的水平位置-->
+        <!--ViewCubeVerticalPosition="Top" 设置垂直图标的位置-->
+        <!--ViewCubeFrontText="前" 设置旋转图标前文本-->
+        <!--ViewCubeTopText="上" 设置旋转图标上文本-->
+
+        <!--ShowCoordinateSystem="True" 设置显示坐标轴-->
+        <!--CoordinateSystemLabelForeground="#5000" 设置坐标系统的字体颜色-->
+        <!--CoordinateSystemHorizontalPosition="Center" 设置坐标系的水平位置-->
+        <!--CoordinateSystemVerticalPosition="Center" 设置坐标系的垂直位置-->
+        <h:HelixViewport3D ShowViewCube="True"
+             ViewCubeWidth="100"
+             ViewCubeHeight="100"
+             ViewCubeHorizontalPosition="Right"
+             ViewCubeVerticalPosition="Bottom"
+             ViewCubeFrontText="前"
+             ViewCubeTopText="上"
+             ViewCubeBackText="后"
+             ViewCubeLeftText="左"
+             ViewCubeRightText="右"
+             ViewCubeBottomText="下"
+              
+             ShowCoordinateSystem="True"
+             CoordinateSystemLabelForeground="#5000"
+             CoordinateSystemHorizontalPosition="Left"
+             CoordinateSystemVerticalPosition="Bottom" Margin="-10,0,10,0"
+             >
+            <!--相机-->
+            <h:HelixViewport3D.Camera>
+                <!-- PerspectiveCamera标签-透视相机（近比例长远比例小，符合我们正常观察事物的视觉-常用）-->
+                <!--Position="100,100,100" 设置视角x,y,z-->
+                <!--LookDirection="-2,-2,-2" 设置相机的观看视角-相机观察的方向-->
+                <!--FieldOfView="90" 调整相机焦距 设置相机与观看物体的距离，离得远观看物体区域范围大，离得近观看物体区域范围小 -->
+                <!--UpDirection="0,1,0" （x, y,z）设置相机视口的旋转角度，斜着拍还是正着拍 -->
+                <!--FarPlaneDistance="1000" 设置相机远处景色的渲染范围，如果值设置的比较小，远处景色是模糊的-->
+                <!--NearPlaneDistance="1" 设置相机近处的晶圆渲染范围，如果值越大，近处景色是模糊的-->
+                <PerspectiveCamera Position="10,10,10"
+  LookDirection="-2,-2,-2"
+  FieldOfView="50"
+  UpDirection="0,1,0"
+  FarPlaneDistance="1000"
+  NearPlaneDistance="1">
+                    <!--设置相机旋转标签-->
+                    <PerspectiveCamera.Transform>
+                        <!--分组标签，在分组标签内可以有多个变形标签-->
+                        <Transform3DGroup>
+                            <!--CenterX="0" CenterY="0" CenterZ="0" 设置相机旋转中心点-->
+                            <RotateTransform3D CenterX="3" CenterY="0" CenterZ="0">
+                                <!--设置相机旋转方式标签-->
+                                <RotateTransform3D.Rotation>
+                                    <!--AxisAngleRotation3D 设置相机按照轴的方式旋转标签-->
+                                    <!--Angle="45" 设置相机按照45度角旋转-->
+                                    <!--Axis="0 1 0" 设置以那个轴进行旋转 （x y z）-->
+                                    <AxisAngleRotation3D Angle="0" Axis="0 1 0" x:Name="aar"/>
+                                </RotateTransform3D.Rotation>
+                            </RotateTransform3D>
+                            <!--平移标签-->
+                            <!--OffsetX="1" OffsetY="1" OffsetZ="1" 设置 x y z 三个方向的移动距离-->
+                            <TranslateTransform3D OffsetX="0" OffsetY="0" OffsetZ="0" x:Name="tt"/>
+                            <!--缩放标签-->
+                            <!--ScaleX="1" ScaleY="1" ScaleZ="1" 设置图像缩放大小 1是原始大小 小于1是相机尺寸变小，图像变大 大于1是相机尺寸变大，图像变小 -->
+                            <!--一般很少使用相机平移调整图像放大缩小，可以使用相机视野调整图像放大与缩小-->
+                            <ScaleTransform3D ScaleX="1" ScaleY="1" ScaleZ="1"/>
+                        </Transform3DGroup>
+                    </PerspectiveCamera.Transform>
+                </PerspectiveCamera>
+                <!--正交相机（远近比例都一样-很少用）-->
+                <!--Width="50" 相当与透视相机的视野范围属性-->
+                <!--<OrthographicCamera Position="100,100,100"
+   LookDirection="-2,-2,-2"
+   Width="50"
+   UpDirection="0,1,0"
+   FarPlaneDistance="1000"
+    NearPlaneDistance="1"/>-->
+            </h:HelixViewport3D.Camera>
+
+
+            <!--设置旋转动作靠什么来操作-->
+            <h:HelixViewport3D.RotateGesture>
+                <!--设置鼠标操作旋转动作-->
+                <!--MouseAction="LeftClick" 设置鼠标左键旋转-->
+                <MouseGesture MouseAction="LeftClick"/>
+            </h:HelixViewport3D.RotateGesture>
+            <!--设置3D图像移动操作-->
+            <h:HelixViewport3D.PanGesture>
+                <!--设置鼠标右键移动3D图像-->
+                <MouseGesture MouseAction="RightClick"/>
+            </h:HelixViewport3D.PanGesture>
+
+
+            <!--第二步在3D世界设置光源进来，没有光源全是黑的呀-->
+            <!--光源标签-设置光源的相关属性-->
+            <ModelVisual3D>
+                <!--光源内容标签-->
+                <ModelVisual3D.Content>
+                    <!--多个光源可以组合使用-会出现不同的效果-->
+                    <Model3DGroup>
+                        <!--环境光标签    -->
+                        <!--Color="White"-设置环境光颜色 -->
+                        <AmbientLight Color="White"/>
+
+                        <!--平行光-设置某一个方向上照射的光-平行光不发散 -->
+                        <!--Direction="-1,-1,-1" （x,y,z）三个方向照射的光 设置平行光的照射方向-->
+                        <!--<DirectionalLight Color="White" Direction="-1,-1,-1"/>-->
+
+                        <!--点光源-点光源是向四面八方发散的光源 -->
+                        <!--Position="100,100,100" （x,y,z） 设置光源点-->
+                        <!--Range="200" 设置光源的照射范围-->
+                        <!--<PointLight Color="White" Position="100,100,100" Range="200"/>-->
+
+                        <!--射灯光源（聚光灯，手电筒）-某一个方向去发射光源-相当于手电筒有一个中心的光柱（比较亮的）以及两遍发散的光源（相对较暗） -->
+                        <!--InnerConeAngle="100" 设置中心范围光柱的角度-->
+                        <!--OuterConeAngle="40" 设置两遍光源的范围角度-->
+                        <!--Position="50,50,50" 设置光源的中心位置-->
+                        <!--Direction="-1,-1,-1" （x,y,z）三个方向照射的光 设置光源的照射方向-->
+                        <!--<SpotLight Color="Orange" InnerConeAngle="100"
+ OuterConeAngle="40"
+ Position="50,50,50"
+ Direction="-1,-1,-1"/>-->
+                    </Model3DGroup>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+
+            <!--动态库提供的光源-比较全-建议使用这个-当然自己写也可以 -->
+            <!--<h:DefaultLights/>-->
+
+
+            <!--3D图形的第一个面 可以把所有的面放在一起写-->
+            <!--3DUIElement标签-固定写法-->
+            <!--MouseLeftButtonDown 鼠标左键点击事件-->
+            <ModelUIElement3D  MouseLeftButtonDown="ModelUIElement3D_MouseLeftButtonDown">
+                <ModelUIElement3D.Model>
+                    <!--GeometryModel3D网格标签-->
+                    <GeometryModel3D>
+                        <!--第三步物体需要呈现出来需要材质-->
+                        <!--3D的材质 标签-->
+                        <GeometryModel3D.Material>
+                            <MaterialGroup>
+                                <!--漫反射的一种材质 材质是与网格属性标签组合在一起使用的-->
+                                <!--DiffuseMaterial 慢反射材质标签-->
+                                <!--Brush 设置材质颜色或图片-->
+                                <!--<DiffuseMaterial Brush="Orange"/>-->
+                                <!--3D面设置背景图-需要在网格标签中设置TextureCoordinates="0,1 0,0 1,0 1,1"属性，背景图显示方向，才能显示出背景图 -->
+                                <!--****************************-->
+                                <!--<DiffuseMaterial>
+                                  <DiffuseMaterial.Brush>
+                                      <ImageBrush ImageSource="Arrow.png"/>
+                                  </DiffuseMaterial.Brush>
+                              </DiffuseMaterial>-->
+                                <!--自发光-->
+                                <!--<EmissiveMaterial Brush="Red"/>-->
+                                <SpecularMaterial Brush="Blue"/>
+                            </MaterialGroup>
+                        </GeometryModel3D.Material>
+                        <!--BackMaterial 异面材质标签-->
+                        <GeometryModel3D.BackMaterial>
+                            <DiffuseMaterial Brush="Green"/>
+                        </GeometryModel3D.BackMaterial>
+                        <!--网格标签-->
+                        <GeometryModel3D.Geometry>
+                            <!-- MeshGeometry3D呈现3D图形的标签  Positions="0,0,0（x,y,z）     3,0,0      3,2,0      0,2,0" 一个面的4个点-->
+                            <!--TriangleIndices ="0,2,3（第一组-这里的坐标点需要逆时针顺序） 0,1,2（第二组）" 设置Positions的3个点组成一个三角行 -->
+                            <!--这里如果呈现的是三角行而不是四边行的画，是因为TriangleIndices="0,2,3 0,1,2"的画点顺序需要逆时针顺序-->
+                            <!--TextureCoordinates 设置平面对象与3D对象的映射关系-用来解决平面设置背景图显示问题-如果不设置这个属性平面设置的背景图不显示-->
+                            <MeshGeometry3D Positions="0,0,0     3,0,0      3,2,0      0,2,0"
+                    TriangleIndices="0,2,3 0,1,2"
+                           TextureCoordinates="1,1 1,0 0,0 0,1"/>
+                            <!--箭头向下-->
+                            <!--TextureCoordinates="1,1 0,1 0,0 1,0"/> 箭头向左-->
+                            <!--TextureCoordinates="0,1 1,1 1,0 0,0"/> 箭头向右-->
+                            <!--TextureCoordinates="0,1 0,0 1,0 1,1"/>-->
+                            <!--  箭头向上-->
+                        </GeometryModel3D.Geometry>
+                    </GeometryModel3D>
+                </ModelUIElement3D.Model>
+            </ModelUIElement3D>
+
+            <!--Viewport2DVisual3D 平面对象加载标签用于在3D对象中呈现2D控件-->
+            <Viewport2DVisual3D>
+                <!--网格标签-->
+                <Viewport2DVisual3D.Geometry>
+                    <!-- MeshGeometry3D呈现3D图形的标签  Positions="0,0,0（x,y,z）     3,0,0      3,2,0      0,2,0" 一个面的4个点-->
+                    <!--TriangleIndices ="0,2,3（第一组-这里的坐标点需要逆时针顺序） 0,1,2（第二组）" 设置Positions的3个点组成一个三角行 -->
+                    <!--这里如果呈现的是三角行而不是四边行的画，是因为TriangleIndices="0,2,3 0,1,2"的画点顺序需要逆时针顺序-->
+                    <!--TextureCoordinates 设置平面对象与3D对象的映射关系-用来解决平面设置背景图显示问题-如果不设置这个属性平面设置的背景图不显示-->
+                    <MeshGeometry3D Positions="0,0,1     3,0,1      3,2,1      0,2,1"
+                   TriangleIndices="0,2,3 0,1,2"
+                   TextureCoordinates="0,1 1,1 1,0 0,0"/>
+                </Viewport2DVisual3D.Geometry>
+                <!--Material设置3D的材质 标签-->
+                <Viewport2DVisual3D.Material>
+                    <!--IsVisualHostMaterial 属性是将DiffuseMaterial材质设置成2D平面的盒子 - 用于解决将Button按钮显示出来 -->
+                    <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
+                </Viewport2DVisual3D.Material>
+
+                <Border>
+                    <Button Content="Hello" Click="Button_Click"/>
+                </Border>
+            </Viewport2DVisual3D>
+
+            <!--3D图形的第二个面 可以把所有的面放在一起写 这里没有放在一起写是因为可以给每个面设置不同的颜色-->
+            <!--3DUIElement标签-固定写法-->
+            <ModelUIElement3D>
+                <ModelUIElement3D.Model>
+                    <!--GeometryModel3D网格标签-->
+                    <GeometryModel3D>
+                        <!--第三步物体需要呈现出来需要材质-->
+                        <!--3D的材质 标签-->
+                        <GeometryModel3D.Material>
+                            <MaterialGroup>
+                                <!--漫反射的一种材质 材质是与网格属性标签组合在一起使用的-->
+                                <!--DiffuseMaterial 慢反射材质标签-->
+                                <!--Brush 设置材质颜色或图片-->
+                                <DiffuseMaterial Brush="Red"/>
+                                <!--<DiffuseMaterial>
+        <DiffuseMaterial.Brush>
+            <ImageBrush ImageSource="Arrow.png"/>
+        </DiffuseMaterial.Brush>
+    </DiffuseMaterial>-->
+                                <!--自发光 标签-用于设置在没有光源的情况下可以看见自发光颜色-在有光源的情况下自发光颜色会影响到材质颜色的显示 -->
+                                <!--<EmissiveMaterial Brush="Green"/>-->
+                                <!--全反射标签 目前只是了解一下-->
+                                <!--<SpecularMaterial Brush="Blue"/>-->
+                            </MaterialGroup>
+                        </GeometryModel3D.Material>
+                        <!--BackMaterial 异面材质标签-->
+                        <GeometryModel3D.BackMaterial>
+                            <DiffuseMaterial Brush="Blue"/>
+                        </GeometryModel3D.BackMaterial>
+                        <!--网格标签-->
+                        <GeometryModel3D.Geometry>
+                            <!-- 呈现3D图形的标签  Positions="0,0,0（x,y,z）     3,0,0      3,2,0      0,2,0" 一个面的4个点-->
+                            <!--TriangleIndices ="0,2,3（第一组-这里的坐标点需要逆时针顺序） 0,1,2（第二组）" 设置Positions的3个点组成一个三角行 -->
+                            <!--这里如果呈现的是三角行而不是四边行的画，是因为TriangleIndices="0,2,3 0,1,2"的画点顺序需要逆时针顺序-->
+                            <MeshGeometry3D Positions="3,2,1     3,2,0      3,0,0      3,0,1"
+         TriangleIndices="0,3,1    1,3,2"/>
+                        </GeometryModel3D.Geometry>
+                    </GeometryModel3D>
+                </ModelUIElement3D.Model>
+            </ModelUIElement3D>
+
+        </h:HelixViewport3D>
+    </Grid>
+</UserControl>
