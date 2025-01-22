@@ -14,18 +14,25 @@
         </Grid.ColumnDefinitions>
 
         <!-- 左侧控制面板 -->
-        <StackPanel Orientation="Vertical" Margin="10,70,0,0">
+        <StackPanel Orientation="Vertical" Margin="10,40,0,0">
             <TextBlock Text="俯仰角度:" VerticalAlignment="Center"/>
             <TextBox Name="yawTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
             <Button Content="俯仰+" Click="YawIncrease_Click" Margin="5,0"/>
             <Button Content="俯仰-" Click="YawDecrease_Click" Margin="5,0"/>
 
             <TextBlock Text="方向角度 (Pitch):" VerticalAlignment="Center"/>
-            <TextBox Name="pitchTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
+            <TextBox Name="pitchTextBox" Width="100" Margin="5" Text="0" IsReadOnly="False"/>
             <Button Content="方向+" Click="PitchIncrease_Click" Margin="5,0"/>
             <Button Content="方向-" Click="PitchDecrease_Click" Margin="5,0"/>
 
             <Button Content="启动/停止定时器" Click="ToggleTimer_Click" Margin="5,0"/>
+
+            <TextBlock Grid.Column="0"  Text="串口号:"  />
+            <ComboBox Grid.Column="1" Name="comlist"  Margin="20 0"/>
+            <TextBlock Grid.Column="2" Text="波特率:"  />
+            <ComboBox Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
+            <ToggleButton Grid.Column="4" x:Name="openclosecom" Height="25" Margin="5" Content="打开串口" IsChecked="False" Click="openclosecom_Click">
+            </ToggleButton>
         </StackPanel>
 
         <!-- 右侧3D视图 -->
