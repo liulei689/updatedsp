@@ -1,6 +1,8 @@
 ﻿using HelixToolkit.Wpf;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Windows;
@@ -16,6 +18,7 @@ namespace WpfApp3D
         private double yaw = 0; // 方向角度
         private double pitch = 0; // 俯仰角度
         private DispatcherTimer timer; // 定时器
+        private DispatcherTimer timer11; // 定时器
         private bool isTimerRunning = false; // 定时器是否运行
         private BoxVisual3D boxModel; // 3D模型引用
         public System.IO.Ports.SerialPort serialPort2;
@@ -52,7 +55,35 @@ namespace WpfApp3D
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+
+            timer11 = new DispatcherTimer();
+            timer11.Interval = TimeSpan.FromMilliseconds(50); // 每500毫秒更新一次
+            timer11.Tick += Timer_Tick11;
+            timer11.Stop();
         }
+
+        private void Timer_Tick11(object sender, EventArgs e)
+        {
+            // 如果提取的值为空，停止定时器
+            if (extractedValues.Count == 0)
+            {
+                timer11.Stop();
+                return;
+            }
+
+            // 获取当前索引对应的值
+            var (pitch1, yaw1) = extractedValues[currentIndex];
+            yaw = yaw1;
+            pitch = pitch1;
+            // 更新yaw和pitch
+            UpdateYaw();
+            UpdatePitch();
+
+            // 更新索引，如果到达最后一条，重新从头开始
+            currentIndex = (currentIndex + 1) % extractedValues.Count;
+
+        }
+
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -147,6 +178,7 @@ namespace WpfApp3D
         {
             if (!isTimerRunning)
             {
+                timer11.Stop();
                 // 启动定时器
                 timer = new DispatcherTimer();
                 timer.Interval = TimeSpan.FromMilliseconds(50); // 每500毫秒更新一次
@@ -163,7 +195,8 @@ namespace WpfApp3D
                 ((Button)sender).Content = "启动定时器";
             }
         }
-
+        private int currentIndex = 0; // 当前索引
+        private bool issuiji = false;
         // 定时器事件
         private void Timer_Tick(object sender, EventArgs e)
         {
@@ -177,6 +210,7 @@ namespace WpfApp3D
 
             UpdateYaw();
             UpdatePitch();
+
         }
 
         // 更新方向角度
@@ -245,7 +279,7 @@ namespace WpfApp3D
                     serialPort2.DataBits = 8;
                     serialPort2.Open();//打开串口
                     openclosecom.Content = "关闭串口";
-
+                    timer11.Stop();
                 }
             }
             catch (Exception ex)
@@ -268,6 +302,66 @@ namespace WpfApp3D
 
             }
 
+        }
+        List<(double, double)> extractedValues = null;
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt",
+                Title = "选择TXT文件"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filePath = openFileDialog.FileName;
+                extractedValues = ProcessTxtFile(filePath);
+
+
+            }
+        }
+
+        private List<(double, double)> ProcessTxtFile(string filePath)
+        {
+            List<(double, double)> extractedValues = new List<(double, double)>();
+
+            try
+            {
+                string[] lines = File.ReadAllLines(filePath);
+
+                foreach (string line in lines)
+                {
+                    var result = ExtractValues(line);
+                    extractedValues.Add(result); // 将提取的值对添加到列表中
+                }
+                timer11.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"读取文件时发生错误: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return extractedValues;
+        }
+
+        private (double, double) ExtractValues(string line)
+        {
+            // 按逗号分割字符串
+            string[] parts = line.Split(',');
+
+            double lastValue = 0;
+            double secondLastValue = 0;
+
+            // 检查是否有足够的部分
+            if (parts.Length >= 2)
+            {
+                // 使用索引访问最后两个部分
+                double.TryParse(parts[parts.Length - 1], out lastValue);
+                double.TryParse(parts[parts.Length - 2], out secondLastValue);
+            }
+
+            // 返回两个double值作为元组
+            return (secondLastValue, lastValue);
         }
     }
 }

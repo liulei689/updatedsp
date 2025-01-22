@@ -25,7 +25,7 @@
             <Button Content="方向+" Click="PitchIncrease_Click" Margin="5,0"/>
             <Button Content="方向-" Click="PitchDecrease_Click" Margin="5,0"/>
 
-            <Button Content="启动/停止定时器" Click="ToggleTimer_Click" Margin="5,0"/>
+            <Button Content="指定角度附近模拟" Click="ToggleTimer_Click" Margin="5,0"/>
 
             <TextBlock Grid.Column="0"  Text="串口号:"  />
             <ComboBox Grid.Column="1" Name="comlist"  Margin="20 0"/>
@@ -33,6 +33,7 @@
             <ComboBox Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
             <ToggleButton Grid.Column="4" x:Name="openclosecom" Height="25" Margin="5" Content="打开串口" IsChecked="False" Click="openclosecom_Click">
             </ToggleButton>
+            <Button Content="读记录文件" Click="Button_Click" Margin="5,0"/>
         </StackPanel>
 
         <!-- 右侧3D视图 -->
