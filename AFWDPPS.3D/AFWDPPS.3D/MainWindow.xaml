@@ -183,7 +183,7 @@
             <Run Text="稳定平台" FontFamily="{StaticResource Jinbuti}"/>
                 </TextBlock>
             </RadioButton>
-            <!--<RadioButton Style="{StaticResource NavButtonStyle}" 
+            <RadioButton Style="{StaticResource NavButtonStyle}" 
                         Command="{Binding NavCommand}"
                         CommandParameter="MonitorView">
                 <TextBlock>
@@ -219,7 +219,7 @@
                    <Run Text="&#xe60f;" FontFamily="{StaticResource Iconfont}" FontSize="16"/>
                    <Run Text="机械臂2" FontFamily="{StaticResource Jinbuti}"/>
                 </TextBlock>
-            </RadioButton>-->
+            </RadioButton>
         </StackPanel>
     </Grid>     
 </Window>

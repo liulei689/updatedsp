@@ -186,17 +186,39 @@
     <Resource Include="Assets\Fonts\digital_display.ttf" />
     <Resource Include="Assets\Fonts\DingTalk-JinBuTi.ttf" />
     <Resource Include="Assets\Fonts\iconfont.ttf" />
-    <None Include="3D_Models\IRB4600_20kg-250_BASE_CAD_rev04.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK1_rev03.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK2_rev03.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK3_rev03.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_LINK1_CAD_rev04.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_LINK2_CAD_rev04.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev005.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev04.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_LINK4_CAD_rev04.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_LINK5_CAD_rev04.stl" />
-    <None Include="3D_Models\IRB4600_20kg-250_LINK6_CAD_rev04.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_BASE_CAD_rev04.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK1_rev03.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK2_rev03.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK3_rev03.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_LINK1_CAD_rev04.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_LINK2_CAD_rev04.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev005.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev04.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_LINK4_CAD_rev04.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_LINK5_CAD_rev04.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_LINK6_CAD_rev04.stl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

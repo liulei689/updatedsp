@@ -21,6 +21,7 @@ namespace WpfApp3D
         private DispatcherTimer timer11; // 定时器
         private bool isTimerRunning = false; // 定时器是否运行
         private BoxVisual3D boxModel; // 3D模型引用
+        private BoxVisual3D boxModel1; // 3D模型引用
         public System.IO.Ports.SerialPort serialPort2;
         public Dome1()
         {
@@ -32,11 +33,19 @@ namespace WpfApp3D
                 Center = new Point3D(0, 0, 0),
                 Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e2b8")), // 使用自定义颜色
                 Length = 50, // 调整尺寸
-                Width = 30,  // 调整尺寸
+                Width = 50,  // 调整尺寸
                 Height = 1.8 // 调整尺寸
             };
             viewport.Items.Add(boxModel); // 添加到 HelixViewport3D
-
+            boxModel1 = new BoxVisual3D
+            {
+                Center = new Point3D(0, 0, 20),
+                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e2b8")), // 使用自定义颜色
+                Length = 40, // 调整尺寸
+                Width = 30,  // 调整尺寸
+                Height = 1.8 // 调整尺寸
+            };
+            viewport.Items.Add(boxModel1); // 添加到 HelixViewport3D
             // 初始化角度为0°
             UpdateYaw();
             UpdatePitch();
