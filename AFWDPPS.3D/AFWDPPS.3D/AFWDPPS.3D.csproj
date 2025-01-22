@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.props" Condition="Exists('..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,6 +40,9 @@
   <ItemGroup>
     <Reference Include="CommunityToolkit.Mvvm, Version=8.3.0.0, Culture=neutral, PublicKeyToken=4aff67a105548ee2, processorArchitecture=MSIL">
       <HintPath>..\packages\CommunityToolkit.Mvvm.8.3.2\lib\netstandard2.0\CommunityToolkit.Mvvm.dll</HintPath>
+    </Reference>
+    <Reference Include="Costura, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Costura.Fody.6.0.0\lib\netstandard2.0\Costura.dll</HintPath>
     </Reference>
     <Reference Include="HelixToolkit, Version=2.25.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <HintPath>..\packages\HelixToolkit.2.25.0\lib\netstandard2.0\HelixToolkit.dll</HintPath>
@@ -182,39 +186,17 @@
     <Resource Include="Assets\Fonts\digital_display.ttf" />
     <Resource Include="Assets\Fonts\DingTalk-JinBuTi.ttf" />
     <Resource Include="Assets\Fonts\iconfont.ttf" />
-    <None Include="3D_Models\IRB4600_20kg-250_BASE_CAD_rev04.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK1_rev03.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK2_rev03.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK3_rev03.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_LINK1_CAD_rev04.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_LINK2_CAD_rev04.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev005.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev04.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_LINK4_CAD_rev04.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_LINK5_CAD_rev04.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="3D_Models\IRB4600_20kg-250_LINK6_CAD_rev04.stl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="3D_Models\IRB4600_20kg-250_BASE_CAD_rev04.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK1_rev03.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK2_rev03.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_CABLES_LINK3_rev03.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_LINK1_CAD_rev04.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_LINK2_CAD_rev04.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev005.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_LINK3_CAD_rev04.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_LINK4_CAD_rev04.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_LINK5_CAD_rev04.stl" />
+    <None Include="3D_Models\IRB4600_20kg-250_LINK6_CAD_rev04.stl" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -235,6 +217,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets'))" />
     <Error Condition="!Exists('..\packages\CommunityToolkit.Mvvm.8.3.2\build\CommunityToolkit.Mvvm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CommunityToolkit.Mvvm.8.3.2\build\CommunityToolkit.Mvvm.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Fody.6.8.2\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.6.8.2\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.props'))" />
+    <Error Condition="!Exists('..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets'))" />
   </Target>
   <Import Project="..\packages\CommunityToolkit.Mvvm.8.3.2\build\CommunityToolkit.Mvvm.targets" Condition="Exists('..\packages\CommunityToolkit.Mvvm.8.3.2\build\CommunityToolkit.Mvvm.targets')" />
+  <Import Project="..\..\packages\Fody.6.8.2\build\Fody.targets" Condition="Exists('..\..\packages\Fody.6.8.2\build\Fody.targets')" />
+  <Import Project="..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets" Condition="Exists('..\..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets')" />
 </Project>

@@ -201,8 +201,8 @@ namespace WpfApp3D
         private void Timer_Tick(object sender, EventArgs e)
         {
             Random random = new Random();
-            yaw += random.Next(-5, 6); // 随机生成 -5 到 5 的角度变化量
-            pitch += random.Next(-5, 6); // 随机生成 -5 到 5 的角度变化量
+            yaw += random.Next(-2, 5); // 随机生成 -5 到 5 的角度变化量
+            pitch += random.Next(-2, 5); // 随机生成 -5 到 5 的角度变化量
 
             // 限制角度范围
             yaw = Clamp(yaw, -10, 10);
