@@ -1,19 +1,11 @@
 ﻿using HelixToolkit.Wpf;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WpfApp3D.Models;
 
 namespace WpfApp3D.View
@@ -120,7 +112,7 @@ namespace WpfApp3D.View
             changeSelectedJoint();
 
             timer1 = new System.Windows.Forms.Timer();
-            timer1.Interval = 5;
+            timer1.Interval = 1000;
             timer1.Tick += new System.EventHandler(timer1_Tick);
         }
 

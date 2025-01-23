@@ -23,6 +23,7 @@ namespace WpfApp3D
         private BoxVisual3D boxModel; // 3D模型引用
         private BoxVisual3D boxModel1; // 3D模型引用
         public System.IO.Ports.SerialPort serialPort2;
+        public GeometryModel3D springModel;
         public Dome1()
         {
             InitializeComponent();
@@ -45,7 +46,30 @@ namespace WpfApp3D
                 Width = 30,  // 调整尺寸
                 Height = 1.8 // 调整尺寸
             };
+
             viewport.Items.Add(boxModel1); // 添加到 HelixViewport3D
+                                           // 创建圆柱的顶点和三角形索引
+                                           // 定义弹簧的参数
+                                           // 定义弹簧的参数
+            Point3D startPoint = boxModel.Center; // 起点
+            Point3D endPoint = boxModel1.Center; // 终点
+            double radius = 0.5; // 弹簧的半径
+            int turns = 20; // 弹簧的圈数
+
+            // 创建弹簧几何形状
+            var springMesh = CreateSpringGeometry(startPoint, endPoint, radius, turns);
+
+            // 创建几何模型
+            springModel = new GeometryModel3D
+            {
+                Geometry = springMesh,
+                Material = MaterialHelper.CreateMaterial(Brushes.Silver), // 设置材质
+                Transform = new TranslateTransform3D(startPoint.X, startPoint.Y, startPoint.Z)
+            };
+
+            // 添加到视图
+            viewport.Items.Add(new ModelVisual3D { Content = springModel });
+
             // 初始化角度为0°
             UpdateYaw();
             UpdatePitch();
@@ -66,11 +90,29 @@ namespace WpfApp3D
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
 
             timer11 = new DispatcherTimer();
-            timer11.Interval = TimeSpan.FromMilliseconds(50); // 每500毫秒更新一次
+            timer11.Interval = TimeSpan.FromMilliseconds(1000); // 每500毫秒更新一次
             timer11.Tick += Timer_Tick11;
             timer11.Stop();
         }
+        private MeshGeometry3D CreateSpringGeometry(Point3D startPoint, Point3D endPoint, double radius, int turns)
+        {
+            var meshBuilder = new MeshBuilder();
+            double length = (endPoint - startPoint).Length; // 弹簧的总长度
+            double step = length / turns / 360.0; // 每度的步长
 
+            // 计算螺旋线上的点
+            for (double t = 0; t <= 360 * turns; t += 1)
+            {
+                double angle = t * Math.PI / 180.0; // 将角度转换为弧度
+                double z = startPoint.Z + (t / 360.0 / turns) * length; // 当前点的 Z 坐标
+                double x = startPoint.X + radius * Math.Cos(angle);
+                double y = startPoint.Y + radius * Math.Sin(angle);
+
+                meshBuilder.AddSphere(new Point3D(x, y, z), radius / 2, 8); // 添加一个小球作为弹簧的“线”
+            }
+
+            return meshBuilder.ToMesh();
+        }
         private void Timer_Tick11(object sender, EventArgs e)
         {
             // 如果提取的值为空，停止定时器
@@ -190,7 +232,7 @@ namespace WpfApp3D
                 timer11.Stop();
                 // 启动定时器
                 timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(50); // 每500毫秒更新一次
+                timer.Interval = TimeSpan.FromMilliseconds(100); // 每500毫秒更新一次
                 timer.Tick += Timer_Tick;
                 timer.Start();
                 isTimerRunning = true;
@@ -210,15 +252,16 @@ namespace WpfApp3D
         private void Timer_Tick(object sender, EventArgs e)
         {
             Random random = new Random();
-            yaw += random.Next(-2, 5); // 随机生成 -5 到 5 的角度变化量
-            pitch += random.Next(-2, 5); // 随机生成 -5 到 5 的角度变化量
+            yaw += random.Next(-15, 15); // 随机生成 -5 到 5 的角度变化量
+            pitch += random.Next(-15, 15); // 随机生成 -5 到 5 的角度变化量
 
             // 限制角度范围
-            yaw = Clamp(yaw, -10, 10);
-            pitch = Clamp(pitch, -10, 10);
+            yaw = Clamp(yaw, -15, 15);
+            pitch = Clamp(pitch, -15, 15);
 
-            UpdateYaw();
-            UpdatePitch();
+            yawTextBox.Text = yaw.ToString("F2");
+            pitchTextBox.Text = pitch.ToString("F2");
+            UpdateTransform();
 
         }
 
@@ -235,15 +278,39 @@ namespace WpfApp3D
             pitchTextBox.Text = pitch.ToString("F2");
             UpdateTransform();
         }
+        private void UpdateSpringGeometry(BoxVisual3D box1, BoxVisual3D box2, GeometryModel3D springModel)
+        {
+            // 获取新的起点和终点
+            Point3D startPoint = box1.Center;
+            Point3D endPoint = box2.Center;
 
+            // 计算弹簧的方向和长度
+            Vector3D direction = endPoint - startPoint;
+            direction.Normalize();
+
+            // 生成一个小的随机偏移量
+            Random rand = new Random();
+            double randomOffset = (rand.NextDouble() - 0.5) * 0.8; // 随机偏移量，范围在 -0.05 到 0.05 之间
+
+            // 创建一个平移变换，让弹簧稍微动一下
+            Vector3D moveVector = direction * randomOffset;
+
+            // 创建平移变换
+            TranslateTransform3D translateTransform = new TranslateTransform3D(moveVector.X, moveVector.Y, moveVector.Z);
+
+            // 应用变换
+            springModel.Transform = translateTransform;
+        }
         // 更新3D模型的旋转状态
         private void UpdateTransform()
         {
             var yawRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), yaw));
             var pitchRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), pitch));
             boxModel.Transform = new Transform3DGroup { Children = { yawRotation, pitchRotation } };
-            var d = dssd.Position;
-            var s = dssd.LookDirection;
+            var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), yaw * 0.1));
+            var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), pitch * 0.1));
+            boxModel1.Transform = new Transform3DGroup { Children = { yawRotation1, pitchRotation1 } };
+            UpdateSpringGeometry(boxModel, boxModel1, springModel);
         }
 
         private void openclosecom_Click(object sender, RoutedEventArgs e)
