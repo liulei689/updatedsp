@@ -20,22 +20,30 @@
             <Button Content="俯仰+" Click="YawIncrease_Click" Margin="5,0"/>
             <Button Content="俯仰-" Click="YawDecrease_Click" Margin="5,0"/>
 
-            <TextBlock Text="方向角度 (Pitch):" VerticalAlignment="Center"/>
+            <TextBlock Text="滚转角度:" VerticalAlignment="Center"/>
             <TextBox Name="pitchTextBox" Width="100" Margin="5" Text="0" IsReadOnly="False"/>
             <Button Content="方向+" Click="PitchIncrease_Click" Margin="5,0"/>
             <Button Content="方向-" Click="PitchDecrease_Click" Margin="5,0"/>
 
-            <Button Content="指定角度附近模拟" Click="ToggleTimer_Click" Margin="5,0"/>
+            <Button Visibility="Collapsed" Content="指定角度附近模拟" Click="ToggleTimer_Click" Margin="5,0"/>
 
-            <TextBlock Grid.Column="0"  Text="串口号:"  />
-            <ComboBox Grid.Column="1" Name="comlist"  Margin="20 0"/>
-            <TextBlock Grid.Column="2" Text="波特率:"  />
-            <ComboBox Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
-            <ToggleButton Grid.Column="4" x:Name="openclosecom" Height="25" Margin="5" Content="打开串口" IsChecked="False" Click="openclosecom_Click">
+            <TextBlock Visibility="Collapsed" Grid.Column="0"  Text="串口号:"  />
+            <ComboBox Visibility="Collapsed" Grid.Column="1" Name="comlist"  Margin="20 0"/>
+            <TextBlock Visibility="Collapsed" Grid.Column="2" Text="波特率:"  />
+            <ComboBox Visibility="Collapsed" Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
+            <ToggleButton Visibility="Collapsed" Grid.Column="4" x:Name="openclosecom" Height="25" Margin="5" Content="打开串口" IsChecked="False" Click="openclosecom_Click">
             </ToggleButton>
-            <Button Content="读记录文件" Click="Button_Click" Margin="5,0"/>
+            <Button Visibility="Collapsed" Content="读记录文件" Click="Button_Click" Margin="5,0"/>
+            <!-- 分割线 -->
+            <GridSplitter  Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                 Background="Gray" ResizeDirection="Rows" Margin="8"/>
+            <TextBlock Text="稳定平台信息" Margin="5"/>
+            <TextBlock Text="俯仰角度：" Margin="5"/>
+            <TextBlock x:Name="x1" Text="0" Margin="5"/>
+            <TextBlock Text="滚转角度：" Margin="5"/>
+            <TextBlock x:Name="y1" Text="0" Margin="5"/>
         </StackPanel>
-
+     
         <!-- 右侧3D视图 -->
         <ht:HelixViewport3D Name="viewport" Grid.Column="1" ShowCoordinateSystem="True" ShowViewCube="True" ShowFrameRate="True">
             <ht:HelixViewport3D.Background>

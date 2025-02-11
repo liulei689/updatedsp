@@ -135,8 +135,8 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Image Source="../Assets/Images/Logo_64.png" Margin="0,8" Effect="{StaticResource shadowEffect}"/>
-            <TextBlock Text="安防稳定平台3D模拟器" VerticalAlignment="Center" 
+            <!--<Image Source="../Assets/Images/Logo_64.png" Margin="0,8" Effect="{StaticResource shadowEffect}"/>-->
+            <TextBlock Text="稳定平台3D模拟" VerticalAlignment="Center" 
                       HorizontalAlignment="Center" FontFamily="{StaticResource Jinbuti}"
                       FontSize="18" Grid.Column="1" Margin="20,0"/>
         </Grid>
@@ -194,7 +194,7 @@
 
        
 
-            <RadioButton Style="{StaticResource NavButtonStyle}"
+            <!--<RadioButton Style="{StaticResource NavButtonStyle}"
                         Command="{Binding NavCommand}"
                         CommandParameter="demo3">
                 <TextBlock>
@@ -219,7 +219,7 @@
                    <Run Text="&#xe60f;" FontFamily="{StaticResource Iconfont}" FontSize="16"/>
                    <Run Text="机械臂2" FontFamily="{StaticResource Jinbuti}"/>
                 </TextBlock>
-            </RadioButton>
+            </RadioButton>-->
         </StackPanel>
     </Grid>     
 </Window>
