@@ -27,7 +27,7 @@ namespace WpfApp3D
         public Dome1()
         {
             InitializeComponent();
-
+            ProtocolParser.Run();
             // 动态添加 BoxVisual3D
             boxModel1 = new BoxVisual3D
             {
@@ -567,6 +567,161 @@ namespace WpfApp3D
 
             // 返回两个double值作为元组
             return (secondLastValue, lastValue);
+        }
+    }
+
+
+    public class ProtocolParser
+    {
+        public static void Run()
+        {
+            string filePath = "C:\\Users\\liu\\Documents\\WeChat Files\\wxid_7i8ckispir9a22\\FileStorage\\File\\2025-03\\实验1（10圈）.txt"; // 替换为你的txt文件路径
+
+            try
+            {
+                string content = File.ReadAllText(filePath);
+                ParseContent(content);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"读取文件时发生错误: {ex.Message}");
+            }
+        }
+
+        public static void ParseContent(string content)
+        {
+            // 移除所有空格和回车换行符，只保留十六进制字符
+            var cleanedContent = new string(content.Where(c => !char.IsWhiteSpace(c)).ToArray());
+
+            byte[] buffer = new byte[16]; // 用于存储完整的数据帧
+            int currentIndex = 0; // 当前处理的位置
+            int frameIndex = 0; // 当前在帧中的位置
+
+            while (currentIndex < cleanedContent.Length)
+            {
+                // 检查是否找到了起始字节（A5 CC）
+                if (frameIndex == 0)
+                {
+                    if (currentIndex + 1 < cleanedContent.Length && cleanedContent[currentIndex] == 'A' && cleanedContent[currentIndex + 1] == '5')
+                    {
+                        buffer[frameIndex] = Convert.ToByte(cleanedContent.Substring(currentIndex, 2), 16);
+                        currentIndex += 2;
+                        frameIndex++;
+                    }
+                    else
+                    {
+                        currentIndex++;
+                    }
+                }
+                else if (frameIndex == 1)
+                {
+                    if (currentIndex + 1 < cleanedContent.Length && cleanedContent[currentIndex] == 'C' && cleanedContent[currentIndex + 1] == 'C')
+                    {
+                        buffer[frameIndex] = Convert.ToByte(cleanedContent.Substring(currentIndex, 2), 16);
+                        currentIndex += 2;
+                        frameIndex++;
+                    }
+                    else
+                    {
+                        frameIndex = 0;
+                        currentIndex++;
+                    }
+                }
+                else
+                {
+                    if (currentIndex + 1 < cleanedContent.Length)
+                    {
+                        buffer[frameIndex] = Convert.ToByte(cleanedContent.Substring(currentIndex, 2), 16);
+                        currentIndex += 2;
+                        frameIndex++;
+
+                        if (frameIndex >= 16)
+                        {
+                            byte[] dataFrame = new byte[16];
+                            Array.Copy(buffer, dataFrame, 16);
+
+                            if (IsValidData(dataFrame))
+                            {
+                                indss++;
+                                ParseAndDisplayData(dataFrame);
+                            }
+
+                            frameIndex = 0;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        public static int indss = 0;
+        public static bool IsValidData(byte[] data)
+        {
+            if (data.Length != 16)
+                return false;
+
+            if (data[0] != 0xA5 || data[1] != 0xCC)
+                return false;
+
+            if (data[2] != 0x20)
+                return false;
+
+            byte checksum = CalculateChecksum(data);
+            if (checksum != data[15])
+                return false;
+
+            return true;
+        }
+
+        public static byte CalculateChecksum(byte[] data)
+        {
+            int sum = 0;
+            for (int i = 2; i < 15; i++)
+            {
+                sum += data[i];
+            }
+            return (byte)(sum & 0xFF);
+        }
+
+        public static void ParseAndDisplayData(byte[] data)
+        {
+            string startBytes = BitConverter.ToString(data, 0, 2).Replace("-", " ");
+            string selfCheck = Convert.ToString(data[2], 16).PadLeft(2, '0').ToUpper();
+            double xAngularVelocity = ParseAngularVelocity(data, 3);
+            double yAngularVelocity = ParseAngularVelocity(data, 6);
+            double zAngularVelocity = ParseAngularVelocity(data, 9);
+            double temperature = ParseTemperature(data, 12);
+            string spareByte = Convert.ToString(data[14], 16).PadLeft(2, '0').ToUpper();
+            string checksum = Convert.ToString(data[15], 16).PadLeft(2, '0').ToUpper();
+
+            File.AppendAllLines("1.txt", new string[1] { $"{startBytes} {selfCheck} {xAngularVelocity} {yAngularVelocity} {zAngularVelocity} {temperature} {spareByte} {checksum}" });
+        }
+
+        private static double ParseAngularVelocity(byte[] data, int startIndex)
+        {
+            byte[] angularVelocityBytes = new byte[] { data[startIndex], data[startIndex + 1], data[startIndex + 2] };
+
+            if ((angularVelocityBytes[2] & 0x80) == 0x80)
+            {
+                byte[] extendedBytes = new byte[] { angularVelocityBytes[0], angularVelocityBytes[1], angularVelocityBytes[2], 0xFF };
+                int angularVelocityRaw = BitConverter.ToInt32(extendedBytes, 0);
+                return angularVelocityRaw / 256.0;
+            }
+            else
+            {
+                byte[] extendedBytes = new byte[] { angularVelocityBytes[0], angularVelocityBytes[1], angularVelocityBytes[2], 0x00 };
+                int angularVelocityRaw = BitConverter.ToInt32(extendedBytes, 0);
+                return angularVelocityRaw / 256.0;
+            }
+        }
+
+        private static double ParseTemperature(byte[] data, int startIndex)
+        {
+            byte[] temperatureBytes = new byte[] { data[startIndex + 1], data[startIndex] };
+            short temperatureRaw = BitConverter.ToInt16(temperatureBytes, 0);
+            return temperatureRaw / 256.0;
         }
     }
 }
