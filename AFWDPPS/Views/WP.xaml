@@ -41,7 +41,7 @@
                             <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="方位角度"   >
-                            <rubyer:NumericBox x:Name="x1" Interval="5" MinValue="-20.5" MaxValue="20.5" rubyer:InputBoxHelper.PostContent="°" Style="{StaticResource FrontBackNumericBox}" MinWidth="120" Value="0" NumericType="Double" Cursor="IBeam" />
+                            <rubyer:NumericBox x:Name="x1" Interval="5" MinValue="-30.5" MaxValue="30.5" rubyer:InputBoxHelper.PostContent="°" Style="{StaticResource FrontBackNumericBox}" MinWidth="120" Value="0" NumericType="Double" Cursor="IBeam" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="俯仰角度"   >
                             <rubyer:NumericBox x:Name="y1" Interval="5" MinValue="-30.5" MaxValue="30.5" rubyer:InputBoxHelper.PostContent="°" Style="{StaticResource FrontBackNumericBox}" MinWidth="120" Value="0" NumericType="Double" Cursor="IBeam" />

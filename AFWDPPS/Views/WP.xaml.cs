@@ -127,7 +127,7 @@ namespace AFWDPP.Views
 
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
-            this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            //this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
             Loaded += FC_Loaded;
 
             var moduleGroups = Mbslist.GroupBy(m => m.模块).ToList();
@@ -137,7 +137,6 @@ namespace AFWDPP.Views
                g => g.Select(m => m.功能).ToList()
            );
             var moduleNames = moduleGroups.Select(g => g.Key).ToList();
-
         }
 
         Dictionary<string, List<string>> moduleFunctions;
@@ -233,6 +232,7 @@ namespace AFWDPP.Views
             COM_STATUS_LEN,
             COM_STATUS_DATA
         }
+
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -246,7 +246,7 @@ namespace AFWDPP.Views
 
             string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
             // 使用BitConverter将字节数组转换为float
-            Application.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.BeginInvoke(() =>
             {
                 IDC_EDIT_CHECKA_0_0.Content = headcount++;
                 if (!rx.IsEnabled)
@@ -257,14 +257,15 @@ namespace AFWDPP.Views
                 {
                     x2.Content = ParseAngleFromBytes(buffer[2], buffer[3]);
                     y2.Content = ParseAngleFromBytes(buffer[4], buffer[5]);
+                    string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
+                    Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
                 }
                 else
                 {
                     if (rxtxshow.IsChecked == true)
                         rxlog.AddOne("校验和或者帧头、长度错误", "收←◆");
                 }
-                string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
-                Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
+
             });
         }
         public float ParseAngleFromBytes(byte highByte, byte lowByte)
@@ -299,7 +300,7 @@ namespace AFWDPP.Views
             try
             {
                 //根据当前串口属性来判断是否打开
-                if (serialPort2.IsOpen)
+                if (serialPort2 != null && serialPort2.IsOpen)
                 {
                     if (UpdateFlag == true)
                     {
@@ -307,11 +308,13 @@ namespace AFWDPP.Views
                         {
                             //// 停止固件升级
                             UpdateFlag = false;
+                            serialPort2.DataReceived -= serialPort1_DataReceived;
                             ////串口已经处于打开状态
                             serialPort2.Close();    //关闭串口
+
                             comlist.IsEnabled = true;
                             botelv.IsEnabled = true;
-                            RecDataDeal.Abort();
+
                         }
                         else
                         {
@@ -320,12 +323,15 @@ namespace AFWDPP.Views
                         }
                     }
                     else
-                    {
+                    {     // 解绑事件处理程序
+                        serialPort2.DataReceived -= serialPort1_DataReceived;
                         ////串口已经处于打开状态
                         serialPort2.Close();    //关闭串口
+
+
                         comlist.IsEnabled = true;
                         botelv.IsEnabled = true;
-                        RecDataDeal.Abort();
+
                     }
                 }
                 else
@@ -347,12 +353,12 @@ namespace AFWDPP.Views
                     serialPort2.StopBits = StopBits.One;
                     serialPort2.Parity = Parity.None;
                     serialPort2.DataBits = 8;
+                    serialPort2.DataReceived -= serialPort1_DataReceived;
+                    serialPort2.DataReceived += serialPort1_DataReceived;
                     serialPort2.Open();//打开串口
                     notifytimes = 0;
                     ////创建数据处理线程
-                    RecDataDeal = new Thread(new ThreadStart(ProtocolParsing));
-                    RecDataDeal.IsBackground = true;
-                    RecDataDeal.Start();
+
                 }
             }
             catch (Exception ex)
@@ -365,15 +371,22 @@ namespace AFWDPP.Views
                 return;
                 //RecDataDeal.Abort();
             }
+            if (serialPort2 == null)
+            {
+                openclosecom.IsChecked = false;
+                //Message.Warning(comlist.SelectedItem as string + "已断开连接！");
+                return;
+            }
+
             openclosecom.IsChecked = serialPort2.IsOpen;
             if (serialPort2.IsOpen)
             {
-                Message.Success(comlist.SelectedItem as string + "连接成功！");
+                // Message.Success(comlist.SelectedItem as string + "连接成功！");
             }
             else
             {
-                Logger.TestCount++;
-                Message.Warning(comlist.SelectedItem as string + "已断开连接！");
+                // Logger.TestCount++;
+                // Message.Warning(comlist.SelectedItem as string + "已断开连接！");
             }
 
         }
@@ -586,6 +599,8 @@ namespace AFWDPP.Views
                 }
                 if (timer != null)
                     timer.Stop();
+                if (timerhandshake != null)
+                    timerhandshake.Stop();
                 if (RecDataDeal != null)
                     RecDataDeal.Abort();
                 ReleaseSerialPort();
@@ -606,7 +621,6 @@ namespace AFWDPP.Views
         {
 
         }
-
 
         private void yuanshishuju_Click(object sender, RoutedEventArgs e)
         {
@@ -658,7 +672,6 @@ namespace AFWDPP.Views
         }
         List<Module> Mbslist = new List<Module>();
 
-
         // 将HEX字符串转换为byte数组
         public static byte[] HexStringToByteArray(string hexString)
         {
@@ -684,7 +697,6 @@ namespace AFWDPP.Views
             return byteArray;
         }
 
-
         byte[] SendCache = new byte[100];
 
         private void SetCacheByModel(Module data)
@@ -700,13 +712,8 @@ namespace AFWDPP.Views
             SendCache[6 + len] = data.报尾.ToByte();
         }
 
-
-
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
-
             SendCacheToZhangPengFeiB[0] = 0xA5;
             if (searchtime.SelectedIndex == 0)
                 SendCacheToZhangPengFeiB[1] = 0x02;
@@ -731,11 +738,6 @@ namespace AFWDPP.Views
                 SendCacheToZhangPengFeiB[4] = 0;
                 SendCacheToZhangPengFeiB[5] = 0;
             }
-
-
-
-
-
             SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
             sendData(SendCacheToZhangPengFeiB, 7);
 

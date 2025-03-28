@@ -1,9 +1,11 @@
 ﻿
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace AFWDPP.Common
@@ -354,6 +356,64 @@ namespace AFWDPP.Common
         public static IList<string> SearchPort()
         {
             return [.. SerialPort.GetPortNames()];
+        }
+    }
+
+    public static class QueneWriteData
+    {
+        public static class AsyncLogger
+        {
+            private static readonly BlockingCollection<byte[]> _logQueue = new BlockingCollection<byte[]>();
+            private static Task _workerTask;
+
+            public static void Initialize()
+            {
+                // 启动后台工作者线程
+                _workerTask = Task.Run(ProcessLogQueue);
+            }
+
+            public static void Add(byte[] logEntry)
+            {
+                try
+                {
+                    _logQueue.Add(logEntry); // 添加队列
+                }
+                catch
+                {
+                }
+            }
+
+            private static async Task ProcessLogQueue()
+            {
+                foreach (var logEntry in _logQueue.GetConsumingEnumerable())
+                {
+                    try
+                    {
+                        //写入数据
+                        //  await logEntry.ExecuteInsertLog();
+                        await Task.Delay(50);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            // 用于通知系统停止接收新包，并完成处理现有条目
+            public static void Shutdown()
+            {
+                _logQueue.CompleteAdding();
+
+                // 等待工作者线程处理完所有数据包
+                try
+                {
+                    _workerTask.Wait();
+                }
+                catch (AggregateException ex) when (ex.InnerExceptions.All(e => e is OperationCanceledException))
+                {
+                    // 处理取消的情况
+                }
+            }
         }
     }
 }

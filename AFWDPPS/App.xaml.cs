@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AFWDPP.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;
-using AFWDPP.ViewModels;
+using static AFWDPP.Common.QueneWriteData;
 
 namespace AFWDPP
 {
@@ -29,10 +30,8 @@ namespace AFWDPP
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
-
-
             new MainWindow().Show();
+            AsyncLogger.Initialize();
         }
 
         /// <summary>

@@ -29,6 +29,7 @@ namespace AFWDPP
             this.StateChanged += MainWindow_StateChanged;
 
         }
+
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {
             // 检查窗口是否从最小化状态恢复  
@@ -102,7 +103,9 @@ namespace AFWDPP
 
         protected override void OnClosed(EventArgs e)
         {
+            Process.GetCurrentProcess().Kill();
             Application.Current.Shutdown();
+            Environment.Exit(0);
         }
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
