@@ -15,6 +15,7 @@ namespace WpfApp3D
 {
     public partial class Dome1 : UserControl
     {
+        #region 3D模型构建
         private double yaw = 0; // 方向角度
         private double pitch = 0; // 俯仰角度
         private DispatcherTimer timer; // 定时器
@@ -115,6 +116,9 @@ namespace WpfApp3D
 
             return meshBuilder.ToMesh();
         }
+        #endregion
+        #region 动作模拟
+        //定时器模拟船体晃动
         private void Timer_Tick11(object sender, EventArgs e)
         {
             // 如果提取的值为空，停止定时器
@@ -137,66 +141,6 @@ namespace WpfApp3D
 
         }
 
-        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            try
-            {
-                SerialPort sp = (SerialPort)sender;
-                int bytesToRead = sp.BytesToRead;
-                byte[] buffer = new byte[bytesToRead];
-
-                // 读取数据到缓冲区  
-                int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
-                if (nbrDataRead == 0)
-                    return;
-
-                string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
-                // 使用BitConverter将字节数组转换为float
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    if (buffer.Length == 7 && buffer[0] == 0xA5 && GetSum(buffer) == buffer[6])
-                    {
-                        pitch = ParseAngleFromBytes(buffer[2], buffer[3]);
-                        yaw = ParseAngleFromBytes(buffer[4], buffer[5]);
-                        // 限制角度范围
-                        //yaw = Clamp(yaw, -10, 10);
-                        //pitch = Clamp(pitch, -10, 10);
-
-                        UpdateYaw();
-                        UpdatePitch();
-                    }
-                    else
-                    {
-
-                    }
-
-                });
-            }
-            catch { }
-        }
-        public float ParseAngleFromBytes(byte highByte, byte lowByte)
-        {
-            // Combine the bytes into a short. This preserves the sign bit.
-            short angleValue = (short)((highByte << 8) | lowByte);
-
-            // Convert back to a floating-point number and divide by 1000.
-            return (float)angleValue / 1000;
-        }
-        public byte GetSum(byte[] data)
-        {
-            byte sum = 0;
-
-            for (int i = 0; i < data.Length - 1; i++)
-            {
-                sum += data[i];
-            }
-            return (byte)(sum & 0xFF);
-        }
-        // 自定义 Clamp 方法
-        private double Clamp(double value, double min, double max)
-        {
-            return value < min ? min : (value > max ? max : value);
-        }
 
         // 增加方向角度
         private void YawIncrease_Click(object sender, RoutedEventArgs e)
@@ -257,108 +201,107 @@ namespace WpfApp3D
             // 创建一个List来存储数据
             dataList = new List<(double x, double y)>
         {
-(12.6736,0),
-(12.1451,0.9414),
-(11.5687,1.8791),
-(10.9466,2.8093),
-(10.2814,3.7285),
-(9.5757,4.633),
-(8.8322,5.5192),
-(8.0539,6.3837),
-(7.2439,7.223),
-(6.4053,8.0338),
-(5.5414,8.8129),
-(4.6557,9.5573),
-(3.7516,10.264),
-(2.8328,10.9303),
-(1.9027,11.5534),
-(0.9652,12.131),
-(0.0239,12.6608),
-(-0.9175,13.1407),
-(-1.8553,13.5687),
-(-2.7858,13.9433),
-(-3.7054,14.2629),
-(-4.6103,14.5262),
-(-5.497,14.7323),
-(-6.362,14.8803),
-(-7.202,14.9697),
-(-8.0136,15),
-(-8.7936,14.9712),
-(-9.5389,14.8833),
-(-10.2466,14.7368),
-(-10.9139,14.5322),
-(-11.5382,14.2703),
-(-12.117,13.9521),
-(-12.648,13.5789),
-(-13.1291,13.1522),
-(-13.5585,12.6736),
-(-13.9345,12.1451),
-(-14.2555,11.5687),
-(-14.5203,10.9466),
-(-14.7278,10.2814),
-(-14.8773,9.5757),
-(-14.9681,8.8322),
-(-15,8.0539),
-(-14.9726,7.2439),
-(-14.8863,6.4053),
-(-14.7412,5.5414),
-(-14.5381,4.6557),
-(-14.2776,3.7516),
-(-13.9608,2.8328),
-(-13.589,1.9027),
-(-13.1637,0.9652),
-(-12.6864,0.0239),
-(-12.1591,-0.9175),
-(-11.5838,-1.8553),
-(-10.9629,-2.7858),
-(-10.2988,-3.7054),
-(-9.5941,-4.6103),
-(-8.8515,-5.497),
-(-8.0741,-6.362),
-(-7.2648,-7.202),
-(-6.4269,-8.0136),
-(-5.5636,-8.7936),
-(-4.6784,-9.5389),
-(-3.7748,-10.2466),
-(-2.8562,-10.9139),
-(-1.9264,-11.5382),
-(-0.9891,-12.117),
-(-0.0478,-12.648),
-(0,-13.1291),
-(0.9414,-13.5585),
-(1.8791,-13.9345),
-(2.8093,-14.2555),
-(3.7285,-14.5203),
-(4.633,-14.7278),
-(5.5192,-14.8773),
-(6.3837,-14.9681),
-(7.223,-15),
-(8.0338,-14.9726),
-(8.8129,-14.8863),
-(9.5573,-14.7412),
-(10.264,-14.5381),
-(10.9303,-14.2776),
-(11.5534,-13.9608),
-(12.131,-13.589),
-(12.6608,-13.1637),
-(13.1407,-12.6864),
-(13.5687,-12.1591),
-(13.9433,-11.5838),
-(14.2629,-10.9629),
-(14.5262,-10.2988),
-(14.7323,-9.5941),
-(14.8803,-8.8515),
-(14.9697,-8.0741),
-(15,-7.2648),
-(14.9712,-6.4269),
-(14.8833,-5.5636),
-(14.7368,-4.6784),
-(14.5322,-3.7748),
-(14.2703,-2.8562),
-(13.9521,-1.9264),
-(13.5789,-0.9891),
-
-        };
+        (12.6736,0),
+        (12.1451,0.9414),
+        (11.5687,1.8791),
+        (10.9466,2.8093),
+        (10.2814,3.7285),
+        (9.5757,4.633),
+        (8.8322,5.5192),
+        (8.0539,6.3837),
+        (7.2439,7.223),
+        (6.4053,8.0338),
+        (5.5414,8.8129),
+        (4.6557,9.5573),
+        (3.7516,10.264),
+        (2.8328,10.9303),
+        (1.9027,11.5534),
+        (0.9652,12.131),
+        (0.0239,12.6608),
+        (-0.9175,13.1407),
+        (-1.8553,13.5687),
+        (-2.7858,13.9433),
+        (-3.7054,14.2629),
+        (-4.6103,14.5262),
+        (-5.497,14.7323),
+        (-6.362,14.8803),
+        (-7.202,14.9697),
+        (-8.0136,15),
+        (-8.7936,14.9712),
+        (-9.5389,14.8833),
+        (-10.2466,14.7368),
+        (-10.9139,14.5322),
+        (-11.5382,14.2703),
+        (-12.117,13.9521),
+        (-12.648,13.5789),
+        (-13.1291,13.1522),
+        (-13.5585,12.6736),
+        (-13.9345,12.1451),
+        (-14.2555,11.5687),
+        (-14.5203,10.9466),
+        (-14.7278,10.2814),
+        (-14.8773,9.5757),
+        (-14.9681,8.8322),
+        (-15,8.0539),
+        (-14.9726,7.2439),
+        (-14.8863,6.4053),
+        (-14.7412,5.5414),
+        (-14.5381,4.6557),
+        (-14.2776,3.7516),
+        (-13.9608,2.8328),
+        (-13.589,1.9027),
+        (-13.1637,0.9652),
+        (-12.6864,0.0239),
+        (-12.1591,-0.9175),
+        (-11.5838,-1.8553),
+        (-10.9629,-2.7858),
+        (-10.2988,-3.7054),
+        (-9.5941,-4.6103),
+        (-8.8515,-5.497),
+        (-8.0741,-6.362),
+        (-7.2648,-7.202),
+        (-6.4269,-8.0136),
+        (-5.5636,-8.7936),
+        (-4.6784,-9.5389),
+        (-3.7748,-10.2466),
+        (-2.8562,-10.9139),
+        (-1.9264,-11.5382),
+        (-0.9891,-12.117),
+        (-0.0478,-12.648),
+        (0,-13.1291),
+        (0.9414,-13.5585),
+        (1.8791,-13.9345),
+        (2.8093,-14.2555),
+        (3.7285,-14.5203),
+        (4.633,-14.7278),
+        (5.5192,-14.8773),
+        (6.3837,-14.9681),
+        (7.223,-15),
+        (8.0338,-14.9726),
+        (8.8129,-14.8863),
+        (9.5573,-14.7412),
+        (10.264,-14.5381),
+        (10.9303,-14.2776),
+        (11.5534,-13.9608),
+        (12.131,-13.589),
+        (12.6608,-13.1637),
+        (13.1407,-12.6864),
+        (13.5687,-12.1591),
+        (13.9433,-11.5838),
+        (14.2629,-10.9629),
+        (14.5262,-10.2988),
+        (14.7323,-9.5941),
+        (14.8803,-8.8515),
+        (14.9697,-8.0741),
+        (15,-7.2648),
+        (14.9712,-6.4269),
+        (14.8833,-5.5636),
+        (14.7368,-4.6784),
+        (14.5322,-3.7748),
+        (14.2703,-2.8562),
+        (13.9521,-1.9264),
+        (13.5789,-0.9891),
+                };
         }
 
         // 定时器事件
@@ -440,6 +383,64 @@ namespace WpfApp3D
             UpdateSpringGeometry(boxModel, boxModel1, springModel);
             x1.Text = (avgYaw * 0.1).ToString("F2");
             y1.Text = (avgPitch * 0.1).ToString("F2");
+        }
+        #endregion
+        #region 串口操作
+
+        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                SerialPort sp = (SerialPort)sender;
+                int bytesToRead = sp.BytesToRead;
+                byte[] buffer = new byte[bytesToRead];
+
+                // 读取数据到缓冲区  
+                int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
+                if (nbrDataRead == 0)
+                    return;
+
+                string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
+                // 使用BitConverter将字节数组转换为float
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (buffer.Length == 7 && buffer[0] == 0xA5 && GetSum(buffer) == buffer[6])
+                    {
+                        pitch = ParseAngleFromBytes(buffer[2], buffer[3]);
+                        yaw = ParseAngleFromBytes(buffer[4], buffer[5]);
+                        // 限制角度范围
+                        //yaw = Clamp(yaw, -10, 10);
+                        //pitch = Clamp(pitch, -10, 10);
+
+                        UpdateYaw();
+                        UpdatePitch();
+                    }
+                    else
+                    {
+
+                    }
+
+                });
+            }
+            catch { }
+        }
+        public float ParseAngleFromBytes(byte highByte, byte lowByte)
+        {
+            // Combine the bytes into a short. This preserves the sign bit.
+            short angleValue = (short)((highByte << 8) | lowByte);
+
+            // Convert back to a floating-point number and divide by 1000.
+            return (float)angleValue / 1000;
+        }
+        public byte GetSum(byte[] data)
+        {
+            byte sum = 0;
+
+            for (int i = 0; i < data.Length - 1; i++)
+            {
+                sum += data[i];
+            }
+            return (byte)(sum & 0xFF);
         }
 
         private void openclosecom_Click(object sender, RoutedEventArgs e)
@@ -569,8 +570,8 @@ namespace WpfApp3D
             return (secondLastValue, lastValue);
         }
     }
-
-
+    #endregion
+    #region 读本地日志文件生成动作
     public class ProtocolParser
     {
         public static void Run()
@@ -724,4 +725,5 @@ namespace WpfApp3D
             return temperatureRaw / 256.0;
         }
     }
+    #endregion
 }
