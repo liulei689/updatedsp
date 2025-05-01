@@ -36,7 +36,7 @@ namespace WpfApp3D
     {
         new LineSeries
         {
-            Title = "波形1",
+            Title = "船体俯仰角度",
             Values = new ChartValues<double>(),
             PointGeometry = DefaultGeometries.Circle,
             PointGeometrySize = 10,
@@ -46,7 +46,7 @@ namespace WpfApp3D
         },
         new LineSeries
         {
-            Title = "波形2",
+            Title = "声呐俯仰角度",
             Values = new ChartValues<double>(),
             PointGeometry = DefaultGeometries.Square,
             PointGeometrySize = 10,

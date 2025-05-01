@@ -12,7 +12,7 @@ namespace WpfApp3D.Models
         private const int DelayMilliseconds = 5000; // mu数据延迟传入延时时间（毫秒）
 
         /// <summary>
-        /// 接收来自平台和mu俯仰和滚转参数，模拟电机控制并返回处理后的角度。
+        /// 接收来自平台和mu俯仰和滚转参数，模拟电机控制并返回处理后的角度（声呐角度）。
         /// </summary>
         /// <param name="pitch">平台俯仰角度。</param>
         /// <param name="yaw">平台滚转角度。</param>
