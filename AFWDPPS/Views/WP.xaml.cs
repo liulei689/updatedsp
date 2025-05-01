@@ -10,6 +10,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -147,9 +148,21 @@ namespace AFWDPP.Views
         }
 
         byte[] SendCacheToZhangPengFeiB = new byte[7];
+        byte[] SendCacheToZhangPengFeiC = new byte[56]; //模拟MU数据
 
+        byte da = 0;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
+            //#region 模拟MU数据发送
+            //SendCacheToZhangPengFeiC[0] = 0x7F;
+            //SendCacheToZhangPengFeiC[1] = 0x80;
+            //SendCacheToZhangPengFeiC[2] = 0;
+            //SendCacheToZhangPengFeiC[3] = 0xC1;
+            //if (da > 255) da = 0;
+            //SendCacheToZhangPengFeiC[53] = da++;
+            //sendData(SendCacheToZhangPengFeiC, 56);
+
+            //#endregion
 
             if (sendermodel.IsChecked == true)
             {
@@ -232,7 +245,7 @@ namespace AFWDPP.Views
             COM_STATUS_LEN,
             COM_STATUS_DATA
         }
-
+        int COUNTS = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -241,6 +254,9 @@ namespace AFWDPP.Views
 
             // 读取数据到缓冲区  
             int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
+            //if (COUNTS++ > 10)
+            //{
+            COUNTS = 0;
             if (nbrDataRead == 0)
                 return;
 
@@ -251,22 +267,24 @@ namespace AFWDPP.Views
                 IDC_EDIT_CHECKA_0_0.Content = headcount++;
                 if (!rx.IsEnabled)
                     rx.IsEnabled = true;
-                if (rxtxshow.IsChecked == true)
-                    rxlog.AddOne(hexString, "收←◆");
+
                 if (buffer.Length == 7 && buffer[0] == 0xA5 && GetSum(buffer) == buffer[6])
                 {
+                    if (rxtxshow.IsChecked == true)
+                        rxlog.AddOne(hexString, "收←◆");
                     x2.Content = ParseAngleFromBytes(buffer[2], buffer[3]);
                     y2.Content = ParseAngleFromBytes(buffer[4], buffer[5]);
                     string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
                     Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
                 }
-                else
-                {
-                    if (rxtxshow.IsChecked == true)
-                        rxlog.AddOne("校验和或者帧头、长度错误", "收←◆");
-                }
+                //else
+                //{
+                //    if (rxtxshow.IsChecked == true)
+                //        rxlog.AddOne("校验和或者帧头、长度错误", "收←◆");
+                //}
 
             });
+            // }
         }
         public float ParseAngleFromBytes(byte highByte, byte lowByte)
         {
@@ -712,7 +730,7 @@ namespace AFWDPP.Views
             SendCache[6 + len] = data.报尾.ToByte();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             SendCacheToZhangPengFeiB[0] = 0xA5;
             if (searchtime.SelectedIndex == 0)
@@ -739,8 +757,11 @@ namespace AFWDPP.Views
                 SendCacheToZhangPengFeiB[5] = 0;
             }
             SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-            sendData(SendCacheToZhangPengFeiB, 7);
-
+            for (int i = 0; i < 5; i++)
+            {
+                sendData(SendCacheToZhangPengFeiB, 7);
+                await Task.Delay(80);
+            }
         }
 
         private void ShowNotify()
@@ -776,11 +797,16 @@ namespace AFWDPP.Views
             {
                 if (searchtime.SelectedIndex == 0)
                 {
-                    cmd.Visibility = Visibility.Collapsed;
-                    l1.Visibility = Visibility.Visible;
-                    l2.Visibility = Visibility.Visible;
-                    l3.Visibility = Visibility.Visible;
-                    l4.Visibility = Visibility.Visible;
+                    if (cmd != null)
+                        cmd.Visibility = Visibility.Collapsed;
+                    if (l1 != null)
+                        l1.Visibility = Visibility.Visible;
+                    if (l2 != null)
+                        l2.Visibility = Visibility.Visible;
+                    if (l3 != null)
+                        l3.Visibility = Visibility.Visible;
+                    if (l4 != null)
+                        l4.Visibility = Visibility.Visible;
                 }
                 else if (searchtime.SelectedIndex == 1)
                 {

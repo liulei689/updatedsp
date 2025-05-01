@@ -9,7 +9,7 @@
                      xmlns:vm="clr-namespace:AFWDPP.ViewModels" xmlns:hc="https://handyorg.github.io/handycontrol"
                      Title="{Binding Title}"
                      Width="640"
-                     Height="900"
+                     Height="800"
                      MinWidth="640"
                      MinHeight="450"
                      d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
