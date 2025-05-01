@@ -102,6 +102,7 @@
     </ApplicationDefinition>
     <Compile Include="Models\Joint.cs" />
     <Compile Include="Models\ToolXY.cs" />
+    <Compile Include="Models\TransformManager.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="View\demo3.xaml.cs">
       <DependentUpon>demo3.xaml</DependentUpon>

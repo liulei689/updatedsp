@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
+using WpfApp3D.Models;
 
 namespace WpfApp3D
 {
@@ -25,10 +26,11 @@ namespace WpfApp3D
         private BoxVisual3D boxModel1; // 3D模型引用
         public System.IO.Ports.SerialPort serialPort2;
         public GeometryModel3D springModel;
+        private ModelVisual3D springVisual;
         public Dome1()
         {
             InitializeComponent();
-            ProtocolParser.Run();
+            // ProtocolParser.Run();
             // 动态添加 BoxVisual3D
             boxModel1 = new BoxVisual3D
             {
@@ -59,7 +61,6 @@ namespace WpfApp3D
 
             // 创建弹簧几何形状
             var springMesh = CreateSpringGeometry(endPoint, startPoint, radius, turns);
-
             // 创建几何模型
             springModel = new GeometryModel3D
             {
@@ -67,9 +68,9 @@ namespace WpfApp3D
                 Material = MaterialHelper.CreateMaterial(Brushes.Silver), // 设置材质
                 Transform = new TranslateTransform3D(startPoint.X, startPoint.Y, startPoint.Z)
             };
-
+            springVisual = new ModelVisual3D { Content = springModel };
             // 添加到视图
-            viewport.Items.Add(new ModelVisual3D { Content = springModel });
+            viewport.Items.Add(springVisual);
 
             // 初始化角度为0°
             UpdateYaw();
@@ -350,39 +351,52 @@ namespace WpfApp3D
         private void UpdateSpringGeometry(BoxVisual3D box1, BoxVisual3D box2, GeometryModel3D springModel)
         {
             // 弹簧新的起点和终点在这里动态调整
-            Point3D startPoint = box1.Center;
-            startPoint.Offset(yaw, yaw, 0);
-            Point3D endPoint = box2.Center;
+            Point3D newCenter1 = box1.Center;
+            newCenter1.Offset(-pitch * 0.7, -yaw * 0.0, 0);
+            Point3D newCenter2 = box2.Center;
+            newCenter2.Offset(0, 0, 0);
+            // 计算木板新的中心点
+
+            // 计算弹簧新的起点和终点
+            Point3D springStart = newCenter2;
+            Point3D springEnd = newCenter1;
 
             // 计算弹簧的方向和长度
-            Vector3D direction = endPoint - startPoint;
-            direction.Normalize();
+            Vector3D direction = springEnd - springStart;
+            double length = direction.Length;
 
-            // 生成一个小的随机偏移量
-            Random rand = new Random();
-            double randomOffset = (rand.NextDouble() - 0.5) * 0.2; // 随机偏移量，范围在 -0.05 到 0.05 之间
+            // 创建变换组
+            Transform3DGroup transformGroup = new Transform3DGroup();
 
-            // 创建一个平移变换，让弹簧稍微动一下
-            Vector3D moveVector = direction * randomOffset;
+            // 平移变换，将弹簧移动到起点
+            TranslateTransform3D translateTransform = new TranslateTransform3D(springStart.X, springStart.Y, springStart.Z);
+            transformGroup.Children.Add(translateTransform);
 
-            // 创建平移变换
-            TranslateTransform3D translateTransform = new TranslateTransform3D(moveVector.X, moveVector.Y, moveVector.Z);
+            // 旋转变换，使弹簧沿着方向向量对齐
+            AxisAngleRotation3D rotation = new AxisAngleRotation3D(direction, 0);
+            RotateTransform3D rotateTransform = new RotateTransform3D(rotation);
+            transformGroup.Children.Add(rotateTransform);
 
-            // 应用变换
-            springModel.Transform = translateTransform;
+            // 缩放变换，调整弹簧的长度
+            ScaleTransform3D scaleTransform = new ScaleTransform3D(1, 1, length / springModel.Geometry.Bounds.SizeZ);
+            transformGroup.Children.Add(scaleTransform);
+
+            // 应用变换到弹簧模型
+            springModel.Transform = transformGroup;
         }
         // 更新3D模型的旋转状态
         private void UpdateTransform()
         {
-            var yawRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), yaw));
-            var pitchRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), pitch));
+            var yawRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitch));
+            var pitchRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw));
             boxModel.Transform = new Transform3DGroup { Children = { yawRotation, pitchRotation } };
-            var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), avgYaw * 0.1));
-            var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), avgPitch * 0.1));
+            var res = new TransformManager().CalculateTransform(pitch, yaw, pitch, yaw);
+            var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), res.pitch));
+            var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), res.yaw));
             boxModel1.Transform = new Transform3DGroup { Children = { yawRotation1, pitchRotation1 } };
             UpdateSpringGeometry(boxModel, boxModel1, springModel);
-            x1.Text = (avgYaw * 0.1).ToString("F2");
-            y1.Text = (avgPitch * 0.1).ToString("F2");
+            x1.Text = (avgYaw).ToString("F2");
+            y1.Text = (avgPitch).ToString("F2");
         }
         #endregion
         #region 串口操作
