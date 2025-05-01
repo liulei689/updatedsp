@@ -397,6 +397,8 @@ namespace WpfApp3D
             UpdateSpringGeometry(boxModel, boxModel1, springModel);
             x1.Text = (avgYaw).ToString("F2");
             y1.Text = (avgPitch).ToString("F2");
+            if (WaveformChart != null)
+                WaveformChart.OnUITimerTick(pitch, res.pitch);
         }
         #endregion
         #region 串口操作
@@ -582,6 +584,12 @@ namespace WpfApp3D
 
             // 返回两个double值作为元组
             return (secondLastValue, lastValue);
+        }
+        public WaveformChart WaveformChart { get; set; }
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            WaveformChart = new WaveformChart();
+            WaveformChart.Show();
         }
     }
     #endregion

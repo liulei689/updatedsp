@@ -42,6 +42,7 @@
             <TextBlock x:Name="x1" Text="0" Margin="5"/>
             <TextBlock Text="滚转角度：" Margin="5"/>
             <TextBlock x:Name="y1" Text="0" Margin="5"/>
+            <Button Content="波形" Click="Button_Click_1"/>
         </StackPanel>
      
         <!-- 右侧3D视图 -->

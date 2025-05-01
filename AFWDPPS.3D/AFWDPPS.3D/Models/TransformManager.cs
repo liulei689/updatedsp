@@ -9,7 +9,7 @@ namespace WpfApp3D.Models
         private double currentMuyaw = 0;
         private static bool lastUpdateTime = false;
         private static DateTime startwatch = DateTime.Now;
-        private const int DelayMilliseconds = 500; // mu数据延迟传入延时时间（毫秒）
+        private const int DelayMilliseconds = 5000; // mu数据延迟传入延时时间（毫秒）
 
         /// <summary>
         /// 接收来自平台和mu俯仰和滚转参数，模拟电机控制并返回处理后的角度。
@@ -40,8 +40,8 @@ namespace WpfApp3D.Models
             }
             #endregion
             // 使用当前的mu角度值进行计算
-            pitch = currentMupitch + pitch;
-            yaw = currentMuyaw + yaw;
+            pitch = pitch + currentMupitch;
+            yaw = yaw + currentMuyaw;
 
             // 返回处理后的参数
             return (pitch, yaw);
