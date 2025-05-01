@@ -58,7 +58,8 @@ namespace WpfApp3D
 
             lineSeries1 = cartesianChart.Series[0] as LineSeries;
             lineSeries2 = cartesianChart.Series[1] as LineSeries;
-
+            // 设置图例位置为左上角
+            cartesianChart.LegendLocation = LegendLocation.Top;
             // 设置x轴和y轴的范围（可选，根据需要调整）  
             cartesianChart.AxisX.Add(new Axis
             {
