@@ -43,6 +43,11 @@
             <TextBlock Text="滚转角度：" Margin="5"/>
             <TextBlock x:Name="y1" Text="0" Margin="5"/>
             <Button Content="波形" Click="Button_Click_1"/>
+            <TextBlock Text="幅值（°）"/>
+            <TextBox x:Name="fuzhi" Width="100" Text="9" IsReadOnly="False"/>
+            <TextBlock Text="频率(Hz)"/>
+            <TextBox x:Name="pinlv" Width="100" Text="1" IsReadOnly="False"/>
+            <Button Content="生成正玄波" Click="Button_Click_2"/>
         </StackPanel>
      
         <!-- 右侧3D视图 -->

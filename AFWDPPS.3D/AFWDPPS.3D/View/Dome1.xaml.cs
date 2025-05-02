@@ -27,6 +27,25 @@ namespace WpfApp3D
         public System.IO.Ports.SerialPort serialPort2;
         public GeometryModel3D springModel;
         private ModelVisual3D springVisual;
+        SimplifiedSineWaveGenerator generator;
+        public void InintZXB()
+        {
+            if (double.TryParse(fuzhi.Text, out double amplitude) &&
+                double.TryParse(pinlv.Text, out double frequency))
+            {
+                // 创建或更新正弦波生成器
+                if (generator == null)
+                {
+                    generator = new SimplifiedSineWaveGenerator(amplitude, frequency);
+                }
+                else
+                {
+                    generator.SetAmplitude(amplitude);
+                    generator.SetFrequency(frequency);
+                    generator.Reset(); // 重置生成器以从头开始生成数据
+                }
+            }
+        }
         public Dome1()
         {
             InitializeComponent();
@@ -97,7 +116,14 @@ namespace WpfApp3D
             timer11.Stop();
             data();
             ToggleTimer_Click(null, null);
+            Loaded += Dome1_Loaded;
         }
+
+        private void Dome1_Loaded(object sender, RoutedEventArgs e)
+        {
+            InintZXB();
+        }
+
         private MeshGeometry3D CreateSpringGeometry(Point3D startPoint, Point3D endPoint, double radius, int turns)
         {
             var meshBuilder = new MeshBuilder();
@@ -310,6 +336,12 @@ namespace WpfApp3D
         double avgPitch = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
+            yaw = generator.GenerateNextValue();
+            pitch = yaw;
+            UpdateTransform();
+            yawTextBox.Text = yaw.ToString("F2");
+            pitchTextBox.Text = pitch.ToString("F2");
+            return;
             //Random random = new Random();
             //yaw += random.Next(-15, 15); // 随机生成 -5 到 5 的角度变化量
             //pitch += random.Next(-15, 15); // 随机生成 -5 到 5 的角度变化量
@@ -590,6 +622,15 @@ namespace WpfApp3D
         {
             WaveformChart = new WaveformChart();
             WaveformChart.Show();
+        }
+        /// <summary>
+        /// 生成正玄波
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            InintZXB();
         }
     }
     #endregion
