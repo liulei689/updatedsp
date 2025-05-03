@@ -417,20 +417,24 @@ namespace WpfApp3D
             springModel.Transform = transformGroup;
         }
         // 更新3D模型的旋转状态
+        TransformManager datacontrl = new TransformManager();
         private void UpdateTransform()
         {
             var yawRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitch));
             var pitchRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw));
             boxModel.Transform = new Transform3DGroup { Children = { yawRotation, pitchRotation } };
-            var res = new TransformManager().CalculateTransform(pitch, yaw, pitch, yaw);
-            var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), res.pitch));
-            var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), res.yaw));
+            var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
+            var (djpitch, djyaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
+            var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw);
+            var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
+            var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitc_back));
+            var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw_back));
             boxModel1.Transform = new Transform3DGroup { Children = { yawRotation1, pitchRotation1 } };
             UpdateSpringGeometry(boxModel, boxModel1, springModel);
-            x1.Text = (avgYaw).ToString("F2");
-            y1.Text = (avgPitch).ToString("F2");
+            x1.Text = (pitc_back).ToString("F2");
+            y1.Text = (yaw_back).ToString("F2");
             if (WaveformChart != null)
-                WaveformChart.OnUITimerTick(pitch, res.pitch);
+                WaveformChart.OnUITimerTick(pitch, pitc_back);
         }
         #endregion
         #region 串口操作

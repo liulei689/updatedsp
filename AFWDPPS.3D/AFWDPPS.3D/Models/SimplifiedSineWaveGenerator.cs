@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace WpfApp3D.Models
 {
@@ -60,6 +62,46 @@ namespace WpfApp3D.Models
         public void Reset()
         {
             currentTime = 0;
+        }
+    }
+
+    public class DataDelay
+    {
+        private readonly Queue<(double Pitch, double Yaw, long Timestamp)> _buffer = new Queue<(double, double, long)>();
+        private readonly long _delayTicks;
+
+        public DataDelay(double delayMilliseconds)
+        {
+            // 将延迟时间转换为ticks
+            _delayTicks = (long)(delayMilliseconds * Stopwatch.Frequency / 1000);
+        }
+
+        public void InputData(double pitch, double yaw)
+        {
+            long currentTime = Stopwatch.GetTimestamp();
+            _buffer.Enqueue((pitch, yaw, currentTime));
+        }
+
+        public (double Pitch, double Yaw) GetDelayedData()
+        {
+            long currentTime = Stopwatch.GetTimestamp();
+
+            while (_buffer.Count > 0)
+            {
+                var (pitch, yaw, timestamp) = _buffer.Peek();
+
+                if (currentTime - timestamp >= _delayTicks)
+                {
+                    _buffer.Dequeue();
+                    return (pitch, yaw);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return (-100, -100);
         }
     }
 }
