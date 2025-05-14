@@ -245,6 +245,7 @@ namespace AFWDPP.Views
             COM_STATUS_LEN,
             COM_STATUS_DATA
         }
+
         int COUNTS = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -254,37 +255,38 @@ namespace AFWDPP.Views
 
             // 读取数据到缓冲区  
             int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
-            //if (COUNTS++ > 10)
-            //{
-            COUNTS = 0;
-            if (nbrDataRead == 0)
-                return;
 
-            string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
-            // 使用BitConverter将字节数组转换为float
-            Application.Current.Dispatcher.BeginInvoke(() =>
+            if (COUNTS++ > 10)
             {
-                IDC_EDIT_CHECKA_0_0.Content = headcount++;
-                if (!rx.IsEnabled)
-                    rx.IsEnabled = true;
+                COUNTS = 0;
+                if (nbrDataRead == 0)
+                    return;
 
-                if (buffer.Length == 7 && buffer[0] == 0xA5 && GetSum(buffer) == buffer[6])
+                string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
+                // 使用BitConverter将字节数组转换为float
+                Application.Current.Dispatcher.BeginInvoke(() =>
                 {
-                    if (rxtxshow.IsChecked == true)
-                        rxlog.AddOne(hexString, "收←◆");
-                    x2.Content = ParseAngleFromBytes(buffer[2], buffer[3]);
-                    y2.Content = ParseAngleFromBytes(buffer[4], buffer[5]);
-                    string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
-                    Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
-                }
-                //else
-                //{
-                //    if (rxtxshow.IsChecked == true)
-                //        rxlog.AddOne("校验和或者帧头、长度错误", "收←◆");
-                //}
+                    IDC_EDIT_CHECKA_0_0.Content = headcount++;
+                    if (!rx.IsEnabled)
+                        rx.IsEnabled = true;
 
-            });
-            // }
+                    if (buffer.Length == 7 && buffer[0] == 0xA5 && GetSum(buffer) == buffer[6])
+                    {
+                        if (rxtxshow.IsChecked == true)
+                            rxlog.AddOne(hexString, "收←◆");
+                        x2.Content = ParseAngleFromBytes(buffer[2], buffer[3]);
+                        y2.Content = ParseAngleFromBytes(buffer[4], buffer[5]);
+                        string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
+                        Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
+                    }
+                    //else
+                    //{
+                    //    if (rxtxshow.IsChecked == true)
+                    //        rxlog.AddOne("校验和或者帧头、长度错误", "收←◆");
+                    //}
+
+                });
+            }
         }
         public float ParseAngleFromBytes(byte highByte, byte lowByte)
         {
@@ -738,6 +740,8 @@ namespace AFWDPP.Views
             else if (searchtime.SelectedIndex == 1)
                 SendCacheToZhangPengFeiB[1] = 0x01;
             else if (searchtime.SelectedIndex == 2)
+                SendCacheToZhangPengFeiB[1] = 0x04;
+            else if (searchtime.SelectedIndex == 3)
                 SendCacheToZhangPengFeiB[1] = 0x03;
             // Step 1: Multiply by 1000 and cast to short.
             short angleValue = (short)(x1.Value * 1000);
@@ -751,11 +755,9 @@ namespace AFWDPP.Views
             // Step 2: Extract high and low bytes.
             SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
             SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
-            if (searchtime.SelectedIndex == 2)
-            {
-                SendCacheToZhangPengFeiB[4] = 0;
-                SendCacheToZhangPengFeiB[5] = 0;
-            }
+
+
+
             SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
             for (int i = 0; i < 5; i++)
             {

@@ -50,6 +50,7 @@
                             <TabControl x:Name="searchtime" SelectionChanged="searchtime_SelectionChanged"   Style="{StaticResource LineTabControl}">
                                 <TabItem Header="稳定状态" IsSelected="True" />
                                 <TabItem Header="锁定状态" />
+                                <TabItem Header="校零指令" />
                                 <TabItem Header="发送前置声呐控制指令" />
                             </TabControl>
 
