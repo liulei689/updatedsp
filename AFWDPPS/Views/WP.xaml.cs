@@ -64,7 +64,6 @@ namespace AFWDPP.Views
             // 确保TestCount从最后一个已有的编号开始
             TestCount++;
         }
-
         public static void WriteLog(string message, string logDirectory)
         {
             EnsureLogFolderExists(logDirectory);
@@ -255,37 +254,120 @@ namespace AFWDPP.Views
 
             // 读取数据到缓冲区  
             int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
+            G_btList_RecBuf_R.Clear();
+            foreach (byte tmpByte in buffer)
+            {
+                switch (G_int_ComStatus)
+                {
+                    case (int)enum_ComStatus.COM_STATUS_HEAD1:
+                        G_btList_RecBuf.Clear();
 
+                        if (tmpByte == 0xA5)
+                        {
+                            // tmpHEAD1 = tmpByte;
+                            //切换协议解析状态
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
+                            G_btList_RecBuf.Add(tmpByte);
+                        }
+                        break;
+                    case (int)enum_ComStatus.COM_STATUS_HEAD2:
+                        if (tmpByte == 0x00 || tmpByte == 0x01 || tmpByte == 0x02 || tmpByte == 0x03 || tmpByte == 0x04 || tmpByte == 0x05)
+                        {
+                            //切换协议解析状态
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
+                            G_btList_RecBuf.Add(tmpByte);
+                        }
+                        break;
+                    case (int)enum_ComStatus.COM_STATUS_DATA:
+                        G_btList_RecBuf.Add(tmpByte);
+
+                        //数据接收完成后的有效性判断
+                        if (G_btList_RecBuf.Count == 7)  //包接收完成
+                        {
+                            byte[] Rbuffer = G_btList_RecBuf.ToArray();
+                            string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+                            // 使用BitConverter将字节数组转换为float
+                            Application.Current.Dispatcher.BeginInvoke(() =>
+                            {
+                                IDC_EDIT_CHECKA_0_0.Content = headcount++;
+                                if (!rx.IsEnabled)
+                                    rx.IsEnabled = true;
+
+                                if (Rbuffer.Length == 7 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[6])
+                                {
+                                    if (COUNTS++ > 10)
+                                    {
+                                        if (rxtxshow.IsChecked == true)
+                                            rxlog.AddOne(hexString, "收←◆");
+                                        x2.Content = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
+                                        y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
+                                        string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
+
+                                        COUNTS = 0;
+                                        Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
+                                    }
+                                }
+                                //else
+                                //{
+                                //    if (rxtxshow.IsChecked == true)
+                                //        rxlog.AddOne("校验和或者帧头、长度错误", "收←◆");
+                                //}
+
+                            });
+                            G_btList_RecBuf.Clear();
+                            //检查校验和字节
+                            //if ((DSP28335.CheckSumNomarl(G_btList_RecBuf.ToArray())))
+                            //{
+                            //    G_btList_RecBuf_R.AddRange(G_btList_RecBuf);
+                            //}
+
+                            //else
+                            //{
+                            //    G_btList_RecBuf.Clear();
+                            //    //string str_ErrorInfo = "“";
+                            //    //foreach (byte tmpbt in G_btList_RecBuf)
+                            //    //{
+                            //    //    str_ErrorInfo += tmpbt.ToString("X2") + " ";
+                            //    //}
+                            //    //str_ErrorInfo += "”帧校验和错误！";
+
+                            //}
+
+                            //切换协议解析状态
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                        }
+
+                        //数据包长度超限检查
+                        if (G_btList_RecBuf.Count >= 7)
+                        {
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+                            //str_ErrorInfo += "“";
+                            //for (int i = 0; i < 6; i++)
+                            //{
+                            //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
+                            //}
+                            //str_ErrorInfo += "......”该帧数据长度超限！";
+
+                            //清空相关缓存
+                            G_btList_RecBuf.Clear();
+                        }
+                        break;
+
+                    default:
+                        G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                        break;
+                }
+            }
+
+            //
             if (COUNTS++ > 10)
             {
                 COUNTS = 0;
                 if (nbrDataRead == 0)
                     return;
 
-                string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
-                // 使用BitConverter将字节数组转换为float
-                Application.Current.Dispatcher.BeginInvoke(() =>
-                {
-                    IDC_EDIT_CHECKA_0_0.Content = headcount++;
-                    if (!rx.IsEnabled)
-                        rx.IsEnabled = true;
 
-                    if (buffer.Length == 7 && buffer[0] == 0xA5 && GetSum(buffer) == buffer[6])
-                    {
-                        if (rxtxshow.IsChecked == true)
-                            rxlog.AddOne(hexString, "收←◆");
-                        x2.Content = ParseAngleFromBytes(buffer[2], buffer[3]);
-                        y2.Content = ParseAngleFromBytes(buffer[4], buffer[5]);
-                        string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
-                        Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
-                    }
-                    //else
-                    //{
-                    //    if (rxtxshow.IsChecked == true)
-                    //        rxlog.AddOne("校验和或者帧头、长度错误", "收←◆");
-                    //}
-
-                });
             }
         }
         public float ParseAngleFromBytes(byte highByte, byte lowByte)
