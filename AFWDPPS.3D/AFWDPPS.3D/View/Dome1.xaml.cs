@@ -25,6 +25,8 @@ namespace WpfApp3D
         private BoxVisual3D boxModel; // 3D模型引用
         private BoxVisual3D boxModel1; // 3D模型引用
         public System.IO.Ports.SerialPort serialPort2;
+        public System.IO.Ports.SerialPort serialPort3;
+
         public GeometryModel3D springModel;
         private ModelVisual3D springVisual;
         SimplifiedSineWaveGenerator generator;
@@ -94,21 +96,39 @@ namespace WpfApp3D
             // 初始化角度为0°
             UpdateYaw();
             UpdatePitch();
-            botelv.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
+            #region  串口信息稳定设备
+            botelv1.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
 
-            botelv.SelectedIndex = 5;
+            botelv1.SelectedIndex = 5;
             var ports = SerialPort.GetPortNames();
-            if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
+            if (comlist1.ItemsSource == null || !ports.SequenceEqual(comlist1.ItemsSource as IList<string>))
             {
-                comlist.ItemsSource = SerialPort.GetPortNames();
+                comlist1.ItemsSource = SerialPort.GetPortNames();
             }
-            if (comlist.SelectedItem == null && comlist.Items.Count > 0)
+            if (comlist1.SelectedItem == null && comlist1.Items.Count > 0)
             {
-                comlist.SelectedIndex = comlist.Items.Count - 1;
+                comlist1.SelectedIndex = comlist1.Items.Count - 1;
             }
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            #endregion
+            #region  串口平台
+            botelv2.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
+
+            botelv2.SelectedIndex = 8;
+            if (comlist2.ItemsSource == null || !ports.SequenceEqual(comlist2.ItemsSource as IList<string>))
+            {
+                comlist2.ItemsSource = SerialPort.GetPortNames();
+            }
+            if (comlist2.SelectedItem == null && comlist2.Items.Count > 0)
+            {
+                comlist2.SelectedIndex = comlist2.Items.Count - 1;
+            }
+            this.serialPort3 = new System.IO.Ports.SerialPort();
+            serialPort3.RtsEnable = true;
+            this.serialPort3.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort2_DataReceived);
+            #endregion
 
             timer11 = new DispatcherTimer();
             timer11.Interval = TimeSpan.FromMilliseconds(1000); // 每500毫秒更新一次
@@ -205,7 +225,7 @@ namespace WpfApp3D
                 timer11.Stop();
                 // 启动定时器
                 timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(10); // 每500毫秒更新一次
+                timer.Interval = TimeSpan.FromMilliseconds(20); // 每500毫秒更新一次
                 timer.Tick += Timer_Tick;
                 timer.Start();
                 isTimerRunning = true;
@@ -336,6 +356,13 @@ namespace WpfApp3D
         double avgPitch = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
+            if (WaveformChart != null)
+                WaveformChart.OnUITimerTick(pitch, pitch1);
+            if (WaveformChartFY != null)
+                WaveformChartFY.OnUITimerTick(yaw1, yaw);
+
+
+            return;
             yaw = generator.GenerateNextValue();
             pitch = yaw;
             UpdateTransform();
@@ -433,12 +460,16 @@ namespace WpfApp3D
             UpdateSpringGeometry(boxModel, boxModel1, springModel);
             x1.Text = (pitc_back).ToString("F2");
             y1.Text = (yaw_back).ToString("F2");
-            if (WaveformChart != null)
-                WaveformChart.OnUITimerTick(pitch, pitc_back);
+
         }
         #endregion
-        #region 串口操作
-
+        #region 稳定平台串口操作
+        private int G_int_ComStatus1 = 0;
+        private List<byte> G_btList_RecBuf1 = new List<byte>();
+        private List<byte> G_btList_RecBuf_R1 = new List<byte>();
+        private int G_int_RecBufLen1 = 0;
+        double pitch1 = 0;
+        double yaw1 = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -452,27 +483,115 @@ namespace WpfApp3D
                 if (nbrDataRead == 0)
                     return;
 
-                string hexString = BitConverter.ToString(buffer).Replace("-", " ").ToUpper();
-                // 使用BitConverter将字节数组转换为float
-                Application.Current.Dispatcher.Invoke(() =>
+                G_btList_RecBuf_R1.Clear();
+                foreach (byte tmpByte in buffer)
                 {
-                    if (buffer.Length == 7 && buffer[0] == 0xA5 && GetSum(buffer) == buffer[6])
+                    switch (G_int_ComStatus1)
                     {
-                        pitch = ParseAngleFromBytes(buffer[2], buffer[3]);
-                        yaw = ParseAngleFromBytes(buffer[4], buffer[5]);
-                        // 限制角度范围
-                        //yaw = Clamp(yaw, -10, 10);
-                        //pitch = Clamp(pitch, -10, 10);
+                        case (int)enum_ComStatus.COM_STATUS_HEAD1:
+                            G_btList_RecBuf1.Clear();
 
-                        UpdateYaw();
-                        UpdatePitch();
+                            if (tmpByte == 0xA5)
+                            {
+                                // tmpHEAD1 = tmpByte;
+                                //切换协议解析状态
+                                G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD2;
+                                G_btList_RecBuf1.Add(tmpByte);
+                            }
+                            break;
+                        case (int)enum_ComStatus.COM_STATUS_HEAD2:
+                            if (tmpByte == 0x01 || tmpByte == 0x02)
+                            {
+                                //切换协议解析状态
+                                G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_DATA;
+                                G_btList_RecBuf1.Add(tmpByte);
+                            }
+                            break;
+                        case (int)enum_ComStatus.COM_STATUS_DATA:
+                            G_btList_RecBuf1.Add(tmpByte);
+
+                            //数据接收完成后的有效性判断
+                            if (G_btList_RecBuf1.Count == 7)  //包接收完成
+                            {
+                                byte[] Rbuffer = G_btList_RecBuf1.ToArray();
+                                string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+                                // 使用BitConverter将字节数组转换为float
+                                //Application.Current.Dispatcher.BeginInvoke(() =>
+                                //{
+
+
+                                if (Rbuffer.Length == 7 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[6])
+                                {
+                                    //if (COUNTS++ > 10)
+                                    //{
+                                    //    if (rxtxshow.IsChecked == true)
+                                    //        rxlog.AddOne(hexString, "收←◆");
+                                    //Application.Current.Dispatcher.Invoke(() =>
+                                    //{
+
+                                    //    if (WaveformChart != null)
+                                    //        WaveformChart.OnUITimerTick(pitch, yaw);
+
+                                    //});
+                                    pitch1 = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
+                                    yaw1 = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
+
+                                    pitch1 = pitch - pitch1;
+                                    if (pitch1 < 0) pitch1 += 1.5;
+                                    else
+                                        pitch1 -= 1.5;
+                                    if (yaw1 < 0) yaw1 += 1.5;
+                                    yaw1 -= 1.5;
+                                    //}
+                                }
+
+
+                                //  });
+                                G_btList_RecBuf1.Clear();
+                                //检查校验和字节
+                                //if ((DSP28335.CheckSumNomarl(G_btList_RecBuf.ToArray())))
+                                //{
+                                //    G_btList_RecBuf_R.AddRange(G_btList_RecBuf);
+                                //}
+
+                                //else
+                                //{
+                                //    G_btList_RecBuf.Clear();
+                                //    //string str_ErrorInfo = "“";
+                                //    //foreach (byte tmpbt in G_btList_RecBuf)
+                                //    //{
+                                //    //    str_ErrorInfo += tmpbt.ToString("X2") + " ";
+                                //    //}
+                                //    //str_ErrorInfo += "”帧校验和错误！";
+
+                                //}
+
+                                //切换协议解析状态
+                                G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                            }
+
+                            //数据包长度超限检查
+                            if (G_btList_RecBuf1.Count >= 7)
+                            {
+                                G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+                                //str_ErrorInfo += "“";
+                                //for (int i = 0; i < 6; i++)
+                                //{
+                                //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
+                                //}
+                                //str_ErrorInfo += "......”该帧数据长度超限！";
+
+                                //清空相关缓存
+                                G_btList_RecBuf1.Clear();
+                            }
+                            break;
+
+                        default:
+                            G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                            break;
                     }
-                    else
-                    {
-
-                    }
-
-                });
+                }
             }
             catch { }
         }
@@ -495,48 +614,44 @@ namespace WpfApp3D
             return (byte)(sum & 0xFF);
         }
 
-        private void openclosecom_Click(object sender, RoutedEventArgs e)
+        private void openclosecom1_Click(object sender, RoutedEventArgs e)
         {
-            OpenCloseCom();
+            OpenCloseCom1();
         }
-        private void OpenCloseCom()
+        private void OpenCloseCom1()
         {
             try
             {
                 //根据当前串口属性来判断是否打开
                 if (serialPort2.IsOpen)
                 {
-
-
                     ////串口已经处于打开状态
                     serialPort2.Close();    //关闭串口
-                    comlist.IsEnabled = true;
-                    botelv.IsEnabled = true;
-                    openclosecom.Content = "打开串口";
-
-
+                    comlist1.IsEnabled = true;
+                    botelv1.IsEnabled = true;
+                    openclosecom1.Content = "打开稳定平台串口";
                 }
                 else
                 {
                     //串口已经处于关闭状态，则设置好串口属性后打开
-                    comlist.IsEnabled = false;
-                    botelv.IsEnabled = false;
+                    comlist1.IsEnabled = false;
+                    botelv1.IsEnabled = false;
 
                     ////配置串口
                     string comname = "";
-                    if ((comlist.SelectedItem as string).Contains("("))
-                        comname = (comlist.SelectedItem as string).Split('(')[1].Replace(")", "");
+                    if ((comlist1.SelectedItem as string).Contains("("))
+                        comname = (comlist1.SelectedItem as string).Split('(')[1].Replace(")", "");
                     if (comname.Contains("->"))
                         comname = comname.Split('-')[0];
                     if (comname == "")
-                        comname = comlist.SelectedItem as string;
+                        comname = comlist1.SelectedItem as string;
                     serialPort2.PortName = comname;
-                    serialPort2.BaudRate = Convert.ToInt32(botelv.SelectedItem);
+                    serialPort2.BaudRate = Convert.ToInt32(botelv1.SelectedItem);
                     serialPort2.StopBits = StopBits.One;
                     serialPort2.Parity = Parity.None;
                     serialPort2.DataBits = 8;
                     serialPort2.Open();//打开串口
-                    openclosecom.Content = "关闭串口";
+                    openclosecom1.Content = "关闭稳定平台串口";
                     timer11.Stop();
                 }
             }
@@ -544,14 +659,14 @@ namespace WpfApp3D
             {
                 MessageBox.Show(ex.Message);
                 serialPort2.Close();    //关闭串口
-                comlist.IsEnabled = true;
-                botelv.IsEnabled = true;
-                openclosecom.IsChecked = false;
-                openclosecom.Content = "打开串口";
+                comlist1.IsEnabled = true;
+                botelv1.IsEnabled = true;
+                openclosecom1.IsChecked = false;
+                openclosecom1.Content = "打开稳定平台串口";
                 return;
                 //RecDataDeal.Abort();
             }
-            openclosecom.IsChecked = serialPort2.IsOpen;
+            openclosecom1.IsChecked = serialPort2.IsOpen;
             if (serialPort2.IsOpen)
             {
             }
@@ -622,10 +737,14 @@ namespace WpfApp3D
             return (secondLastValue, lastValue);
         }
         public WaveformChart WaveformChart { get; set; }
+        public WaveformChartFY WaveformChartFY { get; set; }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             WaveformChart = new WaveformChart();
             WaveformChart.Show();
+            WaveformChartFY = new WaveformChartFY();
+            WaveformChartFY.Show();
         }
         /// <summary>
         /// 生成正玄波
@@ -636,8 +755,188 @@ namespace WpfApp3D
         {
             InintZXB();
         }
+
+        #endregion
+        #region 稳定平台串口操作
+        private int G_int_ComStatus = 0;
+        private List<byte> G_btList_RecBuf = new List<byte>();
+        private List<byte> G_btList_RecBuf_R = new List<byte>();
+        private int G_int_RecBufLen = 0;
+        private enum enum_ComStatus
+        {
+            COM_STATUS_HEAD1 = 0,
+            COM_STATUS_HEAD2,
+            COM_STATUS_DEVICE_ID,
+            COM_STATUS_DEVICE_FC1,
+            COM_STATUS_DEVICE_FC2,
+            COM_STATUS_LEN,
+            COM_STATUS_DATA
+        }
+        private void serialPort2_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                SerialPort sp = (SerialPort)sender;
+                int bytesToRead = sp.BytesToRead;
+                byte[] buffer = new byte[bytesToRead];
+
+                // 读取数据到缓冲区  
+                int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
+                if (nbrDataRead == 0)
+                    return;
+                G_btList_RecBuf_R.Clear();
+                foreach (byte tmpByte in buffer)
+                {
+                    switch (G_int_ComStatus)
+                    {
+                        case (int)enum_ComStatus.COM_STATUS_HEAD1:
+                            G_btList_RecBuf.Clear();
+
+                            if (tmpByte == 0xFC)
+                            {
+                                // tmpHEAD1 = tmpByte;
+                                //切换协议解析状态
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
+                                G_btList_RecBuf.Add(tmpByte);
+                            }
+                            break;
+                        case (int)enum_ComStatus.COM_STATUS_HEAD2:
+                            if (tmpByte == 0x41)
+                            {
+                                //切换协议解析状态
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
+                                G_btList_RecBuf.Add(tmpByte);
+                            }
+                            break;
+                        case (int)enum_ComStatus.COM_STATUS_DATA:
+                            G_btList_RecBuf.Add(tmpByte);
+
+                            //数据接收完成后的有效性判断
+                            if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //包接收完成
+                            {
+                                byte[] Rbuffer = G_btList_RecBuf.ToArray();
+                                string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+                                // 使用BitConverter将字节数组转换为float
+                                pitch = BitConverter.ToSingle(Rbuffer, 19);
+                                yaw = BitConverter.ToSingle(Rbuffer, 23);
+                                pitch *= 57.3; //滚转
+                                yaw *= 57.3;
+
+                                // UpdateYaw();
+                                //UpdatePitch();
+                                G_btList_RecBuf.Clear();
+
+
+                                //切换协议解析状态
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                            }
+
+                            //数据包长度超限检查
+                            if (G_btList_RecBuf.Count >= 56)
+                            {
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+                                //str_ErrorInfo += "“";
+                                //for (int i = 0; i < 6; i++)
+                                //{
+                                //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
+                                //}
+                                //str_ErrorInfo += "......”该帧数据长度超限！";
+
+                                //清空相关缓存
+                                G_btList_RecBuf.Clear();
+                            }
+                            break;
+
+                        default:
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                            break;
+                    }
+
+
+
+
+
+
+
+
+
+                }
+            }
+            catch { }
+        }
+        int count1 = 0;
+
+        private void openclosecom2_Click(object sender, RoutedEventArgs e)
+        {
+            OpenCloseCom2();
+        }
+        private void OpenCloseCom2()
+        {
+            try
+            {
+                //根据当前串口属性来判断是否打开
+                if (serialPort3.IsOpen)
+                {
+                    ////串口已经处于打开状态
+                    serialPort3.Close();    //关闭串口
+                    comlist2.IsEnabled = true;
+                    botelv2.IsEnabled = true;
+                    openclosecom2.Content = "打开稳定平台串口";
+
+
+                }
+                else
+                {
+                    //串口已经处于关闭状态，则设置好串口属性后打开
+                    comlist2.IsEnabled = false;
+                    botelv2.IsEnabled = false;
+
+                    ////配置串口
+                    string comname = "";
+                    if ((comlist2.SelectedItem as string).Contains("("))
+                        comname = (comlist2.SelectedItem as string).Split('(')[1].Replace(")", "");
+                    if (comname.Contains("->"))
+                        comname = comname.Split('-')[0];
+                    if (comname == "")
+                        comname = comlist2.SelectedItem as string;
+                    serialPort3.PortName = comname;
+                    serialPort3.BaudRate = Convert.ToInt32(botelv2.SelectedItem);
+                    serialPort3.StopBits = StopBits.One;
+                    serialPort3.Parity = Parity.None;
+                    serialPort3.DataBits = 8;
+                    serialPort3.Open();//打开串口
+                    openclosecom2.Content = "关闭稳定平台串口";
+                    timer11.Stop();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                serialPort3.Close();    //关闭串口
+                comlist2.IsEnabled = true;
+                botelv2.IsEnabled = true;
+                openclosecom2.IsChecked = false;
+                openclosecom2.Content = "打开稳定平台串口";
+                return;
+                //RecDataDeal.Abort();
+            }
+            openclosecom1.IsChecked = serialPort3.IsOpen;
+            if (serialPort3.IsOpen)
+            {
+            }
+            else
+            {
+
+            }
+
+        }
+
+
+
+
+        #endregion
     }
-    #endregion
     #region 读本地日志文件生成动作
     public class ProtocolParser
     {

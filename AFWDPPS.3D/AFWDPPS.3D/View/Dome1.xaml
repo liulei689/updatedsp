@@ -9,12 +9,15 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/> <!-- 左侧控制面板 -->
-            <ColumnDefinition Width="*"/>   <!-- 右侧3D视图 -->
+            <ColumnDefinition Width="Auto"/>
+            <!-- 左侧控制面板 -->
+            <ColumnDefinition Width="*"/>
+            <!-- 右侧3D视图 -->
+            <ColumnDefinition Width="Auto"/>
+            <!-- 左侧控制面板 -->
         </Grid.ColumnDefinitions>
-
         <!-- 左侧控制面板 -->
-        <StackPanel Orientation="Vertical" Margin="10,40,0,0">
+        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,40,0,0">
             <TextBlock Text="俯仰角度:" VerticalAlignment="Center"/>
             <TextBox Name="yawTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
             <Button Content="俯仰+" Click="YawIncrease_Click" Margin="5,0"/>
@@ -27,12 +30,12 @@
 
             <Button Visibility="Collapsed" Content="指定角度附近模拟" Click="ToggleTimer_Click" Margin="5,0"/>
 
-            <TextBlock Visibility="Collapsed" Grid.Column="0"  Text="串口号:"  />
+            <!--<TextBlock Visibility="Collapsed" Grid.Column="0"  Text="串口号:"  />
             <ComboBox Visibility="Collapsed" Grid.Column="1" Name="comlist"  Margin="20 0"/>
             <TextBlock Visibility="Collapsed" Grid.Column="2" Text="波特率:"  />
             <ComboBox Visibility="Collapsed" Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
             <ToggleButton Visibility="Collapsed" Grid.Column="4" x:Name="openclosecom" Height="25" Margin="5" Content="打开串口" IsChecked="False" Click="openclosecom_Click">
-            </ToggleButton>
+            </ToggleButton>-->
             <Button Visibility="Collapsed" Content="读记录文件" Click="Button_Click" Margin="5,0"/>
             <!-- 分割线 -->
             <GridSplitter  Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -64,5 +67,21 @@
                 <PerspectiveCamera Position="-0.671713226056439,153.944354616116,36.0650035792227" x:Name="dssd" LookDirection="0.671713226056439,-153.944354616116,-36.0650035792227" UpDirection="-0.000399249862283209,0.091500747633941,0.995804927574662" FieldOfView="45"/>
             </ht:HelixViewport3D.Camera>
         </ht:HelixViewport3D>
+        <StackPanel Grid.Column="2"  Orientation="Vertical" Margin="10,40,0,0">
+      
+            <TextBlock  Grid.Column="0"  Text="串口号:"  />
+            <ComboBox  Grid.Column="1" Name="comlist1"  Margin="20 0"/>
+            <TextBlock  Grid.Column="2" Text="波特率:"  />
+            <ComboBox  Grid.Column="3" Name="botelv1" Width="100" Margin="20 0" />
+            <ToggleButton  Grid.Column="4" x:Name="openclosecom1" Height="25" Margin="5" Content="打开稳定平台串口" IsChecked="False" Click="openclosecom1_Click">
+            </ToggleButton>
+            <TextBlock  Grid.Column="0"  Text="串口号:"  />
+            <ComboBox  Grid.Column="1" Name="comlist2"  Margin="20 0"/>
+            <TextBlock  Grid.Column="2" Text="波特率:"  />
+            <ComboBox  Grid.Column="3" Name="botelv2" Width="100" Margin="20 0" />
+            <ToggleButton  Grid.Column="4" x:Name="openclosecom2" Height="25" Margin="5" Content="打开平台串口" IsChecked="False" Click="openclosecom2_Click">
+            </ToggleButton>
+        </StackPanel>
+
     </Grid>
 </UserControl>

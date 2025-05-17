@@ -10,10 +10,10 @@ namespace WpfApp3D
     /// <summary>
     /// ComboBox.xaml 的交互逻辑
     /// </summary>
-    public partial class WaveformChart
+    public partial class WaveformChartFY
     {
         private DispatcherTimer uiSyncTimer;
-        public WaveformChart()
+        public WaveformChartFY()
         {
 
             InitializeComponent();
@@ -36,7 +36,7 @@ namespace WpfApp3D
     {
         new LineSeries
         {
-            Title = "船体横滚角度",
+            Title = "船体俯仰角度",
             Values = new ChartValues<double>(),
             PointGeometry = DefaultGeometries.Circle,
             PointGeometrySize = 7,
@@ -46,7 +46,7 @@ namespace WpfApp3D
         },
         new LineSeries
         {
-            Title = "声呐横滚角度",
+            Title = "声呐俯仰角度",
             Values = new ChartValues<double>(),
             PointGeometry = DefaultGeometries.Square,
             PointGeometrySize = 7,
