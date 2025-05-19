@@ -867,7 +867,6 @@ namespace AFWDPP.Views
         private void Button_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             sendermodel.IsChecked = true;
-
         }
 
         private void Button_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -882,15 +881,21 @@ namespace AFWDPP.Views
                 if (searchtime.SelectedIndex == 0)
                 {
                     if (cmd != null)
-                        cmd.Visibility = Visibility.Collapsed;
-                    if (l1 != null)
-                        l1.Visibility = Visibility.Visible;
-                    if (l2 != null)
-                        l2.Visibility = Visibility.Visible;
-                    if (l3 != null)
-                        l3.Visibility = Visibility.Visible;
-                    if (l4 != null)
-                        l4.Visibility = Visibility.Visible;
+                        cmd.Visibility = Visibility.Visible;
+                    //if (l1 != null)
+                    //    l1.Visibility = Visibility.Visible;
+                    //if (l2 != null)
+                    //    l2.Visibility = Visibility.Visible;
+                    //if (l3 != null)
+                    //    l3.Visibility = Visibility.Visible;
+                    //if (l4 != null)
+                    //    l4.Visibility = Visibility.Visible;
+
+                    if (l5 != null)
+                        l5.Visibility = Visibility.Collapsed;
+                    if (l6 != null)
+                        l6.Visibility = Visibility.Collapsed;
+
                 }
                 else if (searchtime.SelectedIndex == 1)
                 {
@@ -900,6 +905,12 @@ namespace AFWDPP.Views
                     l2.Visibility = Visibility.Collapsed;
                     l3.Visibility = Visibility.Collapsed;
                     l4.Visibility = Visibility.Collapsed;
+
+                    if (l5 != null)
+                        l5.Visibility = Visibility.Collapsed;
+                    if (l6 != null)
+                        l6.Visibility = Visibility.Collapsed;
+
                 }
                 else if (searchtime.SelectedIndex == 2)
                 {
@@ -909,9 +920,77 @@ namespace AFWDPP.Views
                     l2.Visibility = Visibility.Collapsed;
                     l3.Visibility = Visibility.Collapsed;
                     l4.Visibility = Visibility.Collapsed;
+
+                    if (l5 != null)
+                        l5.Visibility = Visibility.Collapsed;
+                    if (l6 != null)
+                        l6.Visibility = Visibility.Collapsed;
+
+                }
+                else if (searchtime.SelectedIndex == 3)
+                {
+                    cmd.Visibility = Visibility.Collapsed;
+
+                    l1.Visibility = Visibility.Collapsed;
+                    l2.Visibility = Visibility.Collapsed;
+                    l3.Visibility = Visibility.Collapsed;
+                    l4.Visibility = Visibility.Collapsed;
+
+                    if (l5 != null)
+                        l5.Visibility = Visibility.Visible;
+                    if (l6 != null)
+                        l6.Visibility = Visibility.Visible;
+
                 }
             }
             catch { }
+        }
+
+        private async void l5_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn != null)
+            {
+                if (btn.Name == "l5")
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sendduoji(0);
+                        await Task.Delay(50);
+                    }
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sendduoji(1);
+                        await Task.Delay(50);
+                    }
+                }
+                else if (btn.Name == "l6")
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sendduoji(0);
+                        await Task.Delay(50);
+                    }
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sendduoji(2);
+                        await Task.Delay(50);
+                    }
+                }
+
+            }
+        }
+
+        private void sendduoji(byte type)
+        {
+            SendCacheToZhangPengFeiB[0] = 0xA5;
+            SendCacheToZhangPengFeiB[1] = 0x03;
+            SendCacheToZhangPengFeiB[2] = type; // High  if(type==0)
+            SendCacheToZhangPengFeiB[3] = 0; // Low byte
+            SendCacheToZhangPengFeiB[4] = 0; // High byte
+            SendCacheToZhangPengFeiB[5] = 0; // Low byte
+            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
+            sendData(SendCacheToZhangPengFeiB, 7);
         }
     }
 

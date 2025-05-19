@@ -59,16 +59,21 @@
                         <rubyer:DescriptionItem  Description="操作"  >
                             <StackPanel Orientation="Horizontal" >
                                 <ToggleButton  x:Name="sendermodel" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="False"  Visibility="Collapsed"/>
-                                <Button Name="cmd" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="发送指令" rubyer:ButtonHelper.Shape="Circle"  Click="Button_Click" Cursor="Hand">
+                                <Button Name="cmd"  Style="{StaticResource TextButton}" Width="80" Content="发送指令" rubyer:ButtonHelper.Shape="Circle"  Click="Button_Click" Cursor="Hand">
                                 </Button>
-                                <Button Name="l1" Style="{StaticResource TextButton}" Width="80" Content="向上" rubyer:ButtonHelper.Shape="Circle"  PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown"  Cursor="Hand">
+                                <Button Name="l1" Style="{StaticResource TextButton}" Width="80" Content="向上" Visibility="Collapsed" rubyer:ButtonHelper.Shape="Circle"  PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown"  Cursor="Hand">
                                 </Button>
-                                <Button Name="l2" Style="{StaticResource TextButton}" Width="80" Content="向下" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown" Cursor="Hand">
+                                <Button Name="l2" Style="{StaticResource TextButton}" Width="80" Content="向下" Visibility="Collapsed" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown" Cursor="Hand">
                                 </Button>
-                                <Button Name="l3" Style="{StaticResource TextButton}" Width="80" Content="向左" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown" Cursor="Hand">
+                                <Button Name="l3" Style="{StaticResource TextButton}" Width="80" Content="向左" Visibility="Collapsed" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown" Cursor="Hand">
                                 </Button>
-                                <Button Name="l4" Style="{StaticResource TextButton}" Width="80" Content="向右" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown"  Cursor="Hand">
+                                <Button Name="l4" Style="{StaticResource TextButton}" Width="80" Content="向右" Visibility="Collapsed"  rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown"  Cursor="Hand">
                                 </Button>
+                                <Button Name="l5" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="正转5°" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
+                                </Button>
+                                <Button Name="l6" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="反转5°" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
+                                </Button>
+                                
                             </StackPanel>
                         </rubyer:DescriptionItem>
                     </rubyer:Description>
