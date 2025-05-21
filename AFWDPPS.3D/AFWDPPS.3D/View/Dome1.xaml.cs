@@ -225,7 +225,7 @@ namespace WpfApp3D
                 timer11.Stop();
                 // 启动定时器
                 timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(20); // 每500毫秒更新一次
+                timer.Interval = TimeSpan.FromMilliseconds(100); // 每500毫秒更新一次
                 timer.Tick += Timer_Tick;
                 timer.Start();
                 isTimerRunning = true;
@@ -356,10 +356,11 @@ namespace WpfApp3D
         double avgPitch = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
+
             if (WaveformChart != null)
-                WaveformChart.OnUITimerTick(pitch, pitch1);
-            if (WaveformChartFY != null)
-                WaveformChartFY.OnUITimerTick(yaw1, yaw);
+                WaveformChart.OnUITimerTick(new Random().Next(-15, 15), 5, new Random().Next(-2, 5), new Random().Next(-7, 15), new Random().Next(-9, 15), new Random().Next(-11, 15));
+            //if (WaveformChartFY != null)
+            //    WaveformChartFY.OnUITimerTick(yaw1, yaw);
 
 
             return;
@@ -743,8 +744,8 @@ namespace WpfApp3D
         {
             WaveformChart = new WaveformChart();
             WaveformChart.Show();
-            WaveformChartFY = new WaveformChartFY();
-            WaveformChartFY.Show();
+            //WaveformChartFY = new WaveformChartFY();
+            //WaveformChartFY.Show();
         }
         /// <summary>
         /// 生成正玄波

@@ -896,6 +896,7 @@ namespace AFWDPP.Views
                     if (l6 != null)
                         l6.Visibility = Visibility.Collapsed;
 
+
                 }
                 else if (searchtime.SelectedIndex == 1)
                 {
@@ -926,6 +927,7 @@ namespace AFWDPP.Views
                     if (l6 != null)
                         l6.Visibility = Visibility.Collapsed;
 
+
                 }
                 else if (searchtime.SelectedIndex == 3)
                 {
@@ -940,6 +942,7 @@ namespace AFWDPP.Views
                         l5.Visibility = Visibility.Visible;
                     if (l6 != null)
                         l6.Visibility = Visibility.Visible;
+
 
                 }
             }

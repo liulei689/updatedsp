@@ -73,7 +73,7 @@
                                 </Button>
                                 <Button Name="l6" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="反转5°" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
                                 </Button>
-                                
+                               
                             </StackPanel>
                         </rubyer:DescriptionItem>
                     </rubyer:Description>
