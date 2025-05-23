@@ -356,13 +356,17 @@ namespace WpfApp3D
         double avgPitch = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
+            //模拟
+            pitch = -15.5 + (15.5 - (-15.5)) * new Random().NextDouble();
+            pitch1 = -2.1 + (2.1 - (-2.1)) * new Random().NextDouble();
+            pitchdianji = -10.5 + (10.5 - (-10.5)) * new Random().NextDouble();
+
+            yaw = -9.5 + (9.5 - (-9.5)) * new Random().NextDouble();
+            yawdianji = -1.4 + (1.4 - (-1.4)) * new Random().NextDouble();
+            yaw1 = -17.5 + (17.5 - (-17.5)) * new Random().NextDouble();
 
             if (WaveformChart != null)
-                WaveformChart.OnUITimerTick(new Random().Next(-15, 15), 5, new Random().Next(-2, 5), new Random().Next(-7, 15), new Random().Next(-9, 15), new Random().Next(-11, 15));
-            //if (WaveformChartFY != null)
-            //    WaveformChartFY.OnUITimerTick(yaw1, yaw);
-
-
+                WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
             return;
             yaw = generator.GenerateNextValue();
             pitch = yaw;
@@ -470,6 +474,9 @@ namespace WpfApp3D
         private List<byte> G_btList_RecBuf_R1 = new List<byte>();
         private int G_int_RecBufLen1 = 0;
         double pitch1 = 0;
+        double pitchdianji = 0;
+        double yawdianji = 0;
+
         double yaw1 = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -534,13 +541,15 @@ namespace WpfApp3D
                                     //        WaveformChart.OnUITimerTick(pitch, yaw);
 
                                     //});
-                                    pitch1 = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
-                                    yaw1 = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
+                                    pitchdianji = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
+                                    yawdianji = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
 
-                                    pitch1 = pitch - pitch1;
+                                    pitch1 = pitch - pitchdianji;
                                     if (pitch1 < 0) pitch1 += 1.5;
                                     else
                                         pitch1 -= 1.5;
+
+                                    yaw1 = yaw - yawdianji;
                                     if (yaw1 < 0) yaw1 += 1.5;
                                     yaw1 -= 1.5;
                                     //}
