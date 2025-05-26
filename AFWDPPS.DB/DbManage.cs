@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AFWDPPS.DB
 {
-    public static class ChengYun
+    public static class WDPT
     {
         public static string contstr { get; set; } = "";
         public static SqlSugarClient GetInstance()
@@ -32,7 +32,7 @@ namespace AFWDPPS.DB
         }
 
         #region 智能提示表操作
-        public static async Task<int> UpdateAddZNAsync(稳定平台数据 ov)
+        public static async Task<int> Add(稳定平台数据 ov)
         {
             InitCreateTable();
             using (var db = GetInstance())

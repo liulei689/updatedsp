@@ -134,7 +134,6 @@ namespace WpfApp3D
             timer11.Interval = TimeSpan.FromMilliseconds(1000); // 每500毫秒更新一次
             timer11.Tick += Timer_Tick11;
             timer11.Stop();
-            data();
             ToggleTimer_Click(null, null);
             Loaded += Dome1_Loaded;
         }
@@ -243,118 +242,11 @@ namespace WpfApp3D
         private int currentIndex = 0; // 当前索引
         private bool issuiji = false;
         List<(double x, double y)> dataList;
-        private void data()
-        {
-            // 创建一个List来存储数据
-            dataList = new List<(double x, double y)>
-        {
-        (12.6736,0),
-        (12.1451,0.9414),
-        (11.5687,1.8791),
-        (10.9466,2.8093),
-        (10.2814,3.7285),
-        (9.5757,4.633),
-        (8.8322,5.5192),
-        (8.0539,6.3837),
-        (7.2439,7.223),
-        (6.4053,8.0338),
-        (5.5414,8.8129),
-        (4.6557,9.5573),
-        (3.7516,10.264),
-        (2.8328,10.9303),
-        (1.9027,11.5534),
-        (0.9652,12.131),
-        (0.0239,12.6608),
-        (-0.9175,13.1407),
-        (-1.8553,13.5687),
-        (-2.7858,13.9433),
-        (-3.7054,14.2629),
-        (-4.6103,14.5262),
-        (-5.497,14.7323),
-        (-6.362,14.8803),
-        (-7.202,14.9697),
-        (-8.0136,15),
-        (-8.7936,14.9712),
-        (-9.5389,14.8833),
-        (-10.2466,14.7368),
-        (-10.9139,14.5322),
-        (-11.5382,14.2703),
-        (-12.117,13.9521),
-        (-12.648,13.5789),
-        (-13.1291,13.1522),
-        (-13.5585,12.6736),
-        (-13.9345,12.1451),
-        (-14.2555,11.5687),
-        (-14.5203,10.9466),
-        (-14.7278,10.2814),
-        (-14.8773,9.5757),
-        (-14.9681,8.8322),
-        (-15,8.0539),
-        (-14.9726,7.2439),
-        (-14.8863,6.4053),
-        (-14.7412,5.5414),
-        (-14.5381,4.6557),
-        (-14.2776,3.7516),
-        (-13.9608,2.8328),
-        (-13.589,1.9027),
-        (-13.1637,0.9652),
-        (-12.6864,0.0239),
-        (-12.1591,-0.9175),
-        (-11.5838,-1.8553),
-        (-10.9629,-2.7858),
-        (-10.2988,-3.7054),
-        (-9.5941,-4.6103),
-        (-8.8515,-5.497),
-        (-8.0741,-6.362),
-        (-7.2648,-7.202),
-        (-6.4269,-8.0136),
-        (-5.5636,-8.7936),
-        (-4.6784,-9.5389),
-        (-3.7748,-10.2466),
-        (-2.8562,-10.9139),
-        (-1.9264,-11.5382),
-        (-0.9891,-12.117),
-        (-0.0478,-12.648),
-        (0,-13.1291),
-        (0.9414,-13.5585),
-        (1.8791,-13.9345),
-        (2.8093,-14.2555),
-        (3.7285,-14.5203),
-        (4.633,-14.7278),
-        (5.5192,-14.8773),
-        (6.3837,-14.9681),
-        (7.223,-15),
-        (8.0338,-14.9726),
-        (8.8129,-14.8863),
-        (9.5573,-14.7412),
-        (10.264,-14.5381),
-        (10.9303,-14.2776),
-        (11.5534,-13.9608),
-        (12.131,-13.589),
-        (12.6608,-13.1637),
-        (13.1407,-12.6864),
-        (13.5687,-12.1591),
-        (13.9433,-11.5838),
-        (14.2629,-10.9629),
-        (14.5262,-10.2988),
-        (14.7323,-9.5941),
-        (14.8803,-8.8515),
-        (14.9697,-8.0741),
-        (15,-7.2648),
-        (14.9712,-6.4269),
-        (14.8833,-5.5636),
-        (14.7368,-4.6784),
-        (14.5322,-3.7748),
-        (14.2703,-2.8562),
-        (13.9521,-1.9264),
-        (13.5789,-0.9891),
-                };
-        }
 
         // 定时器事件
         double avgYaw = 0;
         double avgPitch = 0;
-        private void Timer_Tick(object sender, EventArgs e)
+        private async void Timer_Tick(object sender, EventArgs e)
         {
             //模拟
             pitch = -15.5 + (15.5 - (-15.5)) * new Random().NextDouble();
@@ -364,39 +256,21 @@ namespace WpfApp3D
             yaw = -9.5 + (9.5 - (-9.5)) * new Random().NextDouble();
             yawdianji = -1.4 + (1.4 - (-1.4)) * new Random().NextDouble();
             yaw1 = -17.5 + (17.5 - (-17.5)) * new Random().NextDouble();
-
+            AFWDPPS.DB.稳定平台数据 data = new AFWDPPS.DB.稳定平台数据();
+            if (WaveformChart != null)
+                data.流水号 = WaveformChart.Serid;
+            data.声呐横滚角度 = pitch1;
+            data.横滚电机动作角度 = pitchdianji;
+            data.船俯仰角度 = yaw;
+            data.声呐俯仰角度 = yaw1;
+            data.俯仰电机动作角度 = yawdianji;
+            data.时间 = DateTime.Now;
+            if (WaveformChart != null)
+                await AFWDPPS.DB.WDPT.Add(data);
             if (WaveformChart != null)
                 WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
-            return;
-            yaw = generator.GenerateNextValue();
-            pitch = yaw;
-            UpdateTransform();
-            yawTextBox.Text = yaw.ToString("F2");
-            pitchTextBox.Text = pitch.ToString("F2");
-            return;
-            //Random random = new Random();
-            //yaw += random.Next(-15, 15); // 随机生成 -5 到 5 的角度变化量
-            //pitch += random.Next(-15, 15); // 随机生成 -5 到 5 的角度变化量
 
-            //// 限制角度范围
-            //yaw = Clamp(yaw, -15, 15);
-            //pitch = Clamp(pitch, -15, 15);
-            currentIndex = (currentIndex + 1) % dataList.Count;
-            yawTextBox.Text = dataList[currentIndex].x.ToString("F2");
-            pitchTextBox.Text = dataList[currentIndex].y.ToString("F2");
-            yaw = dataList[currentIndex].x;
-            if (currentIndex >= 3)
-                avgYaw = (dataList[currentIndex].x + dataList[currentIndex - 1].x + dataList[currentIndex - 2].x) / 3;
-            else
-                avgYaw = (dataList[currentIndex].x + dataList[dataList.Count - currentIndex - 1].x + dataList[dataList.Count - currentIndex - 2].x) / 3;
-            pitch = dataList[currentIndex].y;
-            if (currentIndex >= 3)
-                avgPitch = (dataList[currentIndex].y + dataList[currentIndex - 1].y + dataList[currentIndex - 2].y) / 3;
-            else
-                avgPitch = (dataList[currentIndex].y + dataList[dataList.Count - currentIndex - 1].y + dataList[dataList.Count - currentIndex - 2].y) / 3;
-            UpdateTransform();
-
-
+            //UpdateTransform();
         }
 
         // 更新方向角度

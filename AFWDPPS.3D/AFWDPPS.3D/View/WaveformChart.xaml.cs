@@ -8,11 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Axis = LiveCharts.Wpf.Axis;
 using Separator = LiveCharts.Wpf.Separator;
+using SeriesCollection = LiveCharts.SeriesCollection;
 
 namespace WpfApp3D
 {
@@ -332,14 +335,94 @@ namespace WpfApp3D
                 }
             }
         }
-
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        public string Serid = "";
+        private string serid = "";
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            Serid = GenerateSerial(serid);
+            serid = Serid;
+            // 模拟一个长时间运行的任务
+            for (int i = 0; i <= 100; i++)
+            {
+                await Task.Delay(100);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    progressBar.Value = i;
+                    progressText.Text = $"{i}%";
+                });
+            }
+            Serid = "";
             Program.Main1();
             // WpfApp3Ds.Program.Main();
         }
 
         #region
+        #region 序列号
+        public static string GenerateSerial(string previousSerial = null)
+        {
+            // 获取当前日期
+            DateTime currentDate = DateTime.Now;
+            string currentDateString = currentDate.ToString("yyyyMMdd");
+
+            if (string.IsNullOrEmpty(previousSerial))
+            {
+                // 如果没有提供前一个流水号，则返回当天的第一个序号
+                return $"{currentDateString}001";
+            }
+
+            // 解析前一个流水号
+            if (!TryParseSerial(previousSerial, out DateTime serialDate, out int serialNumber))
+            {
+                throw new ArgumentException("无效的流水号格式", nameof(previousSerial));
+            }
+
+            // 检查是否是同一天
+            if (serialDate.Date == currentDate.Date)
+            {
+                // 同一天则序号加1
+                serialNumber++;
+                if (serialNumber > 999)
+                {
+                    throw new InvalidOperationException("序号超出最大值999");
+                }
+                return $"{serialDate:yyyyMMdd}{serialNumber:D3}";
+            }
+            else
+            {
+                // 不是同一天，则返回当天的第一个序号
+                return $"{currentDateString}001";
+            }
+        }
+        private static bool TryParseSerial(string serial, out DateTime date, out int number)
+        {
+            date = default;
+            number = default;
+
+            // 确保长度正确
+            if (serial.Length != 11)
+            {
+                return false;
+            }
+
+            // 提取日期和序号部分
+            string dateString = serial.Substring(0, 8);
+            string numberString = serial.Substring(8, 3);
+
+            // 尝试解析日期
+            if (!DateTime.TryParseExact(dateString, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out date))
+            {
+                return false;
+            }
+
+            // 尝试解析序号
+            if (!int.TryParse(numberString, out number) || number < 1 || number > 999)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        #endregion
         public class ChineseFontResolver : IFontResolver
         {
             public FontResolverInfo ResolveTypeface(string familyName, bool bold, bool italic)

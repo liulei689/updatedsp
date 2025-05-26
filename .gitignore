@@ -13,3 +13,6 @@
 /LL2024.Algorithms.UpdateDSPTests/bin/Release/net7
 /obj
 /Properties/PublishProfiles
+/AFWDPPS.DB/.vs
+/AFWDPPS.DB/bin/Debug
+/packages

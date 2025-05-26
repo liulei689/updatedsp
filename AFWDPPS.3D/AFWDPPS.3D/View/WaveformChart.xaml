@@ -44,9 +44,14 @@
                     <ComboBoxItem Content="80"/>
                     <ComboBoxItem Content="100"/>
                 </ComboBox>
-                <Button Content="生成报告" Width="60" Click="Button_Click_2" Margin="5,0,0,0"  Foreground="Green"  BorderBrush="Transparent" />
-
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="报告生成：" Margin="-5"/>
+                <Button Content="生成报告" Width="60" Click="Button_Click_2" Margin="5,0,0,0"  Foreground="Green"  BorderBrush="Transparent" />
+                <ProgressBar Name="progressBar" Width="500" Margin="5,0,5,0" Minimum="0" Maximum="100" Value="0"/>
+                <TextBlock Name="progressText" Width="50" TextAlignment="Right" Text="0%"/>
+            </StackPanel>
+      
         </StackPanel>
         <Border  BorderBrush="LightGray" Grid.Row="0"  MinHeight="400"   BorderThickness="1"   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Background="Transparent" >
             <lvc:CartesianChart Name="cartesianChart" Series="{Binding SeriesCollection}"  DisableAnimations="True">
