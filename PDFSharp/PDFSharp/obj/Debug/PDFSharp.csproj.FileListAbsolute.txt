@@ -61,8 +61,6 @@ C:\Users\liu\source\repos\PDFSharp\PDFSharp\obj\Debug\PDFSharp.csproj.CoreCompil
 C:\Users\liu\source\repos\PDFSharp\PDFSharp\obj\Debug\PDFSharp.csproj.Up2Date
 C:\Users\liu\source\repos\PDFSharp\PDFSharp\obj\Debug\PDFSharp.exe
 C:\Users\liu\source\repos\PDFSharp\PDFSharp\obj\Debug\PDFSharp.pdb
-D:\updatedsp\PDFSharp\PDFSharp\bin\Debug\PDFSharp.exe.config
-D:\updatedsp\PDFSharp\PDFSharp\bin\Debug\PDFSharp.exe
 D:\updatedsp\PDFSharp\PDFSharp\bin\Debug\PDFSharp.pdb
 D:\updatedsp\PDFSharp\PDFSharp\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
 D:\updatedsp\PDFSharp\PDFSharp\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.dll
@@ -122,5 +120,6 @@ D:\updatedsp\PDFSharp\PDFSharp\bin\Debug\System.ValueTuple.xml
 D:\updatedsp\PDFSharp\PDFSharp\obj\Debug\PDFSharp.csproj.AssemblyReference.cache
 D:\updatedsp\PDFSharp\PDFSharp\obj\Debug\PDFSharp.csproj.CoreCompileInputs.cache
 D:\updatedsp\PDFSharp\PDFSharp\obj\Debug\PDFSharp.csproj.Up2Date
-D:\updatedsp\PDFSharp\PDFSharp\obj\Debug\PDFSharp.exe
 D:\updatedsp\PDFSharp\PDFSharp\obj\Debug\PDFSharp.pdb
+D:\updatedsp\PDFSharp\PDFSharp\bin\Debug\PDFSharp.dll.config
+D:\updatedsp\PDFSharp\PDFSharp\obj\Debug\PDFSharp.dll

@@ -5,7 +5,7 @@ using PdfSharp.Pdf;
 using System;
 using System.Diagnostics;
 using System.IO;
-namespace WpfApp3Ds
+namespace AFWDPPS.PDF
 {
     public class ChineseFontResolver : IFontResolver
     {
@@ -29,7 +29,7 @@ namespace WpfApp3Ds
 
             PdfDocument document = new PdfDocument();
             document.Info.Title = "安防稳定平台数据分析报告";
-
+            AddFirstPage(document);
             PdfPage page = document.AddPage();
             page.Orientation = PageOrientation.Portrait;
             page.Size = PageSize.A4;
@@ -105,6 +105,16 @@ namespace WpfApp3Ds
 
             // 添加多个水印
             AddWatermark(gfx, page);
+            // 绘制页码（底部中间）
+            XFont pageFont = new XFont("SimSun", 10); // 使用宋体，字号10
+            XSolidBrush pageBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+            double pageX = page.Width.Point / 2; // X轴居中位置
+            double pageY = page.Height.Point - 20; // 距离底部20点位置
+
+            // 使用XStringFormats.Center确保文本水平居中
+            gfx.DrawString("第1/1页", pageFont, pageBrush,
+                new XRect(pageX, pageY, 0, 0), // 使用0宽高让SizeToFit生效
+                XStringFormats.Center);
             // 生成包含时间戳的文件名
             string filename = $"安防稳定平台数据分析报告{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.pdf"; // 你可以根据需求
             document.Save(filename);
@@ -112,6 +122,55 @@ namespace WpfApp3Ds
             Process.Start(new ProcessStartInfo(filename) { UseShellExecute = true });
         }
 
+        // 设置字体和画笔
+        public static void AddFirstPage(PdfDocument document)
+        {
+            PdfPage page = document.AddPage();
+            page.Orientation = PageOrientation.Portrait;
+            page.Size = PageSize.A4;
+
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+
+            // 设置字体和画笔
+            XFont titleFont = new XFont("SimHei", 36); // 标题字体，字号36
+            XFont subtitleFont = new XFont("SimHei", 28); // 副标题字体，字号28
+            XFont infoFont = new XFont("SimHei", 18); // 信息字体，字号18
+            XSolidBrush brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+
+            double margin = 50; // 上下边距
+
+            // 计算文本绘制位置，确保内容居中并有适当的间距
+            double titleY = margin;
+            double subtitleY = titleY + 50;
+            double infoY = subtitleY + 40;
+            double dateY = infoY + 40;
+
+            // 绘制公司名称
+            gfx.DrawString("云南安防科技有限公司", titleFont, brush,
+                new XRect(0, titleY, page.Width.Point, 0), XStringFormats.Center);
+
+            // 绘制报告标题
+            gfx.DrawString("水下稳定平台测评报告", subtitleFont, brush,
+                new XRect(0, subtitleY, page.Width.Point, 0), XStringFormats.Center);
+
+            // 绘制报告编号
+            gfx.DrawString("（编号：CWTC(A)-2024-0603）", infoFont, brush,
+                new XRect(0, infoY, page.Width.Point, 0), XStringFormats.Center);
+
+            // 绘制日期
+            gfx.DrawString("2024 年 06 月 12 日", infoFont, brush,
+                new XRect(0, page.Height.Point - 100, page.Width.Point, 0), XStringFormats.Center);
+
+            // 绘制页脚（页码和发布日期）
+            XFont footerFont = new XFont("SimHei", 10);
+            double footerY = page.Height.Point - 30; // 页脚距离底部的位置
+
+            gfx.DrawString("第1页 共2页", footerFont, brush,
+                new XRect(0, footerY, page.Width.Point, 0), XStringFormats.Center);
+
+            gfx.DrawString("发布日期：2024-06-12", footerFont, brush,
+                new XRect(300, footerY, 100, 0)); // 在右侧绘制发布日期
+        }
         static void AddWatermark(XGraphics gfx, PdfPage page)
         {
             XFont watermarkFont = new XFont("SimHei", 36);
