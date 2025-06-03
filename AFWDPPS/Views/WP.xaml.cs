@@ -162,7 +162,8 @@ namespace AFWDPP.Views
             //sendData(SendCacheToZhangPengFeiC, 56);
 
             //#endregion
-
+            if (istartbit)
+                Senbit();
             if (sendermodel.IsChecked == true)
             {
                 SendCacheToZhangPengFeiB[0] = 0xA5;
@@ -925,6 +926,7 @@ namespace AFWDPP.Views
         {
             try
             {
+ 
                 if (searchtime.SelectedIndex == 0)
                 {
                     if (cmd != null)
@@ -942,7 +944,10 @@ namespace AFWDPP.Views
                         l5.Visibility = Visibility.Collapsed;
                     if (l6 != null)
                         l6.Visibility = Visibility.Collapsed;
-
+                    if (l7 != null)
+                        l7.Visibility = Visibility.Collapsed;
+                    if (status != null)
+                        status.Visibility = Visibility.Collapsed;
 
                 }
                 else if (searchtime.SelectedIndex == 1)
@@ -958,6 +963,10 @@ namespace AFWDPP.Views
                         l5.Visibility = Visibility.Collapsed;
                     if (l6 != null)
                         l6.Visibility = Visibility.Collapsed;
+                    if (l7 != null)
+                        l7.Visibility = Visibility.Collapsed;
+                    if (status != null)
+                        status.Visibility = Visibility.Collapsed;
 
                 }
                 else if (searchtime.SelectedIndex == 2)
@@ -973,7 +982,10 @@ namespace AFWDPP.Views
                         l5.Visibility = Visibility.Collapsed;
                     if (l6 != null)
                         l6.Visibility = Visibility.Collapsed;
-
+                    if (l7 != null)
+                        l7.Visibility = Visibility.Collapsed;
+                    if (status != null)
+                        status.Visibility = Visibility.Collapsed;
 
                 }
                 else if (searchtime.SelectedIndex == 3)
@@ -989,7 +1001,29 @@ namespace AFWDPP.Views
                         l5.Visibility = Visibility.Visible;
                     if (l6 != null)
                         l6.Visibility = Visibility.Visible;
+                    if (l7 != null)
+                        l7.Visibility = Visibility.Collapsed;
+                    if (status != null)
+                        status.Visibility = Visibility.Collapsed;
 
+                }
+                else if (searchtime.SelectedIndex == 4)
+                {
+                    cmd.Visibility = Visibility.Collapsed;
+
+                    l1.Visibility = Visibility.Collapsed;
+                    l2.Visibility = Visibility.Collapsed;
+                    l3.Visibility = Visibility.Collapsed;
+                    l4.Visibility = Visibility.Collapsed;
+
+                    if (l5 != null)
+                        l5.Visibility = Visibility.Collapsed;
+                    if (l6 != null)
+                        l6.Visibility = Visibility.Collapsed;
+                    if (l7 != null)
+                        l7.Visibility = Visibility.Visible;
+                    if (status != null)
+                        status.Visibility = Visibility.Visible;
 
                 }
             }
@@ -1042,6 +1076,63 @@ namespace AFWDPP.Views
             SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
             sendData(SendCacheToZhangPengFeiB, 7);
         }
+
+        private bool istartbit = false;
+        private int currentIndex = 0; // 全局索引，用于跟踪当前温度值的位置
+        private int timeouts = 0; // 全局索引，用于跟踪当前温度值的位置
+
+        private void l7_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            istartbit = true;
+         }
+        int[] temperatures = { 0, 5, 10, 15, 10, 5, 0, -5, -10, -15, -10, -5, 0 };
+
+        private void Senbit() 
+        {
+
+            SendCacheToZhangPengFeiB[0] = 0xA5;
+
+            SendCacheToZhangPengFeiB[1] = 0x01;
+            if (currentIndex == 2 * temperatures.Length)
+            {
+                istartbit = false;
+                return;
+            }
+            if (currentIndex >= temperatures.Length) //第二次了
+            {
+                short angleValue = (short)(temperatures[currentIndex - temperatures.Length] * 1000);
+                // Step 2: Extract high and low bytes.
+                SendCacheToZhangPengFeiB[2] = 0; // High byte
+                SendCacheToZhangPengFeiB[3] = 0; // Low byte
+                SendCacheToZhangPengFeiB[4] = (byte)((angleValue >> 8) & 0xFF); // High byte
+                SendCacheToZhangPengFeiB[5] = (byte)(angleValue & 0xFF); // Low byte
+                status.Content = $"【自检中】【俯仰：{angleValue/1000}度】";
+            }
+            else
+            {
+                short angleValue = (short)(temperatures[currentIndex] * 1000);
+                // Step 2: Extract high and low bytes.
+                SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
+                SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
+                // Step 2: Extract high and low bytes.
+                SendCacheToZhangPengFeiB[4] = 0; // High byte
+                SendCacheToZhangPengFeiB[5] = 0; // Low byte
+                status.Content = $"【自检中】【横滚：{angleValue / 1000}度】";
+
+            }
+            if (timeouts++ > 100)
+            {
+                timeouts = 0;
+                currentIndex++;
+            }
+            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
+
+            sendData(SendCacheToZhangPengFeiB, 7);
+        }
+ 
+
+
+        
     }
 
 }
