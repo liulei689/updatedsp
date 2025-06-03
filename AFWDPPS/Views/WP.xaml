@@ -88,6 +88,7 @@
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_0_0"       Description="接受帧数" />
                         <rubyer:DescriptionItem Name="x2"       Description="方位角度" />
                         <rubyer:DescriptionItem Name="y2"       Description="俯仰角度" />
+                        <rubyer:DescriptionItem Name="s3"       Description="状态" />
 
                     </rubyer:Description>
                                 </StackPanel>

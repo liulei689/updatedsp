@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="AFWDPP.Views.ZZ"
+﻿<UserControl x:Class="YWDEVICE.Views.ZZ"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:rubyer="http://rubyer.io/winfx/xaml/toolkit"
-             xmlns:viewmodels="clr-namespace:AFWDPP.ViewModels" xmlns:usercontrols="clr-namespace:导引头上位机程序.Views.UserControls"
+             xmlns:viewmodels="clr-namespace:YWDEVICE.ViewModels" xmlns:usercontrols="clr-namespace:导引头上位机程序.Views.UserControls"
              mc:Ignorable="d">
     <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
         <Grid Margin="5" 

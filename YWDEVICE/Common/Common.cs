@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace AFWDPP.Common
+namespace YWDEVICE.Common
 {
     public static class Common
     {

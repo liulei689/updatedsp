@@ -1,4 +1,4 @@
-﻿using AFWDPP.Common;
+﻿using YWDEVICE.Common;
 using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
@@ -13,10 +13,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static AFWDPP.Common.Common;
+using static YWDEVICE.Common.Common;
 using Application = System.Windows.Application;
 
-namespace AFWDPP.Views
+namespace YWDEVICE.Views
 {
     /// <summary>
     /// FC.xaml 的交互逻辑

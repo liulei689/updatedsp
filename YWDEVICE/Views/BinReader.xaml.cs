@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace AFWDPP.Views
+namespace YWDEVICE.Views
 {
     /// <summary>
     /// MenuBar.xaml 的交互逻辑

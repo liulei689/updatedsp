@@ -1,10 +1,10 @@
-﻿using AFWDPP.ViewModels;
+﻿using YWDEVICE.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;
-using static AFWDPP.Common.QueneWriteData;
+using static YWDEVICE.Common.QueneWriteData;
 
-namespace AFWDPP
+namespace YWDEVICE
 {
     /// <summary>
     /// Interaction logic for App.xaml

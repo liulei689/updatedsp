@@ -271,12 +271,10 @@ namespace AFWDPP.Views
                         }
                         break;
                     case (int)enum_ComStatus.COM_STATUS_HEAD2:
-                        if (tmpByte == 0x00 || tmpByte == 0x01 || tmpByte == 0x02 || tmpByte == 0x03 || tmpByte == 0x04 || tmpByte == 0x05)
-                        {
-                            //切换协议解析状态
-                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
-                            G_btList_RecBuf.Add(tmpByte);
-                        }
+                        //切换协议解析状态
+                        G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
+                        G_btList_RecBuf.Add(tmpByte);
+
                         break;
                     case (int)enum_ComStatus.COM_STATUS_DATA:
                         G_btList_RecBuf.Add(tmpByte);
@@ -301,8 +299,10 @@ namespace AFWDPP.Views
                                             rxlog.AddOne(hexString, "收←◆");
                                         x2.Content = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
                                         y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
-                                        string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
 
+
+                                        string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
+                                        s3.Content = ParseHexData(Rbuffer);
                                         COUNTS = 0;
                                         Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
                                     }
@@ -369,6 +369,49 @@ namespace AFWDPP.Views
 
 
             }
+        }
+        public string ParseHexData(byte[] hexData)
+        {
+            if (hexData == null || hexData.Length < 2)
+                return "无效";
+
+            // 解析第一个字节
+            byte firstByte = hexData[1];
+            string result = "";
+
+            if (firstByte == 0x01)
+            {
+                result = "锁定";
+            }
+            else if (firstByte == 0x02)
+            {
+                result = "稳定";
+            }
+            else if (firstByte == 0x03)
+            {
+                result = "舵机控制";
+            }
+            else if (firstByte == 0x04)
+            {
+                result = "校零";
+            }
+            else if ((firstByte & 0x80) != 0) // 检查第7位是否为1
+            {
+                result = "【上电自检中】";
+
+                // 解析第二个字节的各位
+                byte secondByte = hexData[1];
+                result += $"【滚转正: {((secondByte & 0x40) != 0 ? "通过" : "")}】";
+                result += $"【滚转负: {((secondByte & 0x20) != 0 ? "通过" : "")}】";
+                result += $"【俯仰正: {((secondByte & 0x10) != 0 ? "通过" : "")}】";
+                result += $"【俯仰负: {((secondByte & 0x08) != 0 ? "通过" : "")}】";
+            }
+            else
+            {
+                return "未知状态";
+            }
+
+            return result;
         }
         public float ParseAngleFromBytes(byte highByte, byte lowByte)
         {
@@ -841,10 +884,15 @@ namespace AFWDPP.Views
 
 
             SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-            for (int i = 0; i < 5; i++)
-            {
+            if (SendCacheToZhangPengFeiB[1] == 0x04)
                 sendData(SendCacheToZhangPengFeiB, 7);
-                await Task.Delay(80);
+            else
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    sendData(SendCacheToZhangPengFeiB, 7);
+                    await Task.Delay(80);
+                }
             }
         }
 

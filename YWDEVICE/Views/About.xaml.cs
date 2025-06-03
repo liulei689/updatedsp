@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AFWDPP.Views
+namespace YWDEVICE.Views
 {
     /// <summary>
     /// About.xaml 的交互逻辑

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace AFWDPP.Converter
+namespace YWDEVICE.Converter
 {
     public class IsSelectedToIconConverter : IValueConverter
     {

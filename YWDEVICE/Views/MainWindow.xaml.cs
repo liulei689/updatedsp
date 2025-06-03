@@ -1,5 +1,5 @@
-﻿using AFWDPP.ViewModels;
-using AFWDPP.Views;
+﻿using YWDEVICE.ViewModels;
+using YWDEVICE.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Rubyer;
 using Rubyer.Enums;
@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using 导引头上位机程序.Views;
 
-namespace AFWDPP
+namespace YWDEVICE
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

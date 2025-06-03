@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AFWDPP.Consts
+namespace YWDEVICE.Consts
 {
     public class ConstNames
     {

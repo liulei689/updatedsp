@@ -1,5 +1,4 @@
-﻿using AFWDPP.Common;
-using HandyControl.Data;
+﻿using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
 using System;
@@ -15,10 +14,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static AFWDPP.Common.Common;
+using YWDEVICE.Common;
+using static YWDEVICE.Common.Common;
 using Application = System.Windows.Application;
 
-namespace AFWDPP.Views
+namespace YWDEVICE.Views
 {
     public static class Logger
     {

@@ -1,4 +1,4 @@
-﻿<Application x:Class="AFWDPP.App"
+﻿<Application x:Class="YWDEVICE.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,7 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Rubyer;component/Themes/Generic.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/AFWDPP;component/Themes/Generic.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/YWDEVICE;component/Themes/Generic.xaml" />
                 <!--<ResourceDictionary Source="pack://application:,,,/Rubyer;component/Themes/Resources/I18N/en-US.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
 

@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Rubyer;
 
-namespace AFWDPP.ViewModels
+namespace YWDEVICE.ViewModels
 {
     /// <summary>
     /// 视图项

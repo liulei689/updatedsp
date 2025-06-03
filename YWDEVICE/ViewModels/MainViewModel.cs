@@ -1,4 +1,4 @@
-﻿using AFWDPP.Views;
+﻿using YWDEVICE.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Rubyer;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace AFWDPP.ViewModels
+namespace YWDEVICE.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
@@ -45,14 +45,14 @@ namespace AFWDPP.ViewModels
                 new ThemeColorInfo
                 {
                     Name = "默认蓝",
-                    Url = @"pack://application:,,,/AFWDPP;component/Themes/BlueColor.xaml",
+                    Url = @"pack://application:,,,/YWDEVICE;component/Themes/BlueColor.xaml",
                     Primary = new SolidColorBrush(Color.FromRgb(0x21,0x96,0xF3)),
                     IsSeleted =true
                 },
                 new ThemeColorInfo
                 {
                     Name = "酷安绿",
-                    Url = @"pack://application:,,,/AFWDPP;component/Themes/GreenColor.xaml",
+                    Url = @"pack://application:,,,/YWDEVICE;component/Themes/GreenColor.xaml",
                     Primary = new SolidColorBrush(Color.FromRgb(0x0B,0xA3,0x61)),
                     IsSeleted = false
                 },
@@ -60,21 +60,21 @@ namespace AFWDPP.ViewModels
                 {
                     Name = "网易红",
                     Primary = new SolidColorBrush(Color.FromRgb(0xE5,0x39,0x35)),
-                    Url = @"pack://application:,,,/AFWDPP;component/Themes/RedColor.xaml",
+                    Url = @"pack://application:,,,/YWDEVICE;component/Themes/RedColor.xaml",
                     IsSeleted =false
                 },
                 new ThemeColorInfo
                 {
                     Name = "妹妹紫",
                     Primary =new SolidColorBrush( Color.FromRgb(0x6A,0x1B,0x9A)),
-                    Url = @"pack://application:,,,/AFWDPP;component/Themes/PurpleColor.xaml",
+                    Url = @"pack://application:,,,/YWDEVICE;component/Themes/PurpleColor.xaml",
                     IsSeleted =false
                 },
                 new ThemeColorInfo
                 {
                     Name = "哔哩粉",
                     Primary = new SolidColorBrush(Color.FromRgb(0xFB,0x72,0x99)),
-                    Url = @"pack://application:,,,/AFWDPP;component/Themes/PinkColor.xaml",
+                    Url = @"pack://application:,,,/YWDEVICE;component/Themes/PinkColor.xaml",
                     IsSeleted =false
                 },
             ];

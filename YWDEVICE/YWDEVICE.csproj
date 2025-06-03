@@ -9,6 +9,7 @@
 		<Authors>昆明光博科技有限公司</Authors>
 		<Version>0.0.0.1</Version>
 		<LangVersion>preview</LangVersion>
+		<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -4,7 +4,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace AFWDPP.Converter
+namespace YWDEVICE.Converter
 {
     /// <summary>
     /// 根据 IconType 获取 Icon

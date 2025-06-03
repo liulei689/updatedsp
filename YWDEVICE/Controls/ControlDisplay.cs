@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AFWDPP.Controls
+namespace YWDEVICE.Controls
 {
     /// <summary>
     /// 展示控件

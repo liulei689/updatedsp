@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Media;
 
-namespace AFWDPP.ViewModels
+namespace YWDEVICE.ViewModels
 {
     /// <summary>
     /// 主题颜色信息
