@@ -293,20 +293,19 @@ namespace AFWDPP.Views
 
                                 if (Rbuffer.Length == 7 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[6])
                                 {
-                                    if (COUNTS++ > 10)
+                                    if (rxtxshow.IsChecked == true)
+                                        rxlog.AddOne(hexString, "收←◆");
+                                    x2.Content = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
+                                    y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
+                                    string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
+                                    s3.Content = ParseHexData(Rbuffer);
+                                    if (COUNTS++ > 100)
                                     {
-                                        if (rxtxshow.IsChecked == true)
-                                            rxlog.AddOne(hexString, "收←◆");
-                                        x2.Content = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
-                                        y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
-
-
-                                        string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
-                                        s3.Content = ParseHexData(Rbuffer);
                                         COUNTS = 0;
                                         Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
                                     }
                                 }
+                                //  }
                                 //else
                                 //{
                                 //    if (rxtxshow.IsChecked == true)

@@ -11,7 +11,6 @@ namespace WpfApp3D
         public MainWindow()
         {
             InitializeComponent();
-            AFWDPPS.PDF.Program.Main();
             this.DataContext = new MainViewModel();
 
 
