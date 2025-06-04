@@ -926,7 +926,7 @@ namespace AFWDPP.Views
         {
             try
             {
- 
+
                 if (searchtime.SelectedIndex == 0)
                 {
                     if (cmd != null)
@@ -1083,11 +1083,23 @@ namespace AFWDPP.Views
 
         private void l7_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            istartbit = true;
-         }
-        int[] temperatures = { 0, 5, 10, 15, 10, 5, 0, -5, -10, -15, -10, -5, 0 };
+            currentIndex = 0;
+            if (l7.Content.ToString() == "开始自检")
+            {
+                istartbit = true;
+                l7.Content = "停止自检";
+                l7.Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+                istartbit = false;
+                l7.Content = "开始自检";
+                l7.Foreground = new SolidColorBrush(Colors.Blue);
+            }
+        }
+        int[] temperatures = { 0, 3, 6, 9, 12, 15, 12, 9, 6, 3, 0, -3, -6, -9, -12, -15, -12, -9, -6, -3, 0 };
 
-        private void Senbit() 
+        private void Senbit()
         {
 
             SendCacheToZhangPengFeiB[0] = 0xA5;
@@ -1095,7 +1107,7 @@ namespace AFWDPP.Views
             SendCacheToZhangPengFeiB[1] = 0x01;
             if (currentIndex == 2 * temperatures.Length)
             {
-                istartbit = false;
+                currentIndex = 0;
                 return;
             }
             if (currentIndex >= temperatures.Length) //第二次了
@@ -1106,7 +1118,7 @@ namespace AFWDPP.Views
                 SendCacheToZhangPengFeiB[3] = 0; // Low byte
                 SendCacheToZhangPengFeiB[4] = (byte)((angleValue >> 8) & 0xFF); // High byte
                 SendCacheToZhangPengFeiB[5] = (byte)(angleValue & 0xFF); // Low byte
-                status.Content = $"【自检中】【俯仰：{angleValue/1000}度】";
+                status.Content = $"【自检中】【俯仰：{angleValue / 1000}度】";
             }
             else
             {
@@ -1120,7 +1132,7 @@ namespace AFWDPP.Views
                 status.Content = $"【自检中】【横滚：{angleValue / 1000}度】";
 
             }
-            if (timeouts++ > 100)
+            if (timeouts++ > 50)
             {
                 timeouts = 0;
                 currentIndex++;
@@ -1129,10 +1141,10 @@ namespace AFWDPP.Views
 
             sendData(SendCacheToZhangPengFeiB, 7);
         }
- 
 
 
-        
+
+
     }
 
 }

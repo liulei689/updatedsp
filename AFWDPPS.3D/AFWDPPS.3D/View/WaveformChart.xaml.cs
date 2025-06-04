@@ -347,7 +347,7 @@ namespace WpfApp3D
             }
             Serid = "";
             //Program.Main1();
-            // WpfApp3Ds.Program.Main();
+            AFWDPPS.PDF.Program.Main();
         }
 
         #region

@@ -261,6 +261,7 @@ namespace WpfApp3D
             AFWDPPS.DB.稳定平台数据 data = new AFWDPPS.DB.稳定平台数据();
             if (WaveformChart != null)
                 data.流水号 = WaveformChart.Serid;
+            data.船横滚角度 = pitch;
             data.声呐横滚角度 = pitch1;
             data.横滚电机动作角度 = pitchdianji;
             data.船俯仰角度 = yaw;
