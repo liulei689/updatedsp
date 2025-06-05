@@ -32,7 +32,7 @@ namespace AFWDPP.Views
             LoadLastTestCount();
         }
 
-        private static void EnsureLogFolderExists(string pth)
+        public static void EnsureLogFolderExists(string pth)
         {
             if (!Directory.Exists(pth))
             {
@@ -1089,6 +1089,7 @@ namespace AFWDPP.Views
                 istartbit = true;
                 l7.Content = "停止自检";
                 l7.Foreground = new SolidColorBrush(Colors.Red);
+                logFileNamebit = $"自检信息_{DateTime.Now:yyyyMMddHHmmss}.txt";
             }
             else
             {
@@ -1098,6 +1099,7 @@ namespace AFWDPP.Views
             }
         }
         int[] temperatures = { 0, 3, 6, 9, 12, 15, 12, 9, 6, 3, 0, -3, -6, -9, -12, -15, -12, -9, -6, -3, 0 };
+        string logFileNamebit = $"自检信息_{DateTime.Now:yyyyMMddHHmmss}.txt";
 
         private void Senbit()
         {
@@ -1110,9 +1112,10 @@ namespace AFWDPP.Views
                 currentIndex = 0;
                 return;
             }
+            short jiaodu = 0;
             if (currentIndex >= temperatures.Length) //第二次了
             {
-                short angleValue = (short)(temperatures[currentIndex - temperatures.Length] * 1000);
+                short angleValue = jiaodu = (short)(temperatures[currentIndex - temperatures.Length] * 1000);
                 // Step 2: Extract high and low bytes.
                 SendCacheToZhangPengFeiB[2] = 0; // High byte
                 SendCacheToZhangPengFeiB[3] = 0; // Low byte
@@ -1122,7 +1125,7 @@ namespace AFWDPP.Views
             }
             else
             {
-                short angleValue = (short)(temperatures[currentIndex] * 1000);
+                short angleValue = jiaodu = (short)(temperatures[currentIndex] * 1000);
                 // Step 2: Extract high and low bytes.
                 SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
                 SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
@@ -1134,6 +1137,46 @@ namespace AFWDPP.Views
             }
             if (timeouts++ > 50)
             {
+
+                string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "自检信息");
+                string logFilePath = Path.Combine(logDirectory, logFileNamebit);
+
+                // 使用 File.AppendAllText 写入日志信息
+                try
+                {
+                    Logger.EnsureLogFolderExists(logDirectory);
+
+                    if (currentIndex >= temperatures.Length)
+                    {
+                        double jd = 0;
+                        if (y2.Content == null) jd = -1000;
+                        else jd = double.Parse(y2.Content.ToString());
+
+                        double abs = ((jiaodu / 1000) - jd);
+                        string res = abs == 1000 ? "" : abs.ToString();
+                        string 偏差 = (abs > 1.5 || abs < -1.5) ? "不通过" : "通过";
+                        string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff},下发俯仰: {jiaodu / 1000}，平台俯仰：{y2.Content},偏差{res}，结果{偏差}{Environment.NewLine}";
+                        File.AppendAllText(logFilePath, logEntry);
+                    }
+                    else
+                    {
+                        double jd = 0;
+                        if (x2.Content == null) jd = -1000;
+                        else jd = double.Parse(x2.Content.ToString());
+
+                        double abs = ((jiaodu / 1000) - jd);
+                        string res = abs == 1000 ? "" : abs.ToString();
+                        string 偏差 = (abs > 1.5 || abs < -1.5) ? "不通过" : "通过";
+                        string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff},下发横滚:{jiaodu / 1000}，平台横滚：{x2.Content},偏差{res}，结果{偏差}{Environment.NewLine}";
+                        File.AppendAllText(logFilePath, logEntry);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Console.Error.WriteLine($"Failed to write log: {ex.Message}");
+                }
+
+
                 timeouts = 0;
                 currentIndex++;
             }
