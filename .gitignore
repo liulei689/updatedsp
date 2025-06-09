@@ -17,5 +17,5 @@
 /AFWDPPS.DB/bin
 /AFWDPPS.DB/obj
 /packages
-/PDFSharp/PDFSharp/obj
-/PDFSharp/PDFSharp/bin
+/PDFSharp/PDFSharp/obj/Debug
+/PDFSharp/PDFSharp/bin/Debug
