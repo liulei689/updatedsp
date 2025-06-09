@@ -14,7 +14,8 @@
 /obj
 /Properties/PublishProfiles
 /AFWDPPS.DB/.vs
-/AFWDPPS.DB/bin/Debug
+/AFWDPPS.DB/bin
 /AFWDPPS.DB/obj
 /packages
-/AFWDPPS.DB/obj/Debug/AFWDPPS.DB.csproj.AssemblyReference.cache
+/PDFSharp/PDFSharp/obj
+/PDFSharp/PDFSharp/bin
