@@ -126,6 +126,9 @@ namespace WpfApp3D
     };
         }
 
+        /// <summary>
+        /// 到底部初始化图表
+        /// </summary>
         private void InitializeChart()
         {
             InitializeLines();
@@ -178,6 +181,11 @@ namespace WpfApp3D
             });
         }
 
+        /// <summary>
+        /// 向图表中添加数据点
+        /// </summary>
+        /// <param name="lineSeries"></param>
+        /// <param name="x"></param>
         private void AddPointsToChart(LineSeries lineSeries, double x)
         {
             if (st.Content.ToString() == "暂停")

@@ -112,7 +112,7 @@ namespace AFWDPP.Views
             timer.Start();
             //握手定时器
             timerhandshake = new DispatcherTimer();
-            timerhandshake.Interval = TimeSpan.FromMilliseconds(80);
+            timerhandshake.Interval = TimeSpan.FromMilliseconds(1);
             timerhandshake.IsEnabled = true;
             timerhandshake.Tick += timerhandshake_Tick;
             var ports = Common.Common.SearchPort();
@@ -150,8 +150,27 @@ namespace AFWDPP.Views
         byte[] SendCacheToZhangPengFeiC = new byte[56]; //模拟MU数据
 
         byte da = 0;
+        byte[] datassd = { 0xFC, 0x41, 0x30, 0x1B, 0x69, 0xB1, 0x09, 0x18, 0xB5, 0x12, 0xB8, 0x6D, 0xCB, 0x12, 0x3A, 0xBE, 0x0A, 0x0E, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFD };
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
+
+            // 生成一个随机的float值，范围在-10到10之间
+            Random random = new Random();
+            float randomFloat = (float)(random.NextDouble() * 0.4 - 0.033); // 生成一个范围在-10到10之间的随机float值
+            float randomFloat2 = (float)(random.NextDouble() * 0.3 - 0.0456); // 生成一个范围在-10到10之间的随机float值
+
+            var a1 = BitConverter.GetBytes(randomFloat);
+            var a2 = BitConverter.GetBytes(randomFloat2);
+            var dd = BitConverter.ToSingle(a1, 0);
+            datassd[19] = a1[0];
+            datassd[20] = a1[1];
+            datassd[21] = a1[2];
+            datassd[22] = a1[3];
+            datassd[23] = a2[0];
+            datassd[24] = a2[1];
+            datassd[25] = a2[2];
+            datassd[26] = a2[3];
+            sendData(datassd, datassd.Length);
             //#region 模拟MU数据发送
             //SendCacheToZhangPengFeiC[0] = 0x7F;
             //SendCacheToZhangPengFeiC[1] = 0x80;
@@ -162,29 +181,11 @@ namespace AFWDPP.Views
             //sendData(SendCacheToZhangPengFeiC, 56);
 
             //#endregion
-            if (istartbit)
-                Senbit();
-            if (sendermodel.IsChecked == true)
-            {
-                SendCacheToZhangPengFeiB[0] = 0xA5;
+            //if (istartbit)
+            //    Senbit();
+            //if (sendermodel.IsChecked == true)
 
-                SendCacheToZhangPengFeiB[1] = 0x02;
-
-                // Step 1: Multiply by 1000 and cast to short.
-                short angleValue = (short)(x1.Value * 1000);
-
-                // Step 2: Extract high and low bytes.
-                SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
-                SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
-
-                short angleValue1 = (short)(y1.Value * 1000);
-
-                // Step 2: Extract high and low bytes.
-                SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
-                SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
-                SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-                sendData(SendCacheToZhangPengFeiB, 7);
-            }
+            // }
         }
 
         public byte GetSum(byte[] data)

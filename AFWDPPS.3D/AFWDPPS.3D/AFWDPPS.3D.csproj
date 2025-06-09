@@ -171,7 +171,9 @@
     <Compile Include="View\SixDrill.xaml.cs">
       <DependentUpon>SixDrill.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\WaveformChart.xaml.cs" />
+    <Compile Include="View\WaveformChart.xaml.cs" >
+      <DependentUpon>WaveformChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
