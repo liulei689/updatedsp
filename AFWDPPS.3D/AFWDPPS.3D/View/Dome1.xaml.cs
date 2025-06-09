@@ -1,12 +1,10 @@
-﻿using AFWDPPS.DB;
-using HelixToolkit.Wpf;
+﻿using HelixToolkit.Wpf;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -270,47 +268,14 @@ namespace WpfApp3D
             data.时间 = DateTime.Now;
             if (WaveformChart != null)
             {
-                await 存储数据Async(data);
+                AsyncLogger.Log(data); // 异步存储数据
             }
             if (WaveformChart != null)
                 WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
 
             //UpdateTransform();
         }
-        private 稳定平台数据 上一组数据;
-        public async Task 存储数据Async(稳定平台数据 当前数据)
-        {
-            if (上一组数据 == null)
-            {
-                // 如果是第一次存储，直接存储
-                上一组数据 = 当前数据;
-                return;
-            }
 
-            // 检查关键角度是否发生变化
-            bool 角度变化 = false;
-            if (当前数据.船俯仰角度 != 上一组数据.船俯仰角度 ||
-                当前数据.声呐俯仰角度 != 上一组数据.声呐俯仰角度 ||
-                当前数据.俯仰电机动作角度 != 上一组数据.俯仰电机动作角度 ||
-                当前数据.船横滚角度 != 上一组数据.船横滚角度 ||
-                当前数据.声呐横滚角度 != 上一组数据.声呐横滚角度 ||
-                当前数据.横滚电机动作角度 != 上一组数据.横滚电机动作角度)
-            {
-                角度变化 = true;
-            }
-
-            if (角度变化)
-            {
-                // 如果有角度变化，则存储当前数据
-                上一组数据 = 当前数据;
-                await AFWDPPS.DB.WDPT.Add(当前数据);
-
-            }
-            else
-            {
-
-            }
-        }
         // 更新方向角度
         private void UpdateYaw()
         {

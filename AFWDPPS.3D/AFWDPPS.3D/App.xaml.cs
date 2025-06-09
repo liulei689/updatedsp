@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using WpfApp3D.Models;
 
 namespace WpfApp3D
 {
@@ -14,5 +9,14 @@ namespace WpfApp3D
     public partial class App : Application
     {
         //
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            AsyncLogger.Initialize(); // 初始化异步日志记录器
+
+            // 在这里可以添加其他启动逻辑
+
+            // 其他启动逻辑
+        }
     }
 }
