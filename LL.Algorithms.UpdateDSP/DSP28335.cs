@@ -8,6 +8,7 @@ namespace LL2024.Algorithms.UpdateDSP
         public static readonly IGeneralAlgorithms _instance = new GeneralAlgorithms();
         public static readonly IQFXHAlgorithms _afxhinstance = new QFXHAlgorithms();
         public static readonly IAFAlgorithms _afinstancel = new AFAlgorithms();
+        public static readonly ICommon _common = new Common();
         /// <summary>
         /// 加载固件
         /// </summary>
@@ -467,6 +468,18 @@ namespace LL2024.Algorithms.UpdateDSP
         {
             return _afinstancel.CheckChecksum(dataFrame);
 
+        }
+
+        /// <summary>
+        /// 根据帧头和长度获取应答数据中数据部分按字节解析
+        /// </summary>
+        /// <param name="HEAD1"></param>
+        /// <param name="len"></param>
+        /// <param name="bt_RecBuf"></param>
+        /// <returns></returns>
+        public static List<byte> GetRecBufData_422(int HEAD1, int len, byte[] bt_RecBuf)
+        {
+            return _common.GetRecBufData_422(HEAD1, len, bt_RecBuf);
         }
     }
 }

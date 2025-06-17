@@ -2,11 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.0.0.10</Version>
+    <Version>0.0.0.11</Version>
     <Title>DSP在线升级算法库</Title>
     <Description>DSP在线升级算法库</Description>
     <Copyright>昆明光博科技有限公司</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <AssemblyVersion>0.0.0.11</AssemblyVersion>
+    <FileVersion>0.0.0.11</FileVersion>
   </PropertyGroup>
 
 </Project>
