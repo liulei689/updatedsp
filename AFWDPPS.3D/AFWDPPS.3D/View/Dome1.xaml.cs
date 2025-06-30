@@ -633,6 +633,12 @@ namespace WpfApp3D
             //WaveformChartFY = new WaveformChartFY();
             //WaveformChartFY.Show();
         }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            var WaveformChartHis = new WaveformChartHis();
+            WaveformChartHis.Show();
+        }
         /// <summary>
         /// 生成正玄波
         /// </summary>
@@ -823,6 +829,7 @@ namespace WpfApp3D
 
 
         #endregion
+
     }
     #region 读本地日志文件生成动作
     public class ProtocolParser

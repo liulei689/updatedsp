@@ -45,7 +45,6 @@
             <TextBlock x:Name="x1" Text="0" Margin="5"/>
             <TextBlock Text="滚转角度：" Margin="5"/>
             <TextBlock x:Name="y1" Text="0" Margin="5"/>
-            <Button Content="波形" Click="Button_Click_1"/>
             <TextBlock Text="幅值（°）"/>
             <TextBox x:Name="fuzhi" Width="100" Text="9" IsReadOnly="False"/>
             <TextBlock Text="频率(Hz)"/>
@@ -69,18 +68,22 @@
         </ht:HelixViewport3D>
         <StackPanel Grid.Column="2"  Orientation="Vertical" Margin="10,40,0,0">
       
-            <TextBlock  Grid.Column="0"  Text="串口号:"  />
-            <ComboBox  Grid.Column="1" Name="comlist1"  Margin="20 0"/>
-            <TextBlock  Grid.Column="2" Text="波特率:"  />
-            <ComboBox  Grid.Column="3" Name="botelv1" Width="100" Margin="20 0" />
-            <ToggleButton  Grid.Column="4" x:Name="openclosecom1" Height="25" Margin="5" Content="打开稳定平台串口" IsChecked="False" Click="openclosecom1_Click">
+            <TextBlock    Text="串口号:"  />
+            <ComboBox  Name="comlist1"  Margin="20 0"/>
+            <TextBlock   Text="波特率:"  />
+            <ComboBox   Name="botelv1" Width="100" Margin="20 0" />
+            <ToggleButton   x:Name="openclosecom1" Height="25" Margin="5" Content="打开稳定平台串口" IsChecked="False" Click="openclosecom1_Click">
             </ToggleButton>
-            <TextBlock  Grid.Column="0"  Text="串口号:"  />
-            <ComboBox  Grid.Column="1" Name="comlist2"  Margin="20 0"/>
-            <TextBlock  Grid.Column="2" Text="波特率:"  />
-            <ComboBox  Grid.Column="3" Name="botelv2" Width="100" Margin="20 0" />
-            <ToggleButton  Grid.Column="4" x:Name="openclosecom2" Height="25" Margin="5" Content="打开平台MU串口" IsChecked="False" Click="openclosecom2_Click">
+            <TextBlock  Text="串口号:"  />
+            <ComboBox   Name="comlist2"  Margin="20 0"/>
+            <TextBlock   Text="波特率:"  />
+            <ComboBox  Name="botelv2" Width="100" Margin="20 0" />
+            <ToggleButton   x:Name="openclosecom2" Height="25" Margin="5" Content="打开平台MU串口" IsChecked="False" Click="openclosecom2_Click">
             </ToggleButton>
+            <Button Content="查看历史波形" Width="100" Margin="5"  Click="Button_Click_3"/>
+
+            <Button Content="显示波形" Width="100" Margin="5"  Click="Button_Click_1"/>
+
         </StackPanel>
 
     </Grid>

@@ -1,5 +1,6 @@
 ﻿using SqlSugar;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -41,7 +42,17 @@ namespace AFWDPPS.DB
 
             }
         }
+        public static async Task<List<稳定平台数据>> GetListByTime(DateTime start, DateTime end)
+        {
+            //InitCreateTable();
+            using (var db = GetInstance())
+            {
+                var query = db.Queryable<稳定平台数据>()
+                              .Where(it => it.时间 >= start && it.时间 <= end);
 
+                return await query.ToListAsync();
+            }
+        }
         #endregion
     }
 }
