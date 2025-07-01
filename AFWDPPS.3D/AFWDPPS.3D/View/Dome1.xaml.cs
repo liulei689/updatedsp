@@ -272,8 +272,9 @@ namespace WpfApp3D
             }
             if (WaveformChart != null)
                 WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
-
-            //UpdateTransform();
+            // 更新yaw和pitch
+            if (ishide.SelectedIndex == 1)
+                UpdateTransform();
         }
 
         // 更新方向角度
@@ -829,7 +830,6 @@ namespace WpfApp3D
 
 
         #endregion
-
     }
     #region 读本地日志文件生成动作
     public class ProtocolParser

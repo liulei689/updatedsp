@@ -418,15 +418,6 @@ namespace WpfApp3D
         }
         #endregion
 
-        private async void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private async void DatePicker_SelectedDateChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
 
         private async void starttime_SelectedTimeChanged(object sender, RoutedPropertyChangedEventArgs<DateTime?> e)
         {

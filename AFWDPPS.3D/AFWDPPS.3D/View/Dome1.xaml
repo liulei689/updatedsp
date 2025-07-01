@@ -50,6 +50,11 @@
             <TextBlock Text="频率(Hz)"/>
             <TextBox x:Name="pinlv" Width="100" Text="1" IsReadOnly="False"/>
             <Button Content="生成正玄波" Click="Button_Click_2"/>
+            <ComboBox Name="ishide" Margin="20 0" Width="120" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" SelectedIndex="0">
+                <ComboBoxItem Content="不显示"/>
+                <ComboBoxItem Content="显示"/>
+            </ComboBox>
+
         </StackPanel>
      
         <!-- 右侧3D视图 -->
