@@ -35,7 +35,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -43,6 +43,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -172,6 +173,7 @@
     <Compile Include="Models\ToolXY.cs" />
     <Compile Include="Models\TransformManager.cs" />
     <Compile Include="Models\SimplifiedSineWaveGenerator.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="View\demo3.xaml.cs">
       <DependentUpon>demo3.xaml</DependentUpon>
