@@ -245,7 +245,7 @@ namespace AFWDPP.Views
             COM_STATUS_LEN,
             COM_STATUS_DATA
         }
-
+        int countred = 0;
         int COUNTS = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -300,9 +300,9 @@ namespace AFWDPP.Views
                                     y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
                                     string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
                                     s3.Content = ParseHexData(Rbuffer);
-                                    if (COUNTS++ > 100)
+                                    if (countred++ > 50)
                                     {
-                                        COUNTS = 0;
+                                        countred = 0;
                                         Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
                                     }
                                 }

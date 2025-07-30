@@ -167,9 +167,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\AlgorithmModule.cs" />
     <Compile Include="Models\BaseControlManager.cs" />
     <Compile Include="Models\db.cs" />
     <Compile Include="Models\Joint.cs" />
+    <Compile Include="Models\MotorSimulator.cs" />
     <Compile Include="Models\ToolXY.cs" />
     <Compile Include="Models\TransformManager.cs" />
     <Compile Include="Models\SimplifiedSineWaveGenerator.cs" />

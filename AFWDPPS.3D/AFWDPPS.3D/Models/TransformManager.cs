@@ -10,9 +10,15 @@ namespace WpfApp3D.Models
         private static bool lastUpdateTime = false;
         private static DateTime startwatch = DateTime.Now;
         private const int DelayMilliseconds = 5000; // mu数据延迟传入延时时间（毫秒）
+        private AlgorithmModule algorithm = new AlgorithmModule();
+        private ControlAlgorithmType currentAlgorithmType = ControlAlgorithmType.PID; // 默认使用PID算法
 
+        public void SetAlgorithmType(ControlAlgorithmType type)
+        {
+            this.currentAlgorithmType = type;
+        }
 
-        public override (double djpitch, double djyaw) Step2_ControlMotorAlgorithm(double mupitch, double muyaw)
+        public override (double djpitch, double djyaw, double speedPitch, double speedYaw) Step2_ControlMotorAlgorithm(double mupitch, double muyaw)
         {
             #region 模拟mu需要一定时间初始化，数据延迟传入
             if (!lastUpdateTime)
@@ -33,9 +39,10 @@ namespace WpfApp3D.Models
             }
             #endregion
 
-            // 返回处理后的参数
-            return (currentMupitch, currentMuyaw);
+            algorithm.AlgorithmType = this.currentAlgorithmType;
+            var (controlPitch, controlYaw, speedPitch, speedYaw) = algorithm.FilterAndControl(currentMupitch, currentMuyaw);
+            // 可以在这里处理或记录speedPitch和speedYaw，如果需要
+            return (controlPitch, controlYaw, speedPitch, speedYaw);
         }
     }
-
 }

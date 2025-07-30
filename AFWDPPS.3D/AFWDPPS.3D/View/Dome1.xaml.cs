@@ -1,4 +1,4 @@
-ï»¿using HelixToolkit.Wpf;
+using HelixToolkit.Wpf;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -16,14 +16,14 @@ namespace WpfApp3D
 {
     public partial class Dome1 : UserControl
     {
-        #region 3Dæ¨¡å‹æ„å»º
-        private double yaw = 0; // æ–¹å‘è§’åº¦
-        private double pitch = 0; // ä¿¯ä»°è§’åº¦
-        private DispatcherTimer timer; // å®šæ—¶å™¨
-        private DispatcherTimer timer11; // å®šæ—¶å™¨
-        private bool isTimerRunning = false; // å®šæ—¶å™¨æ˜¯å¦è¿è¡Œ
-        private BoxVisual3D boxModel; // 3Dæ¨¡å‹å¼•ç”¨
-        private BoxVisual3D boxModel1; // 3Dæ¨¡å‹å¼•ç”¨
+        #region 3DÄ£ĞÍ¹¹½¨
+        private double yaw = 0; // ·½Ïò½Ç¶È
+        private double pitch = 0; // ¸©Ñö½Ç¶È
+        private DispatcherTimer timer; // ¶¨Ê±Æ÷
+        private DispatcherTimer timer11; // ¶¨Ê±Æ÷
+        private bool isTimerRunning = false; // ¶¨Ê±Æ÷ÊÇ·ñÔËĞĞ
+        private BoxVisual3D boxModel; // 3DÄ£ĞÍÒıÓÃ
+        private BoxVisual3D boxModel1; // 3DÄ£ĞÍÒıÓÃ
         public System.IO.Ports.SerialPort serialPort2;
         public System.IO.Ports.SerialPort serialPort3;
 
@@ -35,7 +35,7 @@ namespace WpfApp3D
             if (double.TryParse(fuzhi.Text, out double amplitude) &&
                 double.TryParse(pinlv.Text, out double frequency))
             {
-                // åˆ›å»ºæˆ–æ›´æ–°æ­£å¼¦æ³¢ç”Ÿæˆå™¨
+                // ´´½¨»ò¸üĞÂÕıÏÒ²¨Éú³ÉÆ÷
                 if (generator == null)
                 {
                     generator = new SimplifiedSineWaveGenerator(amplitude, frequency);
@@ -44,7 +44,7 @@ namespace WpfApp3D
                 {
                     generator.SetAmplitude(amplitude);
                     generator.SetFrequency(frequency);
-                    generator.Reset(); // é‡ç½®ç”Ÿæˆå™¨ä»¥ä»å¤´å¼€å§‹ç”Ÿæˆæ•°æ®
+                    generator.Reset(); // ÖØÖÃÉú³ÉÆ÷ÒÔ´ÓÍ·¿ªÊ¼Éú³ÉÊı¾İ
                 }
             }
         }
@@ -52,51 +52,51 @@ namespace WpfApp3D
         {
             InitializeComponent();
             // ProtocolParser.Run();
-            // åŠ¨æ€æ·»åŠ  BoxVisual3D
+            // ¶¯Ì¬Ìí¼Ó BoxVisual3D
             boxModel1 = new BoxVisual3D
             {
                 Center = new Point3D(0, 0, 0),
-                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e2b8")), // ä½¿ç”¨è‡ªå®šä¹‰é¢œè‰²
-                Length = 20, // è°ƒæ•´å°ºå¯¸
-                Width = 15,  // è°ƒæ•´å°ºå¯¸
-                Height = 1.8 // è°ƒæ•´å°ºå¯¸
+                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e2b8")), // Ê¹ÓÃ×Ô¶¨ÒåÑÕÉ«
+                Length = 20, // µ÷Õû³ß´ç
+                Width = 15,  // µ÷Õû³ß´ç
+                Height = 1.8 // µ÷Õû³ß´ç
             };
             boxModel = new BoxVisual3D
             {
                 Center = new Point3D(0, 0, 20),
-                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e2b8")), // ä½¿ç”¨è‡ªå®šä¹‰é¢œè‰²
-                Length = 40, // è°ƒæ•´å°ºå¯¸
-                Width = 30,  // è°ƒæ•´å°ºå¯¸
-                Height = 1.8 // è°ƒæ•´å°ºå¯¸
+                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e2b8")), // Ê¹ÓÃ×Ô¶¨ÒåÑÕÉ«
+                Length = 40, // µ÷Õû³ß´ç
+                Width = 30,  // µ÷Õû³ß´ç
+                Height = 1.8 // µ÷Õû³ß´ç
             };
-            viewport.Items.Add(boxModel1); // æ·»åŠ åˆ° HelixViewport3D
+            viewport.Items.Add(boxModel1); // Ìí¼Óµ½ HelixViewport3D
 
-            viewport.Items.Add(boxModel); // æ·»åŠ åˆ° HelixViewport3D
-                                          // åˆ›å»ºåœ†æŸ±çš„é¡¶ç‚¹å’Œä¸‰è§’å½¢ç´¢å¼•
-                                          // å®šä¹‰å¼¹ç°§çš„å‚æ•°
-                                          // å®šä¹‰å¼¹ç°§çš„å‚æ•°
-            Point3D startPoint = boxModel.Center; // èµ·ç‚¹
-            Point3D endPoint = boxModel1.Center; // ç»ˆç‚¹
-            double radius = 0.5; // å¼¹ç°§çš„åŠå¾„
-            int turns = 20; // å¼¹ç°§çš„åœˆæ•°
+            viewport.Items.Add(boxModel); // Ìí¼Óµ½ HelixViewport3D
+                                          // ´´½¨Ô²ÖùµÄ¶¥µãºÍÈı½ÇĞÎË÷Òı
+                                          // ¶¨Òåµ¯»ÉµÄ²ÎÊı
+                                          // ¶¨Òåµ¯»ÉµÄ²ÎÊı
+            Point3D startPoint = boxModel.Center; // Æğµã
+            Point3D endPoint = boxModel1.Center; // ÖÕµã
+            double radius = 0.5; // µ¯»ÉµÄ°ë¾¶
+            int turns = 20; // µ¯»ÉµÄÈ¦Êı
 
-            // åˆ›å»ºå¼¹ç°§å‡ ä½•å½¢çŠ¶
+            // ´´½¨µ¯»É¼¸ºÎĞÎ×´
             var springMesh = CreateSpringGeometry(endPoint, startPoint, radius, turns);
-            // åˆ›å»ºå‡ ä½•æ¨¡å‹
+            // ´´½¨¼¸ºÎÄ£ĞÍ
             springModel = new GeometryModel3D
             {
                 Geometry = springMesh,
-                Material = MaterialHelper.CreateMaterial(Brushes.Silver), // è®¾ç½®æè´¨
+                Material = MaterialHelper.CreateMaterial(Brushes.Silver), // ÉèÖÃ²ÄÖÊ
                 Transform = new TranslateTransform3D(startPoint.X, startPoint.Y, startPoint.Z)
             };
             springVisual = new ModelVisual3D { Content = springModel };
-            // æ·»åŠ åˆ°è§†å›¾
+            // Ìí¼Óµ½ÊÓÍ¼
             viewport.Items.Add(springVisual);
 
-            // åˆå§‹åŒ–è§’åº¦ä¸º0Â°
+            // ³õÊ¼»¯½Ç¶ÈÎª0¡ã
             UpdateYaw();
             UpdatePitch();
-            #region  ä¸²å£ä¿¡æ¯ç¨³å®šè®¾å¤‡
+            #region  ´®¿ÚĞÅÏ¢ÎÈ¶¨Éè±¸
             botelv1.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
 
             botelv1.SelectedIndex = 5;
@@ -113,7 +113,7 @@ namespace WpfApp3D
             serialPort2.RtsEnable = true;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
             #endregion
-            #region  ä¸²å£å¹³å°
+            #region  ´®¿ÚÆ½Ì¨
             botelv2.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
 
             botelv2.SelectedIndex = 8;
@@ -131,7 +131,7 @@ namespace WpfApp3D
             #endregion
 
             timer11 = new DispatcherTimer();
-            timer11.Interval = TimeSpan.FromMilliseconds(1000); // æ¯500æ¯«ç§’æ›´æ–°ä¸€æ¬¡
+            timer11.Interval = TimeSpan.FromMilliseconds(1000); // Ã¿500ºÁÃë¸üĞÂÒ»´Î
             timer11.Tick += Timer_Tick11;
             timer11.Stop();
             ToggleTimer_Click(null, null);
@@ -146,145 +146,166 @@ namespace WpfApp3D
         private MeshGeometry3D CreateSpringGeometry(Point3D startPoint, Point3D endPoint, double radius, int turns)
         {
             var meshBuilder = new MeshBuilder();
-            double length = (endPoint - startPoint).Length; // å¼¹ç°§çš„æ€»é•¿åº¦
-            double step = length / turns / 360.0; // æ¯åº¦çš„æ­¥é•¿
+            double length = (endPoint - startPoint).Length; // µ¯»ÉµÄ×Ü³¤¶È
+            double step = length / turns / 360.0; // Ã¿¶ÈµÄ²½³¤
 
-            // è®¡ç®—èºæ—‹çº¿ä¸Šçš„ç‚¹
+            // ¼ÆËãÂİĞıÏßÉÏµÄµã
             for (double t = 0; t <= 360 * turns; t += 1)
             {
-                double angle = t * Math.PI / 180.0; // å°†è§’åº¦è½¬æ¢ä¸ºå¼§åº¦
-                double z = startPoint.Z + (t / 360.0 / turns) * length; // å½“å‰ç‚¹çš„ Z åæ ‡
+                double angle = t * Math.PI / 180.0; // ½«½Ç¶È×ª»»Îª»¡¶È
+                double z = startPoint.Z + (t / 360.0 / turns) * length; // µ±Ç°µãµÄ Z ×ø±ê
                 double x = startPoint.X + radius * Math.Cos(angle);
                 double y = startPoint.Y + radius * Math.Sin(angle);
 
-                meshBuilder.AddSphere(new Point3D(x, y, z), radius / 2, 8); // æ·»åŠ ä¸€ä¸ªå°çƒä½œä¸ºå¼¹ç°§çš„â€œçº¿â€
+                meshBuilder.AddSphere(new Point3D(x, y, z), radius / 2, 8); // Ìí¼ÓÒ»¸öĞ¡Çò×÷Îªµ¯»ÉµÄ¡°Ïß¡±
             }
 
             return meshBuilder.ToMesh();
         }
         #endregion
-        #region åŠ¨ä½œæ¨¡æ‹Ÿ
-        //å®šæ—¶å™¨æ¨¡æ‹Ÿèˆ¹ä½“æ™ƒåŠ¨
+        #region ¶¯×÷Ä£Äâ
+        //¶¨Ê±Æ÷Ä£Äâ´¬Ìå»Î¶¯
         private void Timer_Tick11(object sender, EventArgs e)
         {
-            // å¦‚æœæå–çš„å€¼ä¸ºç©ºï¼Œåœæ­¢å®šæ—¶å™¨
+            // Èç¹ûÌáÈ¡µÄÖµÎª¿Õ£¬Í£Ö¹¶¨Ê±Æ÷
             if (extractedValues.Count == 0)
             {
                 timer11.Stop();
                 return;
             }
 
-            // è·å–å½“å‰ç´¢å¼•å¯¹åº”çš„å€¼
+            // »ñÈ¡µ±Ç°Ë÷Òı¶ÔÓ¦µÄÖµ
             var (pitch1, yaw1) = extractedValues[currentIndex];
             yaw = yaw1;
             pitch = pitch1;
-            // æ›´æ–°yawå’Œpitch
+            // ¸üĞÂyawºÍpitch
             UpdateYaw();
             UpdatePitch();
 
-            // æ›´æ–°ç´¢å¼•ï¼Œå¦‚æœåˆ°è¾¾æœ€åä¸€æ¡ï¼Œé‡æ–°ä»å¤´å¼€å§‹
+            // ¸üĞÂË÷Òı£¬Èç¹ûµ½´ï×îºóÒ»Ìõ£¬ÖØĞÂ´ÓÍ·¿ªÊ¼
             currentIndex = (currentIndex + 1) % extractedValues.Count;
 
         }
 
 
-        // å¢åŠ æ–¹å‘è§’åº¦
+        // Ôö¼Ó·½Ïò½Ç¶È
         private void YawIncrease_Click(object sender, RoutedEventArgs e)
         {
             yaw += 1;
             UpdateYaw();
         }
 
-        // å‡å°‘æ–¹å‘è§’åº¦
+        // ¼õÉÙ·½Ïò½Ç¶È
         private void YawDecrease_Click(object sender, RoutedEventArgs e)
         {
             yaw -= 1;
             UpdateYaw();
         }
 
-        // å¢åŠ ä¿¯ä»°è§’åº¦
+        // Ôö¼Ó¸©Ñö½Ç¶È
         private void PitchIncrease_Click(object sender, RoutedEventArgs e)
         {
             pitch += 1;
             UpdatePitch();
         }
 
-        // å‡å°‘ä¿¯ä»°è§’åº¦
+        // ¼õÉÙ¸©Ñö½Ç¶È
         private void PitchDecrease_Click(object sender, RoutedEventArgs e)
         {
             pitch -= 1;
             UpdatePitch();
         }
 
-        // å¯åŠ¨/åœæ­¢å®šæ—¶å™¨
+        // Æô¶¯/Í£Ö¹¶¨Ê±Æ÷
         private void ToggleTimer_Click(object sender, RoutedEventArgs e)
         {
             if (!isTimerRunning)
             {
                 timer11.Stop();
-                // å¯åŠ¨å®šæ—¶å™¨
+                // Æô¶¯¶¨Ê±Æ÷
                 timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(100); // æ¯500æ¯«ç§’æ›´æ–°ä¸€æ¬¡
+                timer.Interval = TimeSpan.FromMilliseconds(100); // Ã¿500ºÁÃë¸üĞÂÒ»´Î
                 timer.Tick += Timer_Tick;
                 timer.Start();
                 isTimerRunning = true;
                 if (sender != null)
-                    ((Button)sender).Content = "åœæ­¢å®šæ—¶å™¨";
+                    ((Button)sender).Content = "Í£Ö¹¶¨Ê±Æ÷";
             }
             else
             {
-                // åœæ­¢å®šæ—¶å™¨
+                // Í£Ö¹¶¨Ê±Æ÷
                 timer.Stop();
                 isTimerRunning = false;
-                ((Button)sender).Content = "å¯åŠ¨å®šæ—¶å™¨";
+                ((Button)sender).Content = "Æô¶¯¶¨Ê±Æ÷";
             }
         }
-        private int currentIndex = 0; // å½“å‰ç´¢å¼•
+        private int currentIndex = 0; // µ±Ç°Ë÷Òı
         private bool issuiji = false;
         List<(double x, double y)> dataList;
 
-        // å®šæ—¶å™¨äº‹ä»¶
+        // ¶¨Ê±Æ÷ÊÂ¼ş
         double avgYaw = 0;
         double avgPitch = 0;
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            //æ¨¡æ‹Ÿ
-            //pitch = -15.5 + (15.5 - (-15.5)) * new Random().NextDouble();
-            //pitch1 = -2.1 + (2.1 - (-2.1)) * new Random().NextDouble();
-            //pitchdianji = -10.5 + (10.5 - (-10.5)) * new Random().NextDouble();
+            if (generator == null) return;
 
-            //yaw = -9.5 + (9.5 - (-9.5)) * new Random().NextDouble();
-            //yawdianji = -1.4 + (1.4 - (-1.4)) * new Random().NextDouble();
-            //yaw1 = -17.5 + (17.5 - (-17.5)) * new Random().NextDouble();
-            AFWDPPS.DB.ç¨³å®šå¹³å°æ•°æ® data = new AFWDPPS.DB.ç¨³å®šå¹³å°æ•°æ®();
+            // Éú³ÉÕñ¶¯ĞÅºÅ£¨ÕıÏÒ²¨£©
+            double vibrationPitch = generator.GenerateNextValue();
+            double vibrationYaw = generator.GenerateNextValue(); // ¼ÙÉè¸©ÑöºÍ¹ö×ªÊ¹ÓÃÏàÍ¬Éú³ÉÆ÷£¬»ò´´½¨ÁíÒ»¸ö
+
+            // Step 1: ¶ÁÈ¡Æ½Ì¨Êı¾İ£¨Ìí¼ÓÕñ¶¯£©
+            pitch = vibrationPitch;
+            yaw = vibrationYaw;
+
+            var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
+
+            // Step 2: ¿ØÖÆËã·¨
+            var (djpitch, djyaw, speedPitch, speedYaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
+
+            // Step 3: Ä£Äâµç»ú·´À¡£¨¼òµ¥Éí·İÄ£Äâ£¬»òÌí¼ÓÑÓ³Ù£©
+            var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw, speedPitch, speedYaw);
+
+            // Step 4: ·´À¡ÎÈ¶¨Æ½Ì¨½Ç¶È£¨±Õ»·£©
+            var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
+
+            // ¸üĞÂÓÃÓÚÏÔÊ¾µÄ½Ç¶È
+            pitch1 = pitc_back;
+            yaw1 = yaw_back;
+            pitchdianji = djpitc_back;
+            yawdianji = djyaw_back;
+
+            // ¼ÇÂ¼Êı¾İ
+            AFWDPPS.DB.ÎÈ¶¨Æ½Ì¨Êı¾İ data = new AFWDPPS.DB.ÎÈ¶¨Æ½Ì¨Êı¾İ();
             if (WaveformChart != null)
-                data.æµæ°´å· = WaveformChart.Serid;
-            data.èˆ¹æ¨ªæ»šè§’åº¦ = pitch;
-            data.å£°å‘æ¨ªæ»šè§’åº¦ = pitch1;
-            data.æ¨ªæ»šç”µæœºåŠ¨ä½œè§’åº¦ = pitchdianji;
-            data.èˆ¹ä¿¯ä»°è§’åº¦ = yaw;
-            data.å£°å‘ä¿¯ä»°è§’åº¦ = yaw1;
-            data.ä¿¯ä»°ç”µæœºåŠ¨ä½œè§’åº¦ = yawdianji;
-            data.æ—¶é—´ = DateTime.Now;
+                data.Á÷Ë®ºÅ = WaveformChart.Serid;
+            data.´¬ºá¹ö½Ç¶È = pitch;
+            data.ÉùÄÅºá¹ö½Ç¶È = pitch1;
+            data.ºá¹öµç»ú¶¯×÷½Ç¶È = pitchdianji;
+            data.´¬¸©Ñö½Ç¶È = yaw;
+            data.ÉùÄÅ¸©Ñö½Ç¶È = yaw1;
+            data.¸©Ñöµç»ú¶¯×÷½Ç¶È = yawdianji;
+            data.Ê±¼ä = DateTime.Now;
             if (WaveformChart != null)
             {
-                AsyncLogger.Log(data); // å¼‚æ­¥å­˜å‚¨æ•°æ®
+                AsyncLogger.Log(data);
             }
             if (WaveformChart != null)
                 WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
-            // æ›´æ–°yawå’Œpitch
+
+            // ¸üĞÂ3DÄ£ĞÍ
             if (ishide.SelectedIndex == 1)
                 UpdateTransform();
         }
 
-        // æ›´æ–°æ–¹å‘è§’åº¦
+        // ¸üĞÂ·½Ïò½Ç¶È
         private void UpdateYaw()
         {
             yawTextBox.Text = yaw.ToString("F2");
             UpdateTransform();
         }
 
-        // æ›´æ–°ä¿¯ä»°è§’åº¦
+        // ¸üĞÂ¸©Ñö½Ç¶È
         private void UpdatePitch()
         {
             pitchTextBox.Text = pitch.ToString("F2");
@@ -292,50 +313,55 @@ namespace WpfApp3D
         }
         private void UpdateSpringGeometry(BoxVisual3D box1, BoxVisual3D box2, GeometryModel3D springModel)
         {
-            // å¼¹ç°§æ–°çš„èµ·ç‚¹å’Œç»ˆç‚¹åœ¨è¿™é‡ŒåŠ¨æ€è°ƒæ•´
+            // µ¯»ÉĞÂµÄÆğµãºÍÖÕµãÔÚÕâÀï¶¯Ì¬µ÷Õû
             Point3D newCenter1 = box1.Center;
             newCenter1.Offset(-pitch * 0.7, -yaw * 0.0, 0);
             Point3D newCenter2 = box2.Center;
             newCenter2.Offset(0, 0, 0);
-            // è®¡ç®—æœ¨æ¿æ–°çš„ä¸­å¿ƒç‚¹
+            // ¼ÆËãÄ¾°åĞÂµÄÖĞĞÄµã
 
-            // è®¡ç®—å¼¹ç°§æ–°çš„èµ·ç‚¹å’Œç»ˆç‚¹
+            // ¼ÆËãµ¯»ÉĞÂµÄÆğµãºÍÖÕµã
             Point3D springStart = newCenter2;
             Point3D springEnd = newCenter1;
 
-            // è®¡ç®—å¼¹ç°§çš„æ–¹å‘å’Œé•¿åº¦
+            // ¼ÆËãµ¯»ÉµÄ·½ÏòºÍ³¤¶È
             Vector3D direction = springEnd - springStart;
             double length = direction.Length;
 
-            // åˆ›å»ºå˜æ¢ç»„
+            // ´´½¨±ä»»×é
             Transform3DGroup transformGroup = new Transform3DGroup();
 
-            // å¹³ç§»å˜æ¢ï¼Œå°†å¼¹ç°§ç§»åŠ¨åˆ°èµ·ç‚¹
+            // Æ½ÒÆ±ä»»£¬½«µ¯»ÉÒÆ¶¯µ½Æğµã
             TranslateTransform3D translateTransform = new TranslateTransform3D(springStart.X, springStart.Y, springStart.Z);
             transformGroup.Children.Add(translateTransform);
 
-            // æ—‹è½¬å˜æ¢ï¼Œä½¿å¼¹ç°§æ²¿ç€æ–¹å‘å‘é‡å¯¹é½
+            // Ğı×ª±ä»»£¬Ê¹µ¯»ÉÑØ×Å·½ÏòÏòÁ¿¶ÔÆë
             AxisAngleRotation3D rotation = new AxisAngleRotation3D(direction, 0);
             RotateTransform3D rotateTransform = new RotateTransform3D(rotation);
             transformGroup.Children.Add(rotateTransform);
 
-            // ç¼©æ”¾å˜æ¢ï¼Œè°ƒæ•´å¼¹ç°§çš„é•¿åº¦
+            // Ëõ·Å±ä»»£¬µ÷Õûµ¯»ÉµÄ³¤¶È
             ScaleTransform3D scaleTransform = new ScaleTransform3D(1, 1, length / springModel.Geometry.Bounds.SizeZ);
             transformGroup.Children.Add(scaleTransform);
 
-            // åº”ç”¨å˜æ¢åˆ°å¼¹ç°§æ¨¡å‹
+            // Ó¦ÓÃ±ä»»µ½µ¯»ÉÄ£ĞÍ
             springModel.Transform = transformGroup;
         }
-        // æ›´æ–°3Dæ¨¡å‹çš„æ—‹è½¬çŠ¶æ€
+        // ¸üĞÂ3DÄ£ĞÍµÄĞı×ª×´Ì¬
         TransformManager datacontrl = new TransformManager();
+
+        public void SetAlgorithmType(ControlAlgorithmType type)
+        {
+            datacontrl.SetAlgorithmType(type);
+        }
         private void UpdateTransform()
         {
             var yawRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitch));
             var pitchRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw));
             boxModel.Transform = new Transform3DGroup { Children = { yawRotation, pitchRotation } };
             var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
-            var (djpitch, djyaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
-            var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw);
+            var (djpitch, djyaw, speedPitch, speedYaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
+            var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw, speedPitch, speedYaw);
             var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
             var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitc_back));
             var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw_back));
@@ -346,7 +372,7 @@ namespace WpfApp3D
 
         }
         #endregion
-        #region ç¨³å®šå¹³å°ä¸²å£æ“ä½œ
+        #region ÎÈ¶¨Æ½Ì¨´®¿Ú²Ù×÷
         private int G_int_ComStatus1 = 0;
         private List<byte> G_btList_RecBuf1 = new List<byte>();
         private List<byte> G_btList_RecBuf_R1 = new List<byte>();
@@ -364,7 +390,7 @@ namespace WpfApp3D
                 int bytesToRead = sp.BytesToRead;
                 byte[] buffer = new byte[bytesToRead];
 
-                // è¯»å–æ•°æ®åˆ°ç¼“å†²åŒº  
+                // ¶ÁÈ¡Êı¾İµ½»º³åÇø  
                 int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
                 if (nbrDataRead == 0)
                     return;
@@ -380,7 +406,7 @@ namespace WpfApp3D
                             if (tmpByte == 0xA5)
                             {
                                 // tmpHEAD1 = tmpByte;
-                                //åˆ‡æ¢åè®®è§£æçŠ¶æ€
+                                //ÇĞ»»Ğ­Òé½âÎö×´Ì¬
                                 G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD2;
                                 G_btList_RecBuf1.Add(tmpByte);
                             }
@@ -388,7 +414,7 @@ namespace WpfApp3D
                         case (int)enum_ComStatus.COM_STATUS_HEAD2:
                             if (tmpByte == 0x01 || tmpByte == 0x02)
                             {
-                                //åˆ‡æ¢åè®®è§£æçŠ¶æ€
+                                //ÇĞ»»Ğ­Òé½âÎö×´Ì¬
                                 G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_DATA;
                                 G_btList_RecBuf1.Add(tmpByte);
                             }
@@ -396,12 +422,12 @@ namespace WpfApp3D
                         case (int)enum_ComStatus.COM_STATUS_DATA:
                             G_btList_RecBuf1.Add(tmpByte);
 
-                            //æ•°æ®æ¥æ”¶å®Œæˆåçš„æœ‰æ•ˆæ€§åˆ¤æ–­
-                            if (G_btList_RecBuf1.Count == 7)  //åŒ…æ¥æ”¶å®Œæˆ
+                            //Êı¾İ½ÓÊÕÍê³ÉºóµÄÓĞĞ§ĞÔÅĞ¶Ï
+                            if (G_btList_RecBuf1.Count == 7)  //°ü½ÓÊÕÍê³É
                             {
                                 byte[] Rbuffer = G_btList_RecBuf1.ToArray();
                                 string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
-                                // ä½¿ç”¨BitConverterå°†å­—èŠ‚æ•°ç»„è½¬æ¢ä¸ºfloat
+                                // Ê¹ÓÃBitConverter½«×Ö½ÚÊı×é×ª»»Îªfloat
                                 //Application.Current.Dispatcher.BeginInvoke(() =>
                                 //{
 
@@ -411,7 +437,7 @@ namespace WpfApp3D
                                     //if (COUNTS++ > 10)
                                     //{
                                     //    if (rxtxshow.IsChecked == true)
-                                    //        rxlog.AddOne(hexString, "æ”¶â†â—†");
+                                    //        rxlog.AddOne(hexString, "ÊÕ¡û¡ô");
                                     //Application.Current.Dispatcher.Invoke(() =>
                                     //{
 
@@ -421,7 +447,7 @@ namespace WpfApp3D
                                     //});
                                     pitchdianji = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
                                     yawdianji = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
-
+                                    // Removed manual adjustments to let algorithm handle stable angles
                                     pitch1 = pitch - pitchdianji;
                                     if (pitch1 < 0) pitch1 += 1.5;
                                     else
@@ -436,7 +462,7 @@ namespace WpfApp3D
 
                                 //  });
                                 G_btList_RecBuf1.Clear();
-                                //æ£€æŸ¥æ ¡éªŒå’Œå­—èŠ‚
+                                //¼ì²éĞ£ÑéºÍ×Ö½Ú
                                 //if ((DSP28335.CheckSumNomarl(G_btList_RecBuf.ToArray())))
                                 //{
                                 //    G_btList_RecBuf_R.AddRange(G_btList_RecBuf);
@@ -445,32 +471,32 @@ namespace WpfApp3D
                                 //else
                                 //{
                                 //    G_btList_RecBuf.Clear();
-                                //    //string str_ErrorInfo = "â€œ";
+                                //    //string str_ErrorInfo = "¡°";
                                 //    //foreach (byte tmpbt in G_btList_RecBuf)
                                 //    //{
                                 //    //    str_ErrorInfo += tmpbt.ToString("X2") + " ";
                                 //    //}
-                                //    //str_ErrorInfo += "â€å¸§æ ¡éªŒå’Œé”™è¯¯ï¼";
+                                //    //str_ErrorInfo += "¡±Ö¡Ğ£ÑéºÍ´íÎó£¡";
 
                                 //}
 
-                                //åˆ‡æ¢åè®®è§£æçŠ¶æ€
+                                //ÇĞ»»Ğ­Òé½âÎö×´Ì¬
                                 G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD1;
                             }
 
-                            //æ•°æ®åŒ…é•¿åº¦è¶…é™æ£€æŸ¥
+                            //Êı¾İ°ü³¤¶È³¬ÏŞ¼ì²é
                             if (G_btList_RecBuf1.Count >= 7)
                             {
                                 G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD1;
 
-                                //str_ErrorInfo += "â€œ";
+                                //str_ErrorInfo += "¡°";
                                 //for (int i = 0; i < 6; i++)
                                 //{
                                 //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
                                 //}
-                                //str_ErrorInfo += "......â€è¯¥å¸§æ•°æ®é•¿åº¦è¶…é™ï¼";
+                                //str_ErrorInfo += "......¡±¸ÃÖ¡Êı¾İ³¤¶È³¬ÏŞ£¡";
 
-                                //æ¸…ç©ºç›¸å…³ç¼“å­˜
+                                //Çå¿ÕÏà¹Ø»º´æ
                                 G_btList_RecBuf1.Clear();
                             }
                             break;
@@ -510,22 +536,22 @@ namespace WpfApp3D
         {
             try
             {
-                //æ ¹æ®å½“å‰ä¸²å£å±æ€§æ¥åˆ¤æ–­æ˜¯å¦æ‰“å¼€
+                //¸ù¾İµ±Ç°´®¿ÚÊôĞÔÀ´ÅĞ¶ÏÊÇ·ñ´ò¿ª
                 if (serialPort2.IsOpen)
                 {
-                    ////ä¸²å£å·²ç»å¤„äºæ‰“å¼€çŠ¶æ€
-                    serialPort2.Close();    //å…³é—­ä¸²å£
+                    ////´®¿ÚÒÑ¾­´¦ÓÚ´ò¿ª×´Ì¬
+                    serialPort2.Close();    //¹Ø±Õ´®¿Ú
                     comlist1.IsEnabled = true;
                     botelv1.IsEnabled = true;
-                    openclosecom1.Content = "æ‰“å¼€ç¨³å®šå¹³å°ä¸²å£";
+                    openclosecom1.Content = "´ò¿ªÎÈ¶¨Æ½Ì¨´®¿Ú";
                 }
                 else
                 {
-                    //ä¸²å£å·²ç»å¤„äºå…³é—­çŠ¶æ€ï¼Œåˆ™è®¾ç½®å¥½ä¸²å£å±æ€§åæ‰“å¼€
+                    //´®¿ÚÒÑ¾­´¦ÓÚ¹Ø±Õ×´Ì¬£¬ÔòÉèÖÃºÃ´®¿ÚÊôĞÔºó´ò¿ª
                     comlist1.IsEnabled = false;
                     botelv1.IsEnabled = false;
 
-                    ////é…ç½®ä¸²å£
+                    ////ÅäÖÃ´®¿Ú
                     string comname = "";
                     if ((comlist1.SelectedItem as string).Contains("("))
                         comname = (comlist1.SelectedItem as string).Split('(')[1].Replace(")", "");
@@ -538,19 +564,19 @@ namespace WpfApp3D
                     serialPort2.StopBits = StopBits.One;
                     serialPort2.Parity = Parity.None;
                     serialPort2.DataBits = 8;
-                    serialPort2.Open();//æ‰“å¼€ä¸²å£
-                    openclosecom1.Content = "å…³é—­ç¨³å®šå¹³å°ä¸²å£";
+                    serialPort2.Open();//´ò¿ª´®¿Ú
+                    openclosecom1.Content = "¹Ø±ÕÎÈ¶¨Æ½Ì¨´®¿Ú";
                     timer11.Stop();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                serialPort2.Close();    //å…³é—­ä¸²å£
+                serialPort2.Close();    //¹Ø±Õ´®¿Ú
                 comlist1.IsEnabled = true;
                 botelv1.IsEnabled = true;
                 openclosecom1.IsChecked = false;
-                openclosecom1.Content = "æ‰“å¼€ç¨³å®šå¹³å°ä¸²å£";
+                openclosecom1.Content = "´ò¿ªÎÈ¶¨Æ½Ì¨´®¿Ú";
                 return;
                 //RecDataDeal.Abort();
             }
@@ -570,7 +596,7 @@ namespace WpfApp3D
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Text files (*.txt)|*.txt",
-                Title = "é€‰æ‹©TXTæ–‡ä»¶"
+                Title = "Ñ¡ÔñTXTÎÄ¼ş"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -593,13 +619,13 @@ namespace WpfApp3D
                 foreach (string line in lines)
                 {
                     var result = ExtractValues(line);
-                    extractedValues.Add(result); // å°†æå–çš„å€¼å¯¹æ·»åŠ åˆ°åˆ—è¡¨ä¸­
+                    extractedValues.Add(result); // ½«ÌáÈ¡µÄÖµ¶ÔÌí¼Óµ½ÁĞ±íÖĞ
                 }
                 timer11.Start();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"è¯»å–æ–‡ä»¶æ—¶å‘ç”Ÿé”™è¯¯: {ex.Message}", "é”™è¯¯", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"¶ÁÈ¡ÎÄ¼şÊ±·¢Éú´íÎó: {ex.Message}", "´íÎó", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return extractedValues;
@@ -607,21 +633,21 @@ namespace WpfApp3D
 
         private (double, double) ExtractValues(string line)
         {
-            // æŒ‰é€—å·åˆ†å‰²å­—ç¬¦ä¸²
+            // °´¶ººÅ·Ö¸î×Ö·û´®
             string[] parts = line.Split(',');
 
             double lastValue = 0;
             double secondLastValue = 0;
 
-            // æ£€æŸ¥æ˜¯å¦æœ‰è¶³å¤Ÿçš„éƒ¨åˆ†
+            // ¼ì²éÊÇ·ñÓĞ×ã¹»µÄ²¿·Ö
             if (parts.Length >= 2)
             {
-                // ä½¿ç”¨ç´¢å¼•è®¿é—®æœ€åä¸¤ä¸ªéƒ¨åˆ†
+                // Ê¹ÓÃË÷Òı·ÃÎÊ×îºóÁ½¸ö²¿·Ö
                 double.TryParse(parts[parts.Length - 1], out lastValue);
                 double.TryParse(parts[parts.Length - 2], out secondLastValue);
             }
 
-            // è¿”å›ä¸¤ä¸ªdoubleå€¼ä½œä¸ºå…ƒç»„
+            // ·µ»ØÁ½¸ödoubleÖµ×÷ÎªÔª×é
             return (secondLastValue, lastValue);
         }
         public WaveformChart WaveformChart { get; set; }
@@ -641,7 +667,7 @@ namespace WpfApp3D
             WaveformChartHis.Show();
         }
         /// <summary>
-        /// ç”Ÿæˆæ­£ç„æ³¢
+        /// Éú³ÉÕıĞş²¨
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -651,7 +677,7 @@ namespace WpfApp3D
         }
 
         #endregion
-        #region ç¨³å®šå¹³å°ä¸²å£æ“ä½œ
+        #region ÎÈ¶¨Æ½Ì¨´®¿Ú²Ù×÷
         private int G_int_ComStatus = 0;
         private List<byte> G_btList_RecBuf = new List<byte>();
         private List<byte> G_btList_RecBuf_R = new List<byte>();
@@ -674,7 +700,7 @@ namespace WpfApp3D
                 int bytesToRead = sp.BytesToRead;
                 byte[] buffer = new byte[bytesToRead];
 
-                // è¯»å–æ•°æ®åˆ°ç¼“å†²åŒº  
+                // ¶ÁÈ¡Êı¾İµ½»º³åÇø  
                 int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
                 if (nbrDataRead == 0)
                     return;
@@ -689,7 +715,7 @@ namespace WpfApp3D
                             if (tmpByte == 0xFC)
                             {
                                 // tmpHEAD1 = tmpByte;
-                                //åˆ‡æ¢åè®®è§£æçŠ¶æ€
+                                //ÇĞ»»Ğ­Òé½âÎö×´Ì¬
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
                                 G_btList_RecBuf.Add(tmpByte);
                             }
@@ -697,7 +723,7 @@ namespace WpfApp3D
                         case (int)enum_ComStatus.COM_STATUS_HEAD2:
                             if (tmpByte == 0x41)
                             {
-                                //åˆ‡æ¢åè®®è§£æçŠ¶æ€
+                                //ÇĞ»»Ğ­Òé½âÎö×´Ì¬
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
                                 G_btList_RecBuf.Add(tmpByte);
                             }
@@ -705,15 +731,15 @@ namespace WpfApp3D
                         case (int)enum_ComStatus.COM_STATUS_DATA:
                             G_btList_RecBuf.Add(tmpByte);
 
-                            //æ•°æ®æ¥æ”¶å®Œæˆåçš„æœ‰æ•ˆæ€§åˆ¤æ–­
-                            if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //åŒ…æ¥æ”¶å®Œæˆ
+                            //Êı¾İ½ÓÊÕÍê³ÉºóµÄÓĞĞ§ĞÔÅĞ¶Ï
+                            if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //°ü½ÓÊÕÍê³É
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
                                 string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
-                                // ä½¿ç”¨BitConverterå°†å­—èŠ‚æ•°ç»„è½¬æ¢ä¸ºfloat
+                                // Ê¹ÓÃBitConverter½«×Ö½ÚÊı×é×ª»»Îªfloat
                                 pitch = BitConverter.ToSingle(Rbuffer, 19);
                                 yaw = BitConverter.ToSingle(Rbuffer, 23);
-                                pitch *= 57.3; //æ»šè½¬
+                                pitch *= 57.3; //¹ö×ª
                                 yaw *= 57.3;
 
                                 // UpdateYaw();
@@ -721,23 +747,23 @@ namespace WpfApp3D
                                 G_btList_RecBuf.Clear();
 
 
-                                //åˆ‡æ¢åè®®è§£æçŠ¶æ€
+                                //ÇĞ»»Ğ­Òé½âÎö×´Ì¬
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
                             }
 
-                            //æ•°æ®åŒ…é•¿åº¦è¶…é™æ£€æŸ¥
+                            //Êı¾İ°ü³¤¶È³¬ÏŞ¼ì²é
                             if (G_btList_RecBuf.Count >= 56)
                             {
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
 
-                                //str_ErrorInfo += "â€œ";
+                                //str_ErrorInfo += "¡°";
                                 //for (int i = 0; i < 6; i++)
                                 //{
                                 //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
                                 //}
-                                //str_ErrorInfo += "......â€è¯¥å¸§æ•°æ®é•¿åº¦è¶…é™ï¼";
+                                //str_ErrorInfo += "......¡±¸ÃÖ¡Êı¾İ³¤¶È³¬ÏŞ£¡";
 
-                                //æ¸…ç©ºç›¸å…³ç¼“å­˜
+                                //Çå¿ÕÏà¹Ø»º´æ
                                 G_btList_RecBuf.Clear();
                             }
                             break;
@@ -769,24 +795,24 @@ namespace WpfApp3D
         {
             try
             {
-                //æ ¹æ®å½“å‰ä¸²å£å±æ€§æ¥åˆ¤æ–­æ˜¯å¦æ‰“å¼€
+                //¸ù¾İµ±Ç°´®¿ÚÊôĞÔÀ´ÅĞ¶ÏÊÇ·ñ´ò¿ª
                 if (serialPort3.IsOpen)
                 {
-                    ////ä¸²å£å·²ç»å¤„äºæ‰“å¼€çŠ¶æ€
-                    serialPort3.Close();    //å…³é—­ä¸²å£
+                    ////´®¿ÚÒÑ¾­´¦ÓÚ´ò¿ª×´Ì¬
+                    serialPort3.Close();    //¹Ø±Õ´®¿Ú
                     comlist2.IsEnabled = true;
                     botelv2.IsEnabled = true;
-                    openclosecom2.Content = "æ‰“å¼€ç¨³å®šå¹³å°ä¸²å£";
+                    openclosecom2.Content = "´ò¿ªÎÈ¶¨Æ½Ì¨´®¿Ú";
 
 
                 }
                 else
                 {
-                    //ä¸²å£å·²ç»å¤„äºå…³é—­çŠ¶æ€ï¼Œåˆ™è®¾ç½®å¥½ä¸²å£å±æ€§åæ‰“å¼€
+                    //´®¿ÚÒÑ¾­´¦ÓÚ¹Ø±Õ×´Ì¬£¬ÔòÉèÖÃºÃ´®¿ÚÊôĞÔºó´ò¿ª
                     comlist2.IsEnabled = false;
                     botelv2.IsEnabled = false;
 
-                    ////é…ç½®ä¸²å£
+                    ////ÅäÖÃ´®¿Ú
                     string comname = "";
                     if ((comlist2.SelectedItem as string).Contains("("))
                         comname = (comlist2.SelectedItem as string).Split('(')[1].Replace(")", "");
@@ -799,19 +825,19 @@ namespace WpfApp3D
                     serialPort3.StopBits = StopBits.One;
                     serialPort3.Parity = Parity.None;
                     serialPort3.DataBits = 8;
-                    serialPort3.Open();//æ‰“å¼€ä¸²å£
-                    openclosecom2.Content = "å…³é—­ç¨³å®šå¹³å°ä¸²å£";
+                    serialPort3.Open();//´ò¿ª´®¿Ú
+                    openclosecom2.Content = "¹Ø±ÕÎÈ¶¨Æ½Ì¨´®¿Ú";
                     timer11.Stop();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                serialPort3.Close();    //å…³é—­ä¸²å£
+                serialPort3.Close();    //¹Ø±Õ´®¿Ú
                 comlist2.IsEnabled = true;
                 botelv2.IsEnabled = true;
                 openclosecom2.IsChecked = false;
-                openclosecom2.Content = "æ‰“å¼€ç¨³å®šå¹³å°ä¸²å£";
+                openclosecom2.Content = "´ò¿ªÎÈ¶¨Æ½Ì¨´®¿Ú";
                 return;
                 //RecDataDeal.Abort();
             }
@@ -831,12 +857,12 @@ namespace WpfApp3D
 
         #endregion
     }
-    #region è¯»æœ¬åœ°æ—¥å¿—æ–‡ä»¶ç”ŸæˆåŠ¨ä½œ
+    #region ¶Á±¾µØÈÕÖ¾ÎÄ¼şÉú³É¶¯×÷
     public class ProtocolParser
     {
         public static void Run()
         {
-            string filePath = "C:\\Users\\liu\\Documents\\WeChat Files\\wxid_7i8ckispir9a22\\FileStorage\\File\\2025-03\\å®éªŒ1ï¼ˆ10åœˆï¼‰.txt"; // æ›¿æ¢ä¸ºä½ çš„txtæ–‡ä»¶è·¯å¾„
+            string filePath = "C:\\Users\\liu\\Documents\\WeChat Files\\wxid_7i8ckispir9a22\\FileStorage\\File\\2025-03\\ÊµÑé1£¨10È¦£©.txt"; // Ìæ»»ÎªÄãµÄtxtÎÄ¼şÂ·¾¶
 
             try
             {
@@ -845,22 +871,22 @@ namespace WpfApp3D
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"è¯»å–æ–‡ä»¶æ—¶å‘ç”Ÿé”™è¯¯: {ex.Message}");
+                Console.WriteLine($"¶ÁÈ¡ÎÄ¼şÊ±·¢Éú´íÎó: {ex.Message}");
             }
         }
 
         public static void ParseContent(string content)
         {
-            // ç§»é™¤æ‰€æœ‰ç©ºæ ¼å’Œå›è½¦æ¢è¡Œç¬¦ï¼Œåªä¿ç•™åå…­è¿›åˆ¶å­—ç¬¦
+            // ÒÆ³ıËùÓĞ¿Õ¸ñºÍ»Ø³µ»»ĞĞ·û£¬Ö»±£ÁôÊ®Áù½øÖÆ×Ö·û
             var cleanedContent = new string(content.Where(c => !char.IsWhiteSpace(c)).ToArray());
 
-            byte[] buffer = new byte[16]; // ç”¨äºå­˜å‚¨å®Œæ•´çš„æ•°æ®å¸§
-            int currentIndex = 0; // å½“å‰å¤„ç†çš„ä½ç½®
-            int frameIndex = 0; // å½“å‰åœ¨å¸§ä¸­çš„ä½ç½®
+            byte[] buffer = new byte[16]; // ÓÃÓÚ´æ´¢ÍêÕûµÄÊı¾İÖ¡
+            int currentIndex = 0; // µ±Ç°´¦ÀíµÄÎ»ÖÃ
+            int frameIndex = 0; // µ±Ç°ÔÚÖ¡ÖĞµÄÎ»ÖÃ
 
             while (currentIndex < cleanedContent.Length)
             {
-                // æ£€æŸ¥æ˜¯å¦æ‰¾åˆ°äº†èµ·å§‹å­—èŠ‚ï¼ˆA5 CCï¼‰
+                // ¼ì²éÊÇ·ñÕÒµ½ÁËÆğÊ¼×Ö½Ú£¨A5 CC£©
                 if (frameIndex == 0)
                 {
                     if (currentIndex + 1 < cleanedContent.Length && cleanedContent[currentIndex] == 'A' && cleanedContent[currentIndex + 1] == '5')

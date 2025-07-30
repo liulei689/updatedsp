@@ -1,62 +1,61 @@
-ï»¿namespace WpfApp3D.Models
+namespace WpfApp3D.Models
 {
     public abstract class BaseControlManager
     {
-        // æ„é€ å‡½æ•°
+        // ¹¹Ôìº¯Êı
         public BaseControlManager()
         {
-            // åˆå§‹åŒ–é€»è¾‘ï¼ˆå¦‚æœæœ‰éœ€è¦ï¼‰
+            // ³õÊ¼»¯Âß¼­£¬Èç¹ûĞèÒª
         }
-        DataDelay dataDelay = new DataDelay(1); // è®¾ç½®å»¶è¿Ÿä¸º1æ¯«ç§’
+        DataDelay dataDelay = new DataDelay(1); // ÑÓ³ÙÎª1Ãë
+        protected MotorSimulator motorSimulator = new MotorSimulator();
 
-        // åŸºç¡€å®ç°ï¼š1. æ¨¡æ‹Ÿmuè¯»å–å¹³å°æ•°æ®
+        // ²½ÖèÊµÏÖ£º1. Ä£Äâmu¶ÁÈ¡Æ½Ì¨Êı¾İ
         /// <summary>
-        /// muè¯»å–å¹³å°æ•°æ®
+        /// mu¶ÁÈ¡Æ½Ì¨Êı¾İ
         /// </summary>
-        /// <param name="pitch">å¹³å°ä¿¯ä»°è§’åº¦</param>
-        /// <param name="yaw">å¹³å°æ¨ªæ»šè§’åº¦</param>
-        /// <returns>æ¨¡æ‹Ÿmuè¯»åˆ°æ•°æ®</returns>
+        /// <param name="pitch">Æ½Ì¨¸©Ñö½Ç¶È</param>
+        /// <param name="yaw">Æ½Ì¨¹ö×ª½Ç¶È</param>
+        /// <returns>Ä£Äâmu¶ÁÈ¡Êı¾İ</returns>
         public virtual (double mupitch, double muyaw) Step1_ReadPlatformData(double pitch, double yaw)
         {
             dataDelay.InputData(pitch, yaw);
-            // å°è¯•è·å–å»¶è¿Ÿåçš„æ•°æ®
+            // ¿ÉÒÔ»ñÈ¡ÑÓ³ÙºóµÄÊı¾İ
             var delayedData = dataDelay.GetDelayedData();
             return (delayedData.Pitch, delayedData.Yaw);
-
-
         }
 
         /// <summary>
-        /// é€šè¿‡å¹³å°æ•°æ®æ§åˆ¶ç”µæœºç®—æ³•
+        /// Í¨¹ıÆ½Ì¨Êı¾İ¿ØÖÆµç»úËã·¨
         /// </summary>
-        /// <param name="mupitch">muè¯»åˆ°ä¿¯ä»°è§’åº¦</param>
-        /// <param name="muyaw">muè¯»åˆ°æ¨ªæ»šè§’åº¦</param>
-        /// <returns>djpitchï¼šä¿¯ä»°ç”µæœºè½¬çš„è§’åº¦ djyawï¼šæ¨ªæ»šç”µæœºè½¬çš„è§’åº¦</returns>        
-        public virtual (double djpitch, double djyaw) Step2_ControlMotorAlgorithm(double mupitch, double muyaw)
+        /// <param name="mupitch">mu¶ÁÈ¡¸©Ñö½Ç¶È</param>
+        /// <param name="muyaw">mu¶ÁÈ¡¹ö×ª½Ç¶È</param>
+        /// <returns>djpitchµç»ú¸©Ñö×ª¶¯½Ç¶È djyawµç»ú¹ö×ª×ª¶¯½Ç¶È speedPitch¸©Ñö½ÇËÙ¶È speedYaw¹ö×ª½ÇËÙ¶È</returns>        
+        public virtual (double djpitch, double djyaw, double speedPitch, double speedYaw) Step2_ControlMotorAlgorithm(double mupitch, double muyaw)
         {
-            return (mupitch, muyaw);
-            // åŸºç¡€å®ç°é€»è¾‘
+            return (mupitch, muyaw, 0, 0);
+            // Êµ¼ÊÊµÏÖÂß¼­
         }
 
-        // åŸºç¡€å®ç°ï¼š3. ç”µæœºå—æ§åé¦ˆæ¨¡æ‹Ÿ
+        // ²½ÖèÊµÏÖ£º3. µç»úÊÜ¿Ø·´À¡Ä£Äâ
         /// <summary>
-        /// ç”µæœºå—æ§åé¦ˆæ¨¡æ‹Ÿ
+        /// µç»úÊÜ¿Ø·´À¡Ä£Äâ
         /// </summary>
-        /// <param name="djpitch">ç”µæœºä¿¯ä»°è§’åº¦æŒ‡ä»¤</param>
-        /// <param name="djyaw">ç”µæœºæ¨ªæ»šè§’åº¦æŒ‡ä»¤</param>
-        /// <returns>djpitc_backï¼šä¿¯ä»°ç”µæœºè½¬çš„è§’åº¦åé¦ˆ djyaw_backï¼šæ¨ªæ»šç”µæœºè½¬çš„è§’åº¦åé¦ˆ</returns>   
-        public virtual (double djpitc_back, double djyaw_back) Step3_SimulateMotorFeedback(double djpitch, double djyaw)
+        /// <param name="djpitch">µç»ú¸©Ñö½Ç¶ÈÖ¸Áî</param>
+        /// <param name="djyaw">µç»ú¹ö×ª½Ç¶ÈÖ¸Áî</param>
+        /// <returns>djpitc_backµç»ú¸©Ñö×ª¶¯µÄ½Ç¶È·´À¡ djyaw_backµç»ú¹ö×ª×ª¶¯µÄ½Ç¶È·´À¡</returns>   
+        public virtual (double djpitc_back, double djyaw_back) Step3_SimulateMotorFeedback(double djpitch, double djyaw, double speedPitch, double speedYaw)
         {
-            return (djpitch, djyaw);
+            return motorSimulator.SimulateFeedback(djpitch, djyaw, speedPitch, speedYaw);
         }
 
-        // åŸºç¡€å®ç°ï¼š4. å—ç”µæœºæ§åˆ¶åç¨³å®šå¹³å°è§’åº¦åé¦ˆ 
+        // ²½ÖèÊµÏÖ£º4. ÊÜµç»ú¿ØÖÆºóÎÈ¶¨Æ½Ì¨½Ç¶È·´À¡ 
         /// <summary>
-        /// å—ç”µæœºæ§åˆ¶åç¨³å®šå¹³å°è§’åº¦åé¦ˆ
+        /// ÊÜµç»ú¿ØÖÆºóÎÈ¶¨Æ½Ì¨½Ç¶È·´À¡
         /// </summary>
-        /// <param name="djpitc_back">å—ç”µæœºæ§åˆ¶åç¨³å®šå¹³å°è§’åº¦åé¦ˆ</param>
-        /// <param name="djyaw_back">å—ç”µæœºæ§åˆ¶åç¨³å®šå¹³å°è§’åº¦åé¦ˆ</param>
-        /// <returns>pitc_backï¼šå£°å‘å¹³å°çš„ä¿¯ä»°è§’åº¦åé¦ˆ yaw_backï¼šå£°å‘å¹³å°çš„æ¨ªæ»šè§’åº¦åé¦ˆ</returns>
+        /// <param name="djpitc_back">ÊÜµç»ú¿ØÖÆºóÎÈ¶¨Æ½Ì¨½Ç¶È·´À¡</param>
+        /// <param name="djyaw_back">ÊÜµç»ú¿ØÖÆºóÎÈ¶¨Æ½Ì¨½Ç¶È·´À¡</param>
+        /// <returns>pitc_back·´À¡ÎÈ¶¨Æ½Ì¨µÄ¸©Ñö½Ç¶È·´À¡ yaw_back·´À¡ÎÈ¶¨Æ½Ì¨µÄ¹ö×ª½Ç¶È·´À¡</returns>
         public virtual (double pitc_back, double yaw_back) Step4_FeedbackStablePlatformAngle(double pitc, double yaw, double djpitc_back, double djyaw_back)
         {
             return (pitc - djpitc_back, yaw - djyaw_back);
