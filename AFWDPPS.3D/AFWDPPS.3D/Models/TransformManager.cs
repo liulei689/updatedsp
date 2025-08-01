@@ -1,17 +1,17 @@
-ï»¿using System;
+using System;
 
 namespace WpfApp3D.Models
 {
     public class TransformManager : BaseControlManager
     {
-        // å­˜å‚¨muä¿¯ä»°å’Œæ»šè½¬çš„å½“å‰å€¼å’Œæ›´æ–°æ—¶é—´
+        // ´æ´¢mu¸©ÑöºÍ¹ö×ªµÄµ±Ç°ÖµºÍ¸üĞÂÊ±¼ä
         private double currentMupitch = 0;
         private double currentMuyaw = 0;
         private static bool lastUpdateTime = false;
         private static DateTime startwatch = DateTime.Now;
-        private const int DelayMilliseconds = 5000; // muæ•°æ®å»¶è¿Ÿä¼ å…¥å»¶æ—¶æ—¶é—´ï¼ˆæ¯«ç§’ï¼‰
+        private const int DelayMilliseconds = 5000; // muÊı¾İÑÓ³Ù´«ÈëÑÓÊ±Ê±¼ä£¨ºÁÃë£©
         private AlgorithmModule algorithm = new AlgorithmModule();
-        private ControlAlgorithmType currentAlgorithmType = ControlAlgorithmType.PID; // é»˜è®¤ä½¿ç”¨PIDç®—æ³•
+        private ControlAlgorithmType currentAlgorithmType = ControlAlgorithmType.PID; // Ä¬ÈÏÊ¹ÓÃPIDËã·¨
 
         public void SetAlgorithmType(ControlAlgorithmType type)
         {
@@ -20,13 +20,13 @@ namespace WpfApp3D.Models
 
         public override (double djpitch, double djyaw, double speedPitch, double speedYaw) Step2_ControlMotorAlgorithm(double mupitch, double muyaw)
         {
-            #region æ¨¡æ‹Ÿmuéœ€è¦ä¸€å®šæ—¶é—´åˆå§‹åŒ–ï¼Œæ•°æ®å»¶è¿Ÿä¼ å…¥
+            #region Ä£ÄâmuĞèÒªÒ»¶¨Ê±¼ä³õÊ¼»¯£¬Êı¾İÑÓ³Ù´«Èë
             if (!lastUpdateTime)
             {
                 lastUpdateTime = true;
                 startwatch = DateTime.Now;
             }
-            // æ£€æŸ¥æ˜¯å¦åº”è¯¥æ›´æ–°muè§’åº¦å€¼
+            // ¼ì²éÊÇ·ñÓ¦¸Ã¸üĞÂmu½Ç¶ÈÖµ
             if ((DateTime.Now - startwatch).TotalMilliseconds >= DelayMilliseconds)
             {
                 currentMupitch = mupitch;
@@ -41,7 +41,7 @@ namespace WpfApp3D.Models
 
             algorithm.AlgorithmType = this.currentAlgorithmType;
             var (controlPitch, controlYaw, speedPitch, speedYaw) = algorithm.FilterAndControl(currentMupitch, currentMuyaw);
-            // å¯ä»¥åœ¨è¿™é‡Œå¤„ç†æˆ–è®°å½•speedPitchå’ŒspeedYawï¼Œå¦‚æœéœ€è¦
+            // ¿ÉÒÔÔÚÕâÀï´¦Àí»ò¼ÇÂ¼speedPitchºÍspeedYaw£¬Èç¹ûĞèÒª
             return (controlPitch, controlYaw, speedPitch, speedYaw);
         }
     }
