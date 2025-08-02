@@ -246,7 +246,7 @@ namespace WpfApp3D
         // 定时器事件
         double avgYaw = 0;
         double avgPitch = 0;
-        private async void Timer_Tick(object sender, EventArgs e)
+        private void Timer_Tick(object sender, EventArgs e)
         {
             if (generator == null) return;
 
@@ -856,6 +856,234 @@ namespace WpfApp3D
 
 
         #endregion
+
+        // 算法参数绑定
+        private Dictionary<string, Tuple<string, double, double, double>> algorithmParams = new Dictionary<string, Tuple<string, double, double, double>>()
+        {
+            { "PID_Kp", Tuple.Create("比例Kp", 0d, 10d, 2d) },
+            { "PID_Ki", Tuple.Create("积分Ki", 0d, 1d, 0.05d) },
+            { "PID_Kd", Tuple.Create("微分Kd", 0d, 1d, 0.1d) },
+            { "LADRC_wo", Tuple.Create("观测wo", 1d, 50d, 10d) },
+            { "LADRC_wc", Tuple.Create("控制wc", 1d, 20d, 5d) },
+            { "LADRC_b0", Tuple.Create("增益b0", 0.1d, 5d, 1d) },
+            { "SMC_lambda", Tuple.Create("滑模λ", 0.1d, 10d, 2d) },
+            { "SMC_eta", Tuple.Create("滑模η", 0.1d, 10d, 2d) }
+        };
+
+        private void AlgorithmComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var panel = this.FindName("AlgorithmParamsPanel") as StackPanel;
+            var combo = this.FindName("AlgorithmComboBox") as ComboBox;
+            if (panel == null || combo == null) return;
+            panel.Children.Clear();
+            ComboBoxItem item = combo.SelectedItem as ComboBoxItem;
+            if (item != null)
+            {
+                string algo = item.Tag.ToString();
+                List<string> keys = new List<string>();
+                if (algo == "PID") { keys.Add("PID_Kp"); keys.Add("PID_Ki"); keys.Add("PID_Kd"); }
+                if (algo == "LADRC") { keys.Add("LADRC_wo"); keys.Add("LADRC_wc"); keys.Add("LADRC_b0"); }
+                if (algo == "SMC") { keys.Add("SMC_lambda"); keys.Add("SMC_eta"); }
+                // 切换算法，先同步参数
+                ControlAlgorithmType type = ControlAlgorithmType.PID;
+                if (algo == "PID") type = ControlAlgorithmType.PID;
+                else if (algo == "LADRC") type = ControlAlgorithmType.LADRC;
+                else if (algo == "SMC") type = ControlAlgorithmType.SMC;
+                datacontrl.SetAlgorithmType(type);
+                // 获取当前算法参数值
+                double[] paramVals = new double[keys.Count];
+                for (int i = 0; i < keys.Count; i++)
+                {
+                    switch (keys[i])
+                    {
+                        case "PID_Kp": paramVals[i] = GetCurrentPIDParam("Kp"); break;
+                        case "PID_Ki": paramVals[i] = GetCurrentPIDParam("Ki"); break;
+                        case "PID_Kd": paramVals[i] = GetCurrentPIDParam("Kd"); break;
+                        case "LADRC_wo": paramVals[i] = GetCurrentLADRCParam("wo"); break;
+                        case "LADRC_wc": paramVals[i] = GetCurrentLADRCParam("wc"); break;
+                        case "LADRC_b0": paramVals[i] = GetCurrentLADRCParam("b0"); break;
+                        case "SMC_lambda": paramVals[i] = GetCurrentSMCParam("lambda"); break;
+                        case "SMC_eta": paramVals[i] = GetCurrentSMCParam("eta"); break;
+                    }
+                }
+                for (int i = 0; i < keys.Count; i++)
+                {
+                    var key = keys[i];
+                    var tuple = algorithmParams[key];
+                    var label = tuple.Item1;
+                    var min = tuple.Item2;
+                    var max = tuple.Item3;
+                    var val = paramVals[i];
+                    double sliderWidth = 100 * 4 / 3.0; // 增加1/3长度
+                    double tickFrequency = (max - min) / 100.0; // 步进更细
+                    // 合理设置最小最大值
+                    if (key == "PID_Kp") { min = 0; max = 20; }
+                    if (key == "PID_Ki") { min = 0; max = 2; }
+                    if (key == "PID_Kd") { min = 0; max = 2; }
+                    if (key == "LADRC_wo") { min = 1; max = 100; }
+                    if (key == "LADRC_wc") { min = 1; max = 50; }
+                    if (key == "LADRC_b0") { min = 0.01; max = 10; }
+                    if (key == "SMC_lambda") { min = 0.01; max = 20; }
+                    if (key == "SMC_eta") { min = 0.01; max = 20; }
+                    var sp = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 4, 0, 0) };
+                    var tb = new TextBlock { Text = label, Width = 60, VerticalAlignment = VerticalAlignment.Center };
+                    var slider = new Slider { Minimum = min, Maximum = max, Value = val, Width = sliderWidth, Tag = key, TickFrequency = tickFrequency, IsSnapToTickEnabled = true, Margin = new Thickness(0, 0, 0, 0) };
+                    slider.ValueChanged += AlgorithmParamSlider_ValueChanged;
+                    var valBox = new TextBox { Width = 50, Text = val.ToString("F3"), Margin = new Thickness(4, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+                    slider.ValueChanged += (s, ev) => valBox.Text = slider.Value.ToString("F3");
+                    sp.Children.Add(tb); sp.Children.Add(slider); sp.Children.Add(valBox);
+                    panel.Children.Add(sp);
+                }
+            }
+        }
+        // 获取当前算法参数值
+        private double GetCurrentPIDParam(string name)
+        {
+            var field = typeof(WpfApp3D.Models.TransformManager).GetField("algorithm", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var algo = field.GetValue(datacontrl);
+            var prop = algo.GetType().GetField(name == "Kp" ? "Kp" : name == "Ki" ? "Ki" : "Kd", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (double)prop.GetValue(algo);
+        }
+        private double GetCurrentLADRCParam(string name)
+        {
+            var field = typeof(WpfApp3D.Models.TransformManager).GetField("algorithm", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var algo = field.GetValue(datacontrl);
+            var prop = algo.GetType().GetField(name == "wo" ? "ladrc_wo" : name == "wc" ? "ladrc_wc" : "ladrc_b0", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (double)prop.GetValue(algo);
+        }
+        private double GetCurrentSMCParam(string name)
+        {
+            var field = typeof(WpfApp3D.Models.TransformManager).GetField("algorithm", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var algo = field.GetValue(datacontrl);
+            var prop = algo.GetType().GetField(name == "lambda" ? "smc_lambda" : "smc_eta", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            return (double)prop.GetValue(algo);
+        }
+        private void AlgorithmParamSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var slider = sender as Slider;
+            if (slider == null) return;
+            string key = slider.Tag.ToString();
+            double value = slider.Value;
+            // 实时应用参数到算法
+            switch (key)
+            {
+                case "PID_Kp": datacontrl.SetPIDParam("Kp", value); break;
+                case "PID_Ki": datacontrl.SetPIDParam("Ki", value); break;
+                case "PID_Kd": datacontrl.SetPIDParam("Kd", value); break;
+                case "LADRC_wo": datacontrl.SetLADRCParam("wo", value); break;
+                case "LADRC_wc": datacontrl.SetLADRCParam("wc", value); break;
+                case "LADRC_b0": datacontrl.SetLADRCParam("b0", value); break;
+                case "SMC_lambda": datacontrl.SetSMCParam("lambda", value); break;
+                case "SMC_eta": datacontrl.SetSMCParam("eta", value); break;
+            }
+        }
+
+        private bool isOptimizing = false;
+        private DispatcherTimer optimizeTimer;
+        private DateTime optimizeStartTime;
+        private double bestScore = double.MaxValue;
+        private Dictionary<string, double> bestParams = new Dictionary<string, double>();
+
+        private void BtnAutoOptimize_Click(object sender, RoutedEventArgs e)
+        {
+            if (isOptimizing) return;
+            isOptimizing = true;
+            bestScore = double.MaxValue;
+            bestParams.Clear();
+            optimizeTimer = new DispatcherTimer();
+            optimizeTimer.Interval = TimeSpan.FromSeconds(5); // 5秒执行一次优化
+            optimizeTimer.Tick += OptimizeStep;
+            optimizeTimer.Start();
+        }
+
+        private void BtnStopOptimize_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isOptimizing) return;
+            isOptimizing = false;
+            optimizeTimer?.Stop();
+            UpdateBestParamsTextBlock();
+        }
+
+        private void OptimizeStep(object sender, EventArgs e)
+        {
+            // 只优化当前选择的算法参数
+            var combo = this.FindName("AlgorithmComboBox") as ComboBox;
+            var panel = this.FindName("AlgorithmParamsPanel") as StackPanel;
+            if (combo == null || combo.SelectedItem == null || panel == null) return;
+            ComboBoxItem item = combo.SelectedItem as ComboBoxItem;
+            string algo = item.Tag.ToString();
+            List<string> keys = new List<string>();
+            if (algo == "PID") { keys.Add("PID_Kp"); keys.Add("PID_Ki"); keys.Add("PID_Kd"); }
+            if (algo == "LADRC") { keys.Add("LADRC_wo"); keys.Add("LADRC_wc"); keys.Add("LADRC_b0"); }
+            if (algo == "SMC") { keys.Add("SMC_lambda"); keys.Add("SMC_eta"); }
+            Random rnd = new Random();
+            foreach (var key in keys)
+            {
+                var tuple = algorithmParams[key];
+                double min = tuple.Item2, max = tuple.Item3;
+                double newVal = min + rnd.NextDouble() * (max - min);
+                // 设置算法参数
+                switch (key)
+                {
+                    case "PID_Kp": datacontrl.SetPIDParam("Kp", newVal); break;
+                    case "PID_Ki": datacontrl.SetPIDParam("Ki", newVal); break;
+                    case "PID_Kd": datacontrl.SetPIDParam("Kd", newVal); break;
+                    case "LADRC_wo": datacontrl.SetLADRCParam("wo", newVal); break;
+                    case "LADRC_wc": datacontrl.SetLADRCParam("wc", newVal); break;
+                    case "LADRC_b0": datacontrl.SetLADRCParam("b0", newVal); break;
+                    case "SMC_lambda": datacontrl.SetSMCParam("lambda", newVal); break;
+                    case "SMC_eta": datacontrl.SetSMCParam("eta", newVal); break;
+                }
+                // 同步滑块
+                foreach (var child in panel.Children)
+                {
+                    if (child is StackPanel sp)
+                    {
+                        foreach (var sub in sp.Children)
+                        {
+                            if (sub is Slider slider && slider.Tag != null && slider.Tag.ToString() == key)
+                            {
+                                slider.Value = newVal;
+                            }
+                        }
+                    }
+                }
+            }
+            // 评估当前参数（这里用pitch1/yaw1的绝对值等指标，实际应用可自定义）
+            double score = Math.Abs(pitch1) + Math.Abs(yaw1); // 示例：越小越好
+            if (score < bestScore)
+            {
+                bestScore = score;
+                bestParams.Clear();
+                foreach (var key in keys)
+                {
+                    double val = 0;
+                    switch (key)
+                    {
+                        case "PID_Kp": val = GetCurrentPIDParam("Kp"); break;
+                        case "PID_Ki": val = GetCurrentPIDParam("Ki"); break;
+                        case "PID_Kd": val = GetCurrentPIDParam("Kd"); break;
+                        case "LADRC_wo": val = GetCurrentLADRCParam("wo"); break;
+                        case "LADRC_wc": val = GetCurrentLADRCParam("wc"); break;
+                        case "LADRC_b0": val = GetCurrentLADRCParam("b0"); break;
+                        case "SMC_lambda": val = GetCurrentSMCParam("lambda"); break;
+                        case "SMC_eta": val = GetCurrentSMCParam("eta"); break;
+                    }
+                    bestParams[key] = val;
+                }
+                UpdateBestParamsTextBlock();
+            }
+        }
+
+        private void UpdateBestParamsTextBlock()
+        {
+            if (BestParamsTextBlock == null) return;
+            string msg = "最优参数：\n";
+            foreach (var kv in bestParams)
+                msg += $"{kv.Key} = {kv.Value:F3}\n";
+            msg += $"最优得分: {bestScore:F3}";
+            BestParamsTextBlock.Text = msg;
+        }
     }
     #region 读本地日志文件生成动作
     public class ProtocolParser

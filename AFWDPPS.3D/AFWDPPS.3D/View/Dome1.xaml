@@ -6,18 +6,19 @@
              xmlns:local="clr-namespace:WpfApp3D"
              xmlns:ht="http://helix-toolkit.org/wpf"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="485.2" d:DesignWidth="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <!-- 左侧控制面板 -->
             <ColumnDefinition Width="*"/>
-            <!-- 右侧3D视图 -->
             <ColumnDefinition Width="Auto"/>
-            <!-- 左侧控制面板 -->
         </Grid.ColumnDefinitions>
         <!-- 左侧控制面板 -->
-        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,40,0,0">
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Margin="10,40,0,0">
             <TextBlock Text="俯仰角度:" VerticalAlignment="Center"/>
             <TextBox Name="yawTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
             <Button Content="俯仰+" Click="YawIncrease_Click" Margin="5,0"/>
@@ -60,7 +61,7 @@
         </StackPanel>
      
         <!-- 右侧3D视图 -->
-        <ht:HelixViewport3D Name="viewport" Grid.Column="1" ShowCoordinateSystem="True" ShowViewCube="True" ShowFrameRate="True">
+        <ht:HelixViewport3D Grid.Row="0" Grid.Column="1" Name="viewport" ShowCoordinateSystem="True" ShowViewCube="True" ShowFrameRate="True">
             <ht:HelixViewport3D.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FF060A13" Offset="0"/>
@@ -73,8 +74,7 @@
                 <PerspectiveCamera Position="-0.671713226056439,153.944354616116,36.0650035792227" x:Name="dssd" LookDirection="0.671713226056439,-153.944354616116,-36.0650035792227" UpDirection="-0.000399249862283209,0.091500747633941,0.995804927574662" FieldOfView="45"/>
             </ht:HelixViewport3D.Camera>
         </ht:HelixViewport3D>
-        <StackPanel Grid.Column="2"  Orientation="Vertical" Margin="10,40,0,0">
-      
+        <StackPanel Grid.Row="0" Grid.Column="2"  Orientation="Vertical" Margin="10,40,0,0">
             <TextBlock    Text="串口号:"  />
             <ComboBox  Name="comlist1"  Margin="20 0"/>
             <TextBlock   Text="波特率:"  />
@@ -88,10 +88,25 @@
             <ToggleButton   x:Name="openclosecom2" Height="25" Margin="5" Content="打开平台MU串口" IsChecked="False" Click="openclosecom2_Click">
             </ToggleButton>
             <Button Content="查看历史波形" Width="100" Margin="5"  Click="Button_Click_3"/>
-
             <Button Content="显示波形" Width="100" Margin="5"  Click="Button_Click_1"/>
 
+            <!-- 算法选择与参数控制区域（右侧，显示波形下方） -->
+            <Border Margin="0,15,0,0" Background="#F8F8F8" Opacity="0.98" CornerRadius="6" Padding="8">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="算法选择" FontWeight="Bold" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="AlgorithmComboBox" Width="160" Margin="0,0,0,8" SelectionChanged="AlgorithmComboBox_SelectionChanged">
+                        <ComboBoxItem Content="PID" Tag="PID"/>
+                        <ComboBoxItem Content="LADRC" Tag="LADRC"/>
+                        <ComboBoxItem Content="SMC" Tag="SMC"/>
+                    </ComboBox>
+                    <StackPanel x:Name="AlgorithmParamsPanel" Orientation="Vertical"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
+                        <Button x:Name="BtnAutoOptimize" Content="自动优化参数" Width="100" Margin="0,0,8,0" Click="BtnAutoOptimize_Click"/>
+                        <Button x:Name="BtnStopOptimize" Content="停止优化" Width="100" Click="BtnStopOptimize_Click"/>
+                    </StackPanel>
+                    <TextBlock x:Name="BestParamsTextBlock" Text="" Margin="0,8,0,0" Foreground="DarkGreen" FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
         </StackPanel>
-
     </Grid>
 </UserControl>

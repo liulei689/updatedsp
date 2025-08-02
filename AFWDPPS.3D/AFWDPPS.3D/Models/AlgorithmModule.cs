@@ -11,6 +11,11 @@ namespace WpfApp3D.Models
 
     public class AlgorithmModule
     {
+        // 参数记忆：每种算法的参数单独保存
+        private static double PID_Kp = 2.0, PID_Ki = 0.05, PID_Kd = 0.1;
+        private static double LADRC_wo = 10.0, LADRC_wc = 5.0, LADRC_b0 = 1.0;
+        private static double SMC_lambda = 2.0, SMC_eta = 2.0;
+
         // 卡尔曼滤波参数
         private double kalmanPitchEstimate = 0;
         private double kalmanPitchErrorCov = 1;
@@ -23,9 +28,9 @@ namespace WpfApp3D.Models
         private double kalmanYawR = 0.1;
 
         // PID控制参数
-        private double Kp = 2.0;
-        private double Ki = 0.05;
-        private double Kd = 0.1;
+        private double Kp = PID_Kp;
+        private double Ki = PID_Ki;
+        private double Kd = PID_Kd;
         private double prevPitchError = 0;
         private double prevYawError = 0;
         private double pitchIntegral = 0;
@@ -39,13 +44,13 @@ namespace WpfApp3D.Models
         private double yawESO = 0;
 
         // SMC参数
-        private double smc_lambda = 2.0;
-        private double smc_eta = 2.0;
+        private double smc_lambda = SMC_lambda;
+        private double smc_eta = SMC_eta;
 
         // LADRC参数
-        private double ladrc_wo = 10.0; // 观测器带宽
-        private double ladrc_wc = 5.0; // 控制器带宽
-        private double ladrc_b0 = 1.0; // 系统增益
+        private double ladrc_wo = LADRC_wo; // 观测器带宽
+        private double ladrc_wc = LADRC_wc; // 控制器带宽
+        private double ladrc_b0 = LADRC_b0; // 系统增益
         private double dt = 0.01; // 假设时间步，单位秒，根据实际定时器调整
         private double lastControlPitch = 0;
         private double lastControlYaw = 0;
@@ -61,7 +66,22 @@ namespace WpfApp3D.Models
         private double yaw_z3 = 0;
 
         // 算法切换
-        public ControlAlgorithmType AlgorithmType { get; set; } = ControlAlgorithmType.PID;
+        public ControlAlgorithmType AlgorithmType
+        {
+            get => _algorithmType;
+            set
+            {
+                if (_algorithmType != value)
+                {
+                    // 切换前保存当前参数
+                    SaveCurrentParams(_algorithmType);
+                    // 切换后恢复参数
+                    RestoreParams(value);
+                    _algorithmType = value;
+                }
+            }
+        }
+        private ControlAlgorithmType _algorithmType = ControlAlgorithmType.PID;
 
         private double KalmanFilter(ref double estimate, ref double errorCov, double Q, double R, double measurement)
         {
@@ -143,7 +163,61 @@ namespace WpfApp3D.Models
             }
             return (controlPitch, controlYaw, speedPitch, speedYaw);
         }
+        public void SetPIDParam(string name, double value)
+        {
+            switch (name)
+            {
+                case "Kp": Kp = value; break;
+                case "Ki": Ki = value; break;
+                case "Kd": Kd = value; break;
+            }
+        }
+        public void SetLADRCParam(string name, double value)
+        {
+            switch (name)
+            {
+                case "wo": ladrc_wo = value; break;
+                case "wc": ladrc_wc = value; break;
+                case "b0": ladrc_b0 = value; break;
+            }
+        }
+        public void SetSMCParam(string name, double value)
+        {
+            switch (name)
+            {
+                case "lambda": smc_lambda = value; break;
+                case "eta": smc_eta = value; break;
+            }
+        }
+        private void SaveCurrentParams(ControlAlgorithmType type)
+        {
+            switch (type)
+            {
+                case ControlAlgorithmType.PID:
+                    PID_Kp = Kp; PID_Ki = Ki; PID_Kd = Kd;
+                    break;
+                case ControlAlgorithmType.LADRC:
+                    LADRC_wo = ladrc_wo; LADRC_wc = ladrc_wc; LADRC_b0 = ladrc_b0;
+                    break;
+                case ControlAlgorithmType.SMC:
+                    SMC_lambda = smc_lambda; SMC_eta = smc_eta;
+                    break;
+            }
+        }
+        private void RestoreParams(ControlAlgorithmType type)
+        {
+            switch (type)
+            {
+                case ControlAlgorithmType.PID:
+                    Kp = PID_Kp; Ki = PID_Ki; Kd = PID_Kd;
+                    break;
+                case ControlAlgorithmType.LADRC:
+                    ladrc_wo = LADRC_wo; ladrc_wc = LADRC_wc; ladrc_b0 = LADRC_b0;
+                    break;
+                case ControlAlgorithmType.SMC:
+                    smc_lambda = SMC_lambda; smc_eta = SMC_eta;
+                    break;
+            }
+        }
     }
 }
-
-// Remove any declarations after the class closing brace.

@@ -16,6 +16,28 @@ namespace WpfApp3D.Models
         public void SetAlgorithmType(ControlAlgorithmType type)
         {
             this.currentAlgorithmType = type;
+            if (algorithm != null)
+            {
+
+                algorithm.AlgorithmType = type; // 保证参数切换和记忆生效
+                
+            }
+        }
+
+        public void SetPIDParam(string name, double value)
+        {
+            if (algorithm != null)
+                algorithm.SetPIDParam(name, value);
+        }
+        public void SetLADRCParam(string name, double value)
+        {
+            if (algorithm != null)
+                algorithm.SetLADRCParam(name, value);
+        }
+        public void SetSMCParam(string name, double value)
+        {
+            if (algorithm != null)
+                algorithm.SetSMCParam(name, value);
         }
 
         public override (double djpitch, double djyaw, double speedPitch, double speedYaw) Step2_ControlMotorAlgorithm(double mupitch, double muyaw)
@@ -39,7 +61,6 @@ namespace WpfApp3D.Models
             }
             #endregion
 
-            algorithm.AlgorithmType = this.currentAlgorithmType;
             var (controlPitch, controlYaw, speedPitch, speedYaw) = algorithm.FilterAndControl(currentMupitch, currentMuyaw);
             // 可以在这里处理或记录speedPitch和speedYaw，如果需要
             return (controlPitch, controlYaw, speedPitch, speedYaw);
