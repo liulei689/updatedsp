@@ -65,6 +65,12 @@ namespace WpfApp3D.Models
         private double yaw_z2 = 0;
         private double yaw_z3 = 0;
 
+        // 评价指标统计字段
+        private double mseSum = 0;
+        private int mseCount = 0;
+        private double maxOvershoot = 0;
+        private double controlEnergy = 0;
+
         // 算法切换
         public ControlAlgorithmType AlgorithmType
         {
@@ -93,6 +99,22 @@ namespace WpfApp3D.Models
             estimate = predEstimate + K * (measurement - predEstimate);
             errorCov = (1 - K) * predErrorCov;
             return estimate;
+        }
+
+        // 重置评价指标
+        public void ResetMetrics()
+        {
+            mseSum = 0;
+            mseCount = 0;
+            maxOvershoot = 0;
+            controlEnergy = 0;
+        }
+
+        // 获取当前评价分数（可自定义加权）
+        public double GetCurrentScore()
+        {
+            double mse = mseCount > 0 ? mseSum / mseCount : 0;
+            return mse + 0.01 * controlEnergy + maxOvershoot;
         }
 
         public (double controlPitch, double controlYaw, double speedPitch, double speedYaw) FilterAndControl(double inputPitch, double inputYaw)
@@ -161,6 +183,15 @@ namespace WpfApp3D.Models
                         break;
                     }
             }
+
+            // 评价指标统计
+            double target = 0; // 目标值为0
+            double error = filteredPitch - target;
+            mseSum += error * error;
+            mseCount++;
+            maxOvershoot = Math.Max(maxOvershoot, Math.Abs(filteredPitch));
+            controlEnergy += controlPitch * controlPitch + controlYaw * controlYaw;
+
             return (controlPitch, controlYaw, speedPitch, speedYaw);
         }
         public void SetPIDParam(string name, double value)
