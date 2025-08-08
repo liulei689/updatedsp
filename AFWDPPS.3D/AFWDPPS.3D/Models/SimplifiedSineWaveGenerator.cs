@@ -17,10 +17,10 @@ namespace WpfApp3D.Models
         private double timeStep;   // 时间步长，用于控制数据生成的间隔
 
         // 构造函数
-        public SimplifiedSineWaveGenerator(double amplitude, double frequency, double timeStep = 0.01)
+        public SimplifiedSineWaveGenerator(double amplitude, double frequency, double timeStep = 0.001)
         {
-            this.amplitude = amplitude;
-            this.frequency = frequency;
+            this.amplitude = 5;
+            this.frequency = 12;
             this.phase = 0;
             this.currentTime = 0;
             this.timeStep = timeStep; // 默认时间步长为 0.01 秒
