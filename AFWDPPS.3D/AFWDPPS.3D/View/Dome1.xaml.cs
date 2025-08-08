@@ -410,7 +410,7 @@ namespace WpfApp3D
             boxModel1.Transform = new Transform3DGroup { Children = { yawRotation1, pitchRotation1 } };
             UpdateSpringGeometry(boxModel, boxModel1, springModel);
             x1.Text = (pitc_back).ToString("F2");
-            y1.Text = (yaw_back).ToString("F2");
+            //y1.Text = (yaw_back).ToString("F2");
 
         }
         #endregion
