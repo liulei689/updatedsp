@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -21,6 +22,8 @@ namespace WpfApp3D
         private double pitch = 0; // 俯仰角度
         private DispatcherTimer timer; // 定时器
         private DispatcherTimer timer11; // 定时器
+        private DispatcherTimer timer12; // 定时器
+
         private bool isTimerRunning = false; // 定时器是否运行
         private BoxVisual3D boxModel; // 3D模型引用
         private BoxVisual3D boxModel1; // 3D模型引用
@@ -136,6 +139,16 @@ namespace WpfApp3D
             timer11.Stop();
             ToggleTimer_Click(null, null);
             Loaded += Dome1_Loaded;
+            timer12 = new DispatcherTimer();
+            timer12.Interval = TimeSpan.FromMilliseconds(10); // 每500毫秒更新一次
+            timer12.Tick += Timer12_Tick; ;
+            timer12.Start();
+        }
+
+        private void Timer12_Tick(object sender, EventArgs e)
+        {
+            byte[] data = MoliDj.BuildFrame();
+            sendData(data, data.Length);
         }
 
         private void Dome1_Loaded(object sender, RoutedEventArgs e)
@@ -167,6 +180,7 @@ namespace WpfApp3D
         //定时器模拟船体晃动
         private void Timer_Tick11(object sender, EventArgs e)
         {
+
             // 如果提取的值为空，停止定时器
             if (extractedValues.Count == 0)
             {
@@ -215,10 +229,31 @@ namespace WpfApp3D
             pitch -= 1;
             UpdatePitch();
         }
+        /// <summary>
+        /// 打包并发送数据
+        /// </summary>
+        /// <param name="databuf"></param>
+        /// <param name="datalength"></param>
+        private void sendData(byte[] databuf, int datalength)
+        {
+            if (serialPort2 == null && !serialPort2.IsOpen) return;
 
+            //});
+            try
+            {
+                serialPort2.Write(databuf, 0, datalength);
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            Thread.Sleep(1);
+        }
         // 启动/停止定时器
         private void ToggleTimer_Click(object sender, RoutedEventArgs e)
         {
+
             if (!isTimerRunning)
             {
                 timer11.Stop();

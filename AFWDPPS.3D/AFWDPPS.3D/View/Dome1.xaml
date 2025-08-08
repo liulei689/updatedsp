@@ -37,7 +37,7 @@
             <ComboBox Visibility="Collapsed" Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
             <ToggleButton Visibility="Collapsed" Grid.Column="4" x:Name="openclosecom" Height="25" Margin="5" Content="打开串口" IsChecked="False" Click="openclosecom_Click">
             </ToggleButton>-->
-            <Button Visibility="Collapsed" Content="读记录文件" Click="Button_Click" Margin="5,0"/>
+            <Button Visibility="Visible" Content="读记录文件" Click="Button_Click" Margin="5,0"/>
             <!-- 分割线 -->
             <GridSplitter  Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Background="Gray" ResizeDirection="Rows" Margin="8"/>
@@ -45,12 +45,12 @@
             <TextBlock Text="俯仰角度：" Margin="5"/>
             <TextBlock x:Name="x1" Text="0" Margin="5"/>
             <TextBlock Text="滚转角度：" Margin="5"/>
-            <TextBlock x:Name="y1" Text="0" Margin="5"/>
-            <TextBlock Text="幅值（°）"/>
-            <TextBox x:Name="fuzhi" Width="100" Text="9" IsReadOnly="False"/>
-            <TextBlock Text="频率(Hz)"/>
-            <TextBox x:Name="pinlv" Width="100" Text="1" IsReadOnly="False"/>
-            <Button Content="生成正玄波" Click="Button_Click_2" Margin="5"/>
+            <TextBlock Visibility="Collapsed" x:Name="y1" Text="0" Margin="5"/>
+            <TextBlock Visibility="Collapsed" Text="幅值（°）"/>
+            <TextBox Visibility="Collapsed"  x:Name="fuzhi" Width="100" Text="9" IsReadOnly="False"/>
+            <TextBlock Visibility="Collapsed"  Text="频率(Hz)"/>
+            <TextBox Visibility="Collapsed"  x:Name="pinlv" Width="100" Text="1" IsReadOnly="False"/>
+            <Button Visibility="Collapsed"  Content="生成正玄波" Click="Button_Click_2" Margin="5"/>
             <TextBlock Text="是否显示3d状态" Margin="5"/>
 
             <ComboBox Name="ishide" Margin="20 0" Width="120" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" SelectedIndex="0">

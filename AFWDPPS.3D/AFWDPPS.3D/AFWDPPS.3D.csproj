@@ -175,6 +175,7 @@
     <Compile Include="Models\ToolXY.cs" />
     <Compile Include="Models\TransformManager.cs" />
     <Compile Include="Models\SimplifiedSineWaveGenerator.cs" />
+    <Compile Include="MoliDj.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="View\demo3.xaml.cs">
@@ -185,6 +186,9 @@
     </Compile>
     <Compile Include="View\HelixToolkitPageView.xaml.cs">
       <DependentUpon>HelixToolkitPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MoliD.xaml.cs">
+      <DependentUpon>MoliD.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MonitorView.xaml.cs">
       <DependentUpon>MonitorView.xaml</DependentUpon>
@@ -226,6 +230,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\HelixToolkitPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MoliD.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
