@@ -114,7 +114,7 @@ namespace WpfApp3D
             }
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
-            this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
+            this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort2_DataReceived);
             #endregion
             #region  串口平台
             botelv2.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
@@ -292,13 +292,13 @@ namespace WpfApp3D
         {
             if (generator == null) return;
 
-            // 生成振动信号（正弦波）
-            double vibrationPitch = generator.GenerateNextValue();
-            double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
+            //// 生成振动信号（正弦波）
+            //double vibrationPitch = generator.GenerateNextValue();
+            //double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
 
-            // Step 1: 读取平台数据（添加振动）
-            pitch = vibrationPitch;
-            yaw = vibrationYaw;
+            //// Step 1: 读取平台数据（添加振动）
+            //pitch = vibrationPitch;
+            //yaw = vibrationYaw;
 
             var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
 
@@ -736,6 +736,7 @@ namespace WpfApp3D
         }
         private void serialPort2_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+
             try
             {
                 SerialPort sp = (SerialPort)sender;
@@ -754,7 +755,7 @@ namespace WpfApp3D
                         case (int)enum_ComStatus.COM_STATUS_HEAD1:
                             G_btList_RecBuf.Clear();
 
-                            if (tmpByte == 0xFC)
+                            if (tmpByte == 0xAA)
                             {
                                 // tmpHEAD1 = tmpByte;
                                 //切换协议解析状态
@@ -763,7 +764,7 @@ namespace WpfApp3D
                             }
                             break;
                         case (int)enum_ComStatus.COM_STATUS_HEAD2:
-                            if (tmpByte == 0x41)
+                            if (tmpByte == 0x55)
                             {
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
@@ -774,21 +775,24 @@ namespace WpfApp3D
                             G_btList_RecBuf.Add(tmpByte);
 
                             //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //包接收完成
+                            if (G_btList_RecBuf.Count == 12)  //包接收完成
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
-                                string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
-                                // 使用BitConverter将字节数组转换为float
-                                pitch = BitConverter.ToSingle(Rbuffer, 19);
-                                yaw = BitConverter.ToSingle(Rbuffer, 23);
-                                pitch *= 57.3; //滚转
-                                yaw *= 57.3;
+                                yaw = MoliDj.RawToAngle(Rbuffer[6]);
+                                y1.Dispatcher.BeginInvoke((Action)(() =>
+                                {
+                                    y1.Text = yaw.ToString("F2");
+                                }));
 
+                                //string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+                                //// 使用BitConverter将字节数组转换为float
+                                //pitch = BitConverter.ToSingle(Rbuffer, 19);
+                                //yaw = BitConverter.ToSingle(Rbuffer, 23);
+                                //pitch *= 57.3; //滚转
+                                //yaw *= 57.3;
                                 // UpdateYaw();
                                 //UpdatePitch();
                                 G_btList_RecBuf.Clear();
-
-
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
                             }
@@ -815,17 +819,92 @@ namespace WpfApp3D
                             break;
                     }
 
-
-
-
-
-
-
-
-
                 }
             }
             catch { }
+
+            //try
+            //{
+            //    SerialPort sp = (SerialPort)sender;
+            //    int bytesToRead = sp.BytesToRead;
+            //    byte[] buffer = new byte[bytesToRead];
+
+            //    // 读取数据到缓冲区  
+            //    int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
+            //    if (nbrDataRead == 0)
+            //        return;
+            //    G_btList_RecBuf_R.Clear();
+            //    foreach (byte tmpByte in buffer)
+            //    {
+            //        switch (G_int_ComStatus)
+            //        {
+            //            case (int)enum_ComStatus.COM_STATUS_HEAD1:
+            //                G_btList_RecBuf.Clear();
+
+            //                if (tmpByte == 0xFC)
+            //                {
+            //                    // tmpHEAD1 = tmpByte;
+            //                    //切换协议解析状态
+            //                    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
+            //                    G_btList_RecBuf.Add(tmpByte);
+            //                }
+            //                break;
+            //            case (int)enum_ComStatus.COM_STATUS_HEAD2:
+            //                if (tmpByte == 0x41)
+            //                {
+            //                    //切换协议解析状态
+            //                    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
+            //                    G_btList_RecBuf.Add(tmpByte);
+            //                }
+            //                break;
+            //            case (int)enum_ComStatus.COM_STATUS_DATA:
+            //                G_btList_RecBuf.Add(tmpByte);
+
+            //                //数据接收完成后的有效性判断
+            //                if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //包接收完成
+            //                {
+            //                    byte[] Rbuffer = G_btList_RecBuf.ToArray();
+            //                    string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+            //                    // 使用BitConverter将字节数组转换为float
+            //                    pitch = BitConverter.ToSingle(Rbuffer, 19);
+            //                    yaw = BitConverter.ToSingle(Rbuffer, 23);
+            //                    pitch *= 57.3; //滚转
+            //                    yaw *= 57.3;
+
+            //                    // UpdateYaw();
+            //                    //UpdatePitch();
+            //                    G_btList_RecBuf.Clear();
+
+
+            //                    //切换协议解析状态
+            //                    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+            //                }
+
+            //                //数据包长度超限检查
+            //                if (G_btList_RecBuf.Count >= 56)
+            //                {
+            //                    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+            //                    //str_ErrorInfo += "“";
+            //                    //for (int i = 0; i < 6; i++)
+            //                    //{
+            //                    //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
+            //                    //}
+            //                    //str_ErrorInfo += "......”该帧数据长度超限！";
+
+            //                    //清空相关缓存
+            //                    G_btList_RecBuf.Clear();
+            //                }
+            //                break;
+
+            //            default:
+            //                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+            //                break;
+            //        }
+
+            //    }
+            //}
+            //catch { }
         }
         int count1 = 0;
 
@@ -845,8 +924,6 @@ namespace WpfApp3D
                     comlist2.IsEnabled = true;
                     botelv2.IsEnabled = true;
                     openclosecom2.Content = "打开稳定平台串口";
-
-
                 }
                 else
                 {

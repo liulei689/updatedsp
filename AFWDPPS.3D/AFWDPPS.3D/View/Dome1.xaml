@@ -44,8 +44,8 @@
             <TextBlock Text="稳定平台信息" Margin="5"/>
             <TextBlock Text="俯仰角度：" Margin="5"/>
             <TextBlock x:Name="x1" Text="0" Margin="5"/>
-            <TextBlock Text="滚转角度：" Margin="5"/>
-            <TextBlock Visibility="Collapsed" x:Name="y1" Text="0" Margin="5"/>
+            <TextBlock Text="滚转角度："/>
+            <TextBlock x:Name="y1" Text="0" Margin="5"/>
             <TextBlock Visibility="Collapsed" Text="幅值（°）"/>
             <TextBox Visibility="Collapsed"  x:Name="fuzhi" Width="100" Text="9" IsReadOnly="False"/>
             <TextBlock Visibility="Collapsed"  Text="频率(Hz)"/>
