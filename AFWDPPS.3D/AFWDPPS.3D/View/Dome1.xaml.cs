@@ -143,11 +143,18 @@ namespace WpfApp3D
             timer12.Interval = TimeSpan.FromMilliseconds(10); // 每500毫秒更新一次
             timer12.Tick += Timer12_Tick; ;
             timer12.Start();
+            InintZXB();
         }
 
         private void Timer12_Tick(object sender, EventArgs e)
         {
-            byte[] data = MoliDj.BuildFrame();
+
+            if (generator == null) return;
+
+            // 生成振动信号（正弦波）
+            double vibrationPitch = generator.GenerateNextValue();
+            double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
+            byte[] data = MoliDj.BuildFrame(vibrationPitch);
             sendData(data, data.Length);
         }
 

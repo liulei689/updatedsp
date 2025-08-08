@@ -10,7 +10,7 @@ namespace WpfApp3D
         /// <summary>
         /// 返回 23 字节完整帧，所有字段已按协议顺序赋初值
         /// </summary>
-        public static byte[] BuildFrame()
+        public static byte[] BuildFrame(double vibrationPitch)
         {
             byte[] buf = new byte[23];
 
@@ -38,7 +38,7 @@ namespace WpfApp3D
             buf[19] = 0x00; buf[20] = 0x00;   // C相
 
             /* 角度 0° → 原始值 0 */
-            buf[21] = AngleToRaw((float)-2.1);
+            buf[21] = AngleToRaw((float)vibrationPitch);
             var da = RawToAngle(buf[21]);
             /* 校验和：0~21 累加 → 取反+1 */
             byte sum = 0;
