@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using WpfApp3D.Models;
+using WpfApp3D.View;
 
 namespace WpfApp3D
 {
@@ -266,7 +267,7 @@ namespace WpfApp3D
                 timer11.Stop();
                 // 启动定时器
                 timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromMilliseconds(100); // 每500毫秒更新一次
+                timer.Interval = TimeSpan.FromMilliseconds(10); // 每500毫秒更新一次
                 timer.Tick += Timer_Tick;
                 timer.Start();
                 isTimerRunning = true;
@@ -332,14 +333,16 @@ namespace WpfApp3D
             {
                 AsyncLogger.Log(data);
             }
-            if (WaveformChart != null)
-                WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
+            //if (WaveformChart != null)
+            //    WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
+            if (_boxing != null)
+                _boxing.SetBoXing(new double[6] { pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji });
 
             // 更新3D模型
             if (ishide.SelectedIndex == 1)
                 UpdateTransform();
         }
-
+        private BoXing _boxing;
         // 更新方向角度
         private void UpdateYaw()
         {
@@ -697,8 +700,9 @@ namespace WpfApp3D
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            WaveformChart = new WaveformChart();
-            WaveformChart.Show();
+
+            _boxing = new BoXing();
+            _boxing.Show();
             //WaveformChartFY = new WaveformChartFY();
             //WaveformChartFY.Show();
         }
@@ -906,7 +910,6 @@ namespace WpfApp3D
             //}
             //catch { }
         }
-        int count1 = 0;
 
         private void openclosecom2_Click(object sender, RoutedEventArgs e)
         {
