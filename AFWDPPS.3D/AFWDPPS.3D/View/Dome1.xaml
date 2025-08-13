@@ -19,15 +19,15 @@
         </Grid.ColumnDefinitions>
         <!-- 左侧控制面板 -->
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Margin="10,40,0,0">
-            <TextBlock Text="俯仰角度:" VerticalAlignment="Center"/>
-            <TextBox Name="yawTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
-            <Button Content="俯仰+" Click="YawIncrease_Click" Margin="5,0"/>
-            <Button Content="俯仰-" Click="YawDecrease_Click" Margin="5,0"/>
+            <TextBlock Visibility="Collapsed" Text="俯仰角度:" VerticalAlignment="Center"/>
+            <TextBox Visibility="Collapsed" Name="yawTextBox" Width="100" Margin="5,0" Text="0" IsReadOnly="False"/>
+            <Button Visibility="Collapsed" Content="俯仰+" Click="YawIncrease_Click" Margin="5,0"/>
+            <Button Visibility="Collapsed" Content="俯仰-" Click="YawDecrease_Click" Margin="5,0"/>
 
-            <TextBlock Text="滚转角度:" VerticalAlignment="Center"/>
-            <TextBox Name="pitchTextBox" Width="100" Margin="5" Text="0" IsReadOnly="False"/>
-            <Button Content="方向+" Click="PitchIncrease_Click" Margin="5,0"/>
-            <Button Content="方向-" Click="PitchDecrease_Click" Margin="5,0"/>
+            <TextBlock Visibility="Collapsed" Text="滚转角度:" VerticalAlignment="Center"/>
+            <TextBox Visibility="Collapsed" Name="pitchTextBox" Width="100" Margin="5" Text="0" IsReadOnly="False"/>
+            <Button Visibility="Collapsed" Content="方向+" Click="PitchIncrease_Click" Margin="5,0"/>
+            <Button Visibility="Collapsed" Content="方向-" Click="PitchDecrease_Click" Margin="5,0"/>
 
             <Button Visibility="Collapsed" Content="指定角度附近模拟" Click="ToggleTimer_Click" Margin="5,0"/>
 
@@ -37,7 +37,7 @@
             <ComboBox Visibility="Collapsed" Grid.Column="3" Name="botelv" Width="100" Margin="20 0" />
             <ToggleButton Visibility="Collapsed" Grid.Column="4" x:Name="openclosecom" Height="25" Margin="5" Content="打开串口" IsChecked="False" Click="openclosecom_Click">
             </ToggleButton>-->
-            <Button Visibility="Visible" Content="读记录文件" Click="Button_Click" Margin="5,0"/>
+            <Button Visibility="Collapsed" Content="读记录文件" Click="Button_Click" Margin="5,0"/>
             <!-- 分割线 -->
             <GridSplitter  Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Background="Gray" ResizeDirection="Rows" Margin="8"/>
@@ -57,6 +57,8 @@
                 <ComboBoxItem Content="不显示"/>
                 <ComboBoxItem Content="显示"/>
             </ComboBox>
+            <ToggleButton  Height="25" Margin="20" Content="模拟设备" IsChecked="False" Click="ToggleButton_Click"/>
+            <Button Content="显示波形" Margin="20" Width="100"  Click="Button_Click_1"/>
 
         </StackPanel>
      
@@ -74,7 +76,7 @@
                 <PerspectiveCamera Position="-0.671713226056439,153.944354616116,36.0650035792227" x:Name="dssd" LookDirection="0.671713226056439,-153.944354616116,-36.0650035792227" UpDirection="-0.000399249862283209,0.091500747633941,0.995804927574662" FieldOfView="45"/>
             </ht:HelixViewport3D.Camera>
         </ht:HelixViewport3D>
-        <StackPanel Grid.Row="0" Grid.Column="2"  Orientation="Vertical" Margin="10,40,0,0">
+        <StackPanel Grid.Row="0" Grid.Column="2"  Visibility="Collapsed" Orientation="Vertical" Margin="10,40,0,0">
             <TextBlock    Text="串口号:"  />
             <ComboBox  Name="comlist1"  Margin="20 0"/>
             <TextBlock   Text="波特率:"  />
@@ -88,7 +90,6 @@
             <ToggleButton   x:Name="openclosecom2" Height="25" Margin="5" Content="打开平台MU串口" IsChecked="False" Click="openclosecom2_Click">
             </ToggleButton>
             <Button Content="查看历史波形" Width="100" Margin="5"  Click="Button_Click_3"/>
-            <Button Content="显示波形" Width="100" Margin="5"  Click="Button_Click_1"/>
 
             <!-- 算法选择与参数控制区域（右侧，显示波形下方） -->
             <Border Margin="0,15,0,0" Background="#F8F8F8" Opacity="0.98" CornerRadius="6" Padding="8">

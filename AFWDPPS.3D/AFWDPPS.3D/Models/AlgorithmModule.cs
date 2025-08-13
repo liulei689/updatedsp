@@ -192,7 +192,7 @@ namespace WpfApp3D.Models
             maxOvershoot = Math.Max(maxOvershoot, Math.Abs(filteredPitch));
             controlEnergy += controlPitch * controlPitch + controlYaw * controlYaw;
 
-            return (controlPitch, controlYaw, speedPitch, speedYaw);
+            return (controlPitch, controlYaw, 0, 0);
         }
         public void SetPIDParam(string name, double value)
         {

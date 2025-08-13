@@ -1,0 +1,241 @@
+﻿<Window x:Class="WpfApp3D.View.MoliDevice"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp3D.View"
+        mc:Ignorable="d"
+        Title="模拟设备" Height="450" Width="950">
+    <Window.Resources>
+        <!-- 统一按钮样式：圆角、内边距、最小宽度 -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="20,6"/>
+            <Setter Property="Margin"  Value="6"/>
+            <Setter Property="MinWidth" Value="90"/>
+            <Setter Property="Background" Value="#FF2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF1976D2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 统一下拉框样式 -->
+        <Style TargetType="ComboBox">
+            <Setter Property="MinWidth"  Value="100"/>
+            <Setter Property="Margin"    Value="6,0,20,0"/>
+            <Setter Property="Padding"   Value="6,3"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="False" Background="#FFF5F5F5">
+
+        <!-- ===== 第一块：串口区域 ===== -->
+        <Border DockPanel.Dock="Top"
+            Background="White"
+            BorderBrush="#FFDDDDDD"
+            BorderThickness="0,0,0,1"
+            Padding="25,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 标题 -->
+                <TextBlock Text="电机串口模拟"
+                       VerticalAlignment="Center"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,0,30,0"/>
+
+                <!-- 串口号 -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="串口号：" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="comlist1">
+         
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- 波特率 -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="波特率：" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="botelv1">
+                     
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- 打开按钮 -->
+                <Button x:Name="openclosecom1"
+                    Grid.Column="3"
+                    Content="打开"
+                    HorizontalAlignment="Left" Click="BtnOpenSerial_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- ===== 第二块：CAN 区域 ===== -->
+        <!-- 第二块：电机 CAN 口模拟  -->
+        <Border DockPanel.Dock="Top"
+        Background="White"
+        BorderBrush="#FFDDDDDD"
+        BorderThickness="0,0,0,1"
+        Padding="25,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 标题 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 索引号 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 第几路 -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- 占位，让按钮右对齐 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 连接 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 启动 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 复位 -->
+                </Grid.ColumnDefinitions>
+
+                <!-- 标题 -->
+                <TextBlock Text="电机 CAN 口模拟"
+                   VerticalAlignment="Center"
+                   FontSize="16"
+                   FontWeight="SemiBold"
+                   Margin="0,0,30,0"/>
+
+                <!-- 索引号 -->
+                <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center">
+                    <TextBlock Text="索引号：" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="comboBox_DevIndex" Width="60">
+                        <ComboBoxItem Content="0" IsSelected="True"/>
+                        <ComboBoxItem Content="1"/>
+                        <ComboBoxItem Content="2"/>
+                        <ComboBoxItem Content="3"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- 第几路 CAN -->
+                <StackPanel Grid.Column="2"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center">
+                    <TextBlock Text="第几路 CAN：" VerticalAlignment="Center" Margin="20,0,6,0"/>
+                    <ComboBox x:Name="comboBox_CANIndex" Width="60">
+                        <ComboBoxItem Content="0" IsSelected="True"/>
+                        <ComboBoxItem Content="1"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- 按钮区：放在 4、5、6 三列 -->
+                <Button x:Name="buttonConnect"
+                Grid.Column="4"
+                Content="连接 CAN"
+                MinWidth="80" Height="29" Margin="6,6,6,0" VerticalAlignment="Top" Click="buttonConnect_Click"/>
+                <Button x:Name="BtnStartCan"
+                Grid.Column="5"
+                Content="启动 CAN"
+                MinWidth="80" Click="BtnStartCan_Click"/>
+                <Button x:Name="BtnResetCan"
+                Grid.Column="6"
+                Content="复位 CAN"
+                MinWidth="80" Click="BtnResetCan_Click"/>
+            </Grid>
+        </Border>
+        <!-- ===== 第三块：发送区 ===== -->
+        <Border DockPanel.Dock="Top"
+        Background="White"
+        BorderBrush="#FFDDDDDD"
+        BorderThickness="0,0,0,1"
+        Padding="25,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 标题 -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- 文本框 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 发送按钮 -->
+                </Grid.ColumnDefinitions>
+
+                <!-- 标题 -->
+                <TextBlock Text="CAN发送帧："
+                   VerticalAlignment="Center"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Margin="0,0,10,0"/>
+
+                <!-- 发送文本框 -->
+                <TextBox x:Name="textBox_Data"
+                 Grid.Column="1"
+                 VerticalAlignment="Center"
+                 Padding="6,4"
+                 MinHeight="26"
+                 Text="00 11 22 33 44 55 66 77"/>
+
+                <!-- 发送按钮 -->
+                <Button x:Name="BtnSend"
+                Grid.Column="2"
+                Content="发送"
+                MinWidth="70"
+                Margin="10,0,0,0"
+                Padding="20,4" Click="BtnSend_Click"/>
+            </Grid>
+        </Border>
+        <!-- 第三块：CAN 消息列表 -->
+        <Border DockPanel.Dock="Top"
+        Background="White"
+        BorderBrush="#FFDDDDDD"
+        BorderThickness="0,0,0,1"
+        Margin="25,0,25,25">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- 表头 -->
+                    <RowDefinition Height="*"/>
+                    <!-- 内容区 -->
+                </Grid.RowDefinitions>
+
+                <!-- 表头 -->
+                <TextBlock Grid.Row="0"
+                   Text="CAN 消息日志"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Margin="0,10,0,10"/>
+
+                <!-- ListView：只含一列字符串 -->
+                <ListView x:Name="LvCanMsgs"
+                  Grid.Row="1"
+                  BorderThickness="1"
+                  BorderBrush="#FFDDDDDD">
+                    <ListView.View>
+                        <GridView>
+                            <!-- 只放一列，Header 留空即可 -->
+                            <GridViewColumn Header=""
+                                    DisplayMemberBinding="{Binding}"
+                                    Width="{Binding ActualWidth,
+                                            RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </Border>
+    </DockPanel>
+</Window>

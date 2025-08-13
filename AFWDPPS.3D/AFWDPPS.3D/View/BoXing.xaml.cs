@@ -22,6 +22,7 @@ namespace WpfApp3D.View
         private ScottPlot.Plottables.Crosshair CH;
         private readonly DispatcherTimer _autoScaleTimer =
     new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(1000) };   // 2 Hz
+        public static BoXing Instance { get; set; }
         public BoXing()
         {
             InitializeComponent();
@@ -39,6 +40,14 @@ namespace WpfApp3D.View
             MouseMove += DisplayScaling_MouseMove;
             _autoScaleTimer.Start();
             _autoScaleTimer.Tick += _autoScaleTimer_Tick; ;
+            Closed += BoXing_Closed;
+        }
+
+        private void BoXing_Closed(object sender, EventArgs e)
+        {
+            Instance = null;
+            _autoScaleTimer?.Stop();
+
         }
 
         private void _autoScaleTimer_Tick(object sender, EventArgs e)

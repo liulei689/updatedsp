@@ -20,7 +20,7 @@ namespace WpfApp3D
     {
         #region 3D模型构建
         private double yaw = 0; // 方向角度
-        private double pitch = 0; // 俯仰角度
+        public double pitch = 0; // 俯仰角度
         private DispatcherTimer timer; // 定时器
         private DispatcherTimer timer11; // 定时器
         private DispatcherTimer timer12; // 定时器
@@ -33,7 +33,7 @@ namespace WpfApp3D
 
         public GeometryModel3D springModel;
         private ModelVisual3D springVisual;
-        SimplifiedSineWaveGenerator generator;
+        public SimplifiedSineWaveGenerator generator;
         public void InintZXB()
         {
             if (double.TryParse(fuzhi.Text, out double amplitude) &&
@@ -52,8 +52,14 @@ namespace WpfApp3D
                 }
             }
         }
+        public void SetPitch(double pc)
+        {
+            pitch = pc;
+        }
+        public static Dome1 Dome1Instance { get; private set; }// 单例模式
         public Dome1()
         {
+            Dome1Instance = this; // 设置单例实例
             InitializeComponent();
             // ProtocolParser.Run();
             // 动态添加 BoxVisual3D
@@ -143,20 +149,14 @@ namespace WpfApp3D
             timer12 = new DispatcherTimer();
             timer12.Interval = TimeSpan.FromMilliseconds(10); // 每500毫秒更新一次
             timer12.Tick += Timer12_Tick; ;
-            timer12.Start();
+            timer12.Stop();
             InintZXB();
         }
 
         private void Timer12_Tick(object sender, EventArgs e)
         {
 
-            if (generator == null) return;
 
-            // 生成振动信号（正弦波）
-            double vibrationPitch = generator.GenerateNextValue();
-            double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
-            byte[] data = MoliDj.BuildFrame(vibrationPitch);
-            sendData(data, data.Length);
         }
 
         private void Dome1_Loaded(object sender, RoutedEventArgs e)
@@ -313,10 +313,10 @@ namespace WpfApp3D
             var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
 
             // 更新用于显示的角度
-            pitch1 = pitc_back;
-            yaw1 = yaw_back;
-            pitchdianji = djpitc_back;
-            yawdianji = djyaw_back;
+            //pitch1 = pitc_back;
+            //yaw1 = yaw_back;
+            //pitchdianji = djpitc_back;
+            //yawdianji = djyaw_back;
 
             // 记录数据
             AFWDPPS.DB.稳定平台数据 data = new AFWDPPS.DB.稳定平台数据();
@@ -335,14 +335,13 @@ namespace WpfApp3D
             }
             //if (WaveformChart != null)
             //    WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
-            if (_boxing != null)
-                _boxing.SetBoXing(new double[6] { pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji });
+            if (BoXing.Instance != null)
+                BoXing.Instance.SetBoXing(new double[] { pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji });
 
             // 更新3D模型
             if (ishide.SelectedIndex == 1)
                 UpdateTransform();
         }
-        private BoXing _boxing;
         // 更新方向角度
         private void UpdateYaw()
         {
@@ -700,9 +699,9 @@ namespace WpfApp3D
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-
-            _boxing = new BoXing();
-            _boxing.Show();
+            if (BoXing.Instance == null)
+                BoXing.Instance = new BoXing();
+            BoXing.Instance.Show();
             //WaveformChartFY = new WaveformChartFY();
             //WaveformChartFY.Show();
         }
@@ -1038,7 +1037,7 @@ namespace WpfApp3D
                     var val = paramVals[i];
                     double sliderWidth = 100 * 4 / 3.0; // 增加1/3长度
                     double tickFrequency = (max - min) / 100.0; // 步进更细
-                    // 合理设置最小最大值
+                                                                // 合理设置最小最大值
                     if (key == "PID_Kp") { min = 0; max = 20; }
                     if (key == "PID_Ki") { min = 0; max = 2; }
                     if (key == "PID_Kd") { min = 0; max = 2; }
@@ -1205,6 +1204,11 @@ namespace WpfApp3D
                 msg += $"{kv.Key} = {kv.Value:F3}\n";
             msg += $"最优得分: {bestScore:F3}";
             BestParamsTextBlock.Text = msg;
+        }
+
+        private void ToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            new MoliDevice().Show();
         }
     }
     #region 读本地日志文件生成动作
