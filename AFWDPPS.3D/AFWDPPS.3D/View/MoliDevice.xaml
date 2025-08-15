@@ -291,9 +291,12 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
                 <!-- 左侧：P / I / D 输入 -->
-                <StackPanel Grid.Column="0"
+                <StackPanel Grid.Column="0" Grid.Row="0"
                     Orientation="Horizontal"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Left">
@@ -326,10 +329,11 @@
                         <TextBox x:Name="TbD"
                          Width="80"/>
                     </StackPanel>
-                </StackPanel>
 
+                </StackPanel>
+       
                 <!-- 右侧：按钮 -->
-                <StackPanel Grid.Column="1"
+                <StackPanel Grid.Column="1" Grid.Row="0"
                     Orientation="Horizontal"
                     VerticalAlignment="Center"
                     Margin="10,0,0,0">
@@ -353,7 +357,46 @@
                     Height="30"
                     Margin="5"/>
                 </StackPanel>
+                <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" >
+                    <StackPanel Grid.Column="0" Grid.Row="0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left">
+                        <!-- P -->
+                        <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                            <TextBlock Text="P"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Margin="0,0,0,3"/>
+                            <TextBlock x:Name="TbP1"
+                         Width="80"/>
+                        </StackPanel>
+
+                        <!-- I -->
+                        <StackPanel Margin="10,0,10,0" Orientation="Horizontal">
+                            <TextBlock Text="I"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Margin="0,0,0,3"/>
+                            <TextBlock x:Name="TbI1"
+                         Width="80"/>
+                        </StackPanel>
+
+                        <!-- D -->
+                        <StackPanel Margin="10,0,10,0" Orientation="Horizontal">
+                            <TextBlock Text="D"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Margin="0,0,0,3"/>
+                            <TextBlock x:Name="TbD1"
+                         Width="80"/>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                </StackPanel>
             </Grid>
         </Border>
+   
     </DockPanel>
 </Window>

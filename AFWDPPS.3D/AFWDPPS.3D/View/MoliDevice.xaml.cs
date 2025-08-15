@@ -287,9 +287,9 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 {
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
-                                        TbP.Text = GetGateStatusHex(Rbuffer, 6, 9);
-                                        TbI.Text = GetGateStatusHex(Rbuffer, 10, 13);
-                                        TbD.Text = GetGateStatusHex(Rbuffer, 14, 17);
+                                        TbP1.Text = GetGateStatusHex(Rbuffer, 6, 9);
+                                        TbI1.Text = GetGateStatusHex(Rbuffer, 10, 13);
+                                        TbD1.Text = GetGateStatusHex(Rbuffer, 14, 17);
                                     });
                                     G_btList_RecBuf.Clear();
                                     //切换协议解析状态
