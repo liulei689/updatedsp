@@ -329,7 +329,7 @@ namespace WpfApp3D
             data.声呐俯仰角度 = yaw1;
             data.俯仰电机动作角度 = yawdianji;
             data.时间 = DateTime.Now;
-            if (WaveformChart != null)
+            if (BoXing.Instance != null)
             {
                 AsyncLogger.Log(data);
             }
