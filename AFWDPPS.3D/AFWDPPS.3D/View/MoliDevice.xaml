@@ -7,6 +7,50 @@
         mc:Ignorable="d"
         Title="模拟设备" Height="450" Width="950">
     <Window.Resources>
+        <!-- 统一标签样式 -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <!-- 数字输入框样式 -->
+        <Style x:Key="NumberBoxStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderBrush" Value="#FFBDBDBD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- 主按钮样式 -->
+        <Style x:Key="AccentButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF1976D2"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#FF1976D2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF1565C0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!-- 统一按钮样式：圆角、内边距、最小宽度 -->
         <Style TargetType="Button">
             <Setter Property="Padding" Value="20,6"/>
@@ -235,6 +279,80 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+            </Grid>
+        </Border>
+        <!-- ================= PID 参数区（底部） ================= -->
+        <!-- 底部 PID 参数区 -->
+        <Border DockPanel.Dock="Bottom"
+        Margin="25,0,25,15"
+        Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 左侧：P / I / D 输入 -->
+                <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left">
+                    <!-- P -->
+                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                        <TextBlock Text="P"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Margin="0,0,0,3"/>
+                        <TextBox x:Name="TbP"
+                         Width="80"/>
+                    </StackPanel>
+
+                    <!-- I -->
+                    <StackPanel Margin="10,0,10,0" Orientation="Horizontal">
+                        <TextBlock Text="I"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Margin="0,0,0,3"/>
+                        <TextBox x:Name="TbI"
+                         Width="80"/>
+                    </StackPanel>
+
+                    <!-- D -->
+                    <StackPanel Margin="10,0,10,0" Orientation="Horizontal">
+                        <TextBlock Text="D"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Margin="0,0,0,3"/>
+                        <TextBox x:Name="TbD"
+                         Width="80"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 右侧：按钮 -->
+                <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Margin="10,0,0,0">
+                    <!-- 新增下拉框 -->
+                    <ComboBox x:Name="CmbOption"
+              Width="120"
+              Height="30"
+              SelectedIndex="0"
+              Margin="5">
+                        <ComboBoxItem>模拟电机</ComboBoxItem>
+                        <ComboBoxItem>设置PID参数</ComboBoxItem>
+                    </ComboBox>
+                    <Button x:Name="BtnRead"
+                    Content="读取" Click="BtnRead_Click"
+                    Width="80"
+                    Height="30"
+                    Margin="5"/>
+                    <Button x:Name="BtnSet" Click="BtnRead_Click"
+                    Content="设置"
+                    Width="80"
+                    Height="30"
+                    Margin="5"/>
+                </StackPanel>
             </Grid>
         </Border>
     </DockPanel>

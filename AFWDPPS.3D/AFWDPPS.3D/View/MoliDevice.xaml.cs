@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace WpfApp3D.View
@@ -200,6 +202,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             serialPort2.RtsEnable = true;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort2_DataReceived);
             #endregion
+            CmbOption.SelectedIndex = 0; // 默认选中第一个选项
         }
         private int G_int_ComStatus = 0;
         private List<byte> G_btList_RecBuf = new List<byte>();
@@ -236,7 +239,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                         case (int)enum_ComStatus.COM_STATUS_HEAD1:
                             G_btList_RecBuf.Clear();
 
-                            if (tmpByte == 0xAA)
+                            if (tmpByte == 0xAA || tmpByte == 0xEB)
                             {
                                 // tmpHEAD1 = tmpByte;
                                 //切换协议解析状态
@@ -245,7 +248,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                             }
                             break;
                         case (int)enum_ComStatus.COM_STATUS_HEAD2:
-                            if (tmpByte == 0x55)
+                            if (tmpByte == 0x55 || tmpByte == 0x90)
                             {
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
@@ -256,12 +259,15 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                             G_btList_RecBuf.Add(tmpByte);
 
                             //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf.Count == 12)  //包接收完成
+                            if (G_btList_RecBuf.Count == 12 && G_btList_RecBuf[0] == 0xAA)  //包接收完成
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
-                                var yaw = MoliDj.RawToAngle(Rbuffer[6]);
-                                Dome1.Dome1Instance.pitchdianji = yaw;
+                                if (Rbuffer[0] == 0xAA) //包头1
+                                {
 
+                                    var yaw = MoliDj.RawToAngle(Rbuffer[6]);
+                                    Dome1.Dome1Instance.pitchdianji = yaw;
+                                }
                                 //string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
                                 //// 使用BitConverter将字节数组转换为float
                                 //pitch = BitConverter.ToSingle(Rbuffer, 19);
@@ -273,6 +279,22 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 G_btList_RecBuf.Clear();
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                            }
+                            else if (G_btList_RecBuf.Count == 19 && G_btList_RecBuf[0] == 0xEB)
+                            {
+                                byte[] Rbuffer = G_btList_RecBuf.ToArray();
+                                if (Rbuffer[0] == 0xEB) //包头1
+                                {
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        TbP.Text = GetGateStatusHex(Rbuffer, 6, 9);
+                                        TbI.Text = GetGateStatusHex(Rbuffer, 10, 13);
+                                        TbD.Text = GetGateStatusHex(Rbuffer, 14, 17);
+                                    });
+                                    G_btList_RecBuf.Clear();
+                                    //切换协议解析状态
+                                    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                                }
                             }
 
                             //数据包长度超限检查
@@ -302,18 +324,28 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             catch { }
 
         }
+
+        private bool sendcmd = true;
+
         private void Timer12_Tick(object sender, EventArgs e)
         {
-            if (Dome1.Dome1Instance.generator == null) return;
+            if (CmbOption.SelectedIndex == 0)
+            {
+                if (Dome1.Dome1Instance.generator == null) return;
 
-            // 生成振动信号（正弦波）
-            double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
-            double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
-            Dome1.Dome1Instance.pitch = vibrationYaw;
-            //if (BoXing.Instance != null)
-            //    BoXing.Instance.SetBoXing(new double[6] { vibrationPitch, 0, 0, 0, 0, 0 });
-            byte[] data = MoliDj.BuildFrame(vibrationPitch);
-            sendData(data, data.Length);
+                // 生成振动信号（正弦波）
+                double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
+                double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
+                Dome1.Dome1Instance.pitch = vibrationYaw;
+                //if (BoXing.Instance != null)
+                //    BoXing.Instance.SetBoXing(new double[6] { vibrationPitch, 0, 0, 0, 0, 0 });
+                byte[] data = MoliDj.BuildFrame(vibrationPitch);
+                sendData(data, data.Length);
+            }
+            else
+            {
+                SendCmd();
+            }
 
         }
         private void sendData(byte[] databuf, int datalength)
@@ -558,6 +590,137 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             }
 
         }
+        bool isread = true;
+        private void BtnRead_Click(object sender, RoutedEventArgs e)
+        {
+            CmbOption.SelectedIndex = 1;
+            if ((sender as Button).Name == "BtnRead")
+            { isread = true; }
+            else
+                isread = false;
+            SendCmd();
 
+        }
+        private void SendCmd()
+        {
+
+
+            // 帧总长 18 字节
+            byte[] frame = new byte[19];
+
+            // 0~1 帧头
+            frame[0] = 0xEB;
+            frame[1] = 0x90;
+
+            // 2 帧计数（这里简单写 0，实际可自增）
+            frame[2] = 0;
+
+            // 3 数据包长度
+            frame[3] = 19;
+
+            // 4 命令字：PID 查询/修改指令固定 0x01
+            frame[4] = 0x01;
+
+            // 5 更改命令字：Bit0=P, Bit1=I, Bit2=D
+            byte updateFlag = 0;
+            updateFlag |= 0x01;
+            updateFlag |= 0x02;
+            updateFlag |= 0x04;
+            frame[5] = updateFlag;
+            if (isread) frame[5] = 0;
+            // 6~9  P(float) 小端
+            FloatStringToBytes(frame, TbP.Text, 6);
+
+            // 10~13 I(float) 小端
+            FloatStringToBytes(frame, TbI.Text, 10);
+
+            // 14~17 D(float) 小端
+            FloatStringToBytes(frame, TbD.Text, 14);
+
+            // 18 校验和：累加 0~17 字节后取反+1，再取低 8 位
+            byte sum = 0;
+            for (int idx = 0; idx < frame[3]; idx++)
+                sum += frame[idx];
+            frame[18] = (byte)(((~sum) + 1) & 0xFF);
+            sendData(frame, frame.Length);
+
+        }
+
+        public byte[] FloatToLittleEndianBytes(float value)
+        {
+            // 使用BitConverter将float转换为字节数组（默认是大端序）
+            byte[] bytes = BitConverter.GetBytes(value);
+
+            // 检查系统是否使用大端序（通常Windows是小端序，但最好检查一下）
+            //if (BitConverter.IsLittleEndian)
+            //{
+            //    // 如果系统已经是小端序，则不需要转换
+            //    return bytes;
+            //}
+            //else
+            //{
+            // 如果系统是大端序，则需要反转字节数组
+            Array.Reverse(bytes);
+            return bytes;
+            //}
+        }
+        public void FloatStringToBytes(byte[] bytes, string floatvalue, int startindex)
+        {
+            if (float.TryParse(floatvalue, out float re3))
+            {
+                var data3 = FloatToLittleEndianBytes(re3);
+                bytes[startindex] = data3[2];
+                bytes[startindex + 1] = data3[3];
+                bytes[startindex + 2] = data3[0];
+                bytes[startindex + 3] = data3[1];
+            }
+        }
+
+        public string GetGateStatusHex(byte[] input, int start, int end = 0)
+        {
+            // Null or empty check for input array
+            if (input == null || input.Length == 0)
+                return "";
+
+            // Validate start and end parameters
+            if (end != 0 && (start < 0 || end >= input.Length || start > end))
+                return "";
+            // Use StringBuilder for efficient string concatenation
+            var hexBuilder = new StringBuilder();
+            if (end - start == 3)
+            {
+                byte[] buff = new byte[4];
+                buff[1] = input[start];
+                buff[0] = input[start + 1];
+                buff[3] = input[start + 2];
+                buff[2] = input[start + 3];
+                var data = BitConverter.ToSingle(buff, 0);
+                hexBuilder.Append(data + "(");
+
+            }
+            if (end - start == 1)
+            {
+                var data = BitConverter.ToInt16(input, start);
+                //byte[] buff = new byte[4];
+                //buff[1] = input[start];
+                //buff[0] = input[start + 1];
+                //buff[2] = input[start];
+                //buff[3] = input[start + 1];
+                //var data = BitConverter.ToSingle(buff, 0);
+                hexBuilder.Append(data + "(");
+            }
+            else if (end == 0)
+            {
+                hexBuilder.Append(input[start] + "(0x" + input[start].ToString("X2"));
+            }
+            for (int i = start; i <= end; i++)
+            {
+                hexBuilder.Append(input[i].ToString("X2"));
+                if (i < end) // Avoid adding space after the last element
+                    hexBuilder.Append(" ");
+            }
+
+            return hexBuilder.ToString() + ")";
+        }
     }
 }
