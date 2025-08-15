@@ -260,7 +260,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
                                 var yaw = MoliDj.RawToAngle(Rbuffer[6]);
-
+                                Dome1.Dome1Instance.pitchdianji = yaw;
 
                                 //string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
                                 //// 使用BitConverter将字节数组转换为float

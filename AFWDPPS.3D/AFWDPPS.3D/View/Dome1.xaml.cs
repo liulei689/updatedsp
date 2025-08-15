@@ -422,7 +422,7 @@ namespace WpfApp3D
         private List<byte> G_btList_RecBuf_R1 = new List<byte>();
         private int G_int_RecBufLen1 = 0;
         double pitch1 = 0;
-        double pitchdianji = 0;
+        public double pitchdianji = 0;
         double yawdianji = 0;
 
         double yaw1 = 0;
