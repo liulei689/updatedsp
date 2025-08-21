@@ -337,8 +337,9 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                 double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
                 double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
                 Dome1.Dome1Instance.pitch = vibrationYaw;
+                Dome1.Dome1Instance.pitch = Dome1.Dome1Instance.pitch + Dome1.Dome1Instance.pitchdianji;
                 //double vibrationPitch = Dome1.Dome1Instance.pitch;
-                byte[] data = MoliDj.BuildFrame(vibrationPitch);
+                byte[] data = MoliDj.BuildFrame(Dome1.Dome1Instance.pitch);
                 sendData(data, data.Length);
             }
             else
