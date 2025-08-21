@@ -324,7 +324,7 @@ namespace WpfApp3D
             var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
 
             // 更新用于显示的角度
-            //pitch1 = pitc_back;
+            pitch1 = pitchdianji - pitch;
             //yaw1 = yaw_back;
             //pitchdianji = djpitc_back;
             //yawdianji = djyaw_back;
