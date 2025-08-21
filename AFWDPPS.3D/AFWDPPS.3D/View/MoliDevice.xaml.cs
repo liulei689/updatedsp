@@ -592,11 +592,14 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         bool isread = true; bool sendcmdt = false;
         private void BtnRead_Click(object sender, RoutedEventArgs e)
         {
-            if ((sender as Button).Name == "BtnRead")
-            { isread = true; }
-            else
-                isread = false;
-            sendcmdt = true;
+            {
+                CmbOption.SelectedIndex = 1;
+                if ((sender as Button).Name == "BtnRead")
+                { isread = true; }
+                else
+                    isread = false;
+                SendCmd();
+            }
         }
         private void SendCmd()
         {
