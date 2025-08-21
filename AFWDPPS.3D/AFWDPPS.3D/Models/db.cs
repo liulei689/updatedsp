@@ -37,7 +37,7 @@ namespace WpfApp3D.Models
                 {
                     await 存储数据Async(logEntry);
                 }
-                catch
+                catch (Exception ex)
                 {
                 }
             }

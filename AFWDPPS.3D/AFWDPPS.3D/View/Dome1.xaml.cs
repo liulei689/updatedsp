@@ -1,3 +1,4 @@
+using AFWDPPS.DB;
 using HelixToolkit.Wpf;
 using Microsoft.Win32;
 using System;
@@ -158,10 +159,11 @@ namespace WpfApp3D
 
 
         }
-
-        private void Dome1_Loaded(object sender, RoutedEventArgs e)
+        List<稳定平台数据> datalist;
+        private async void Dome1_Loaded(object sender, RoutedEventArgs e)
         {
             InintZXB();
+            datalist = await WDPT.GetList();
         }
 
         private MeshGeometry3D CreateSpringGeometry(Point3D startPoint, Point3D endPoint, double radius, int turns)
@@ -289,6 +291,7 @@ namespace WpfApp3D
         // 定时器事件
         double avgYaw = 0;
         double avgPitch = 0;
+        int indexi = 0;
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (generator == null) return;
@@ -305,7 +308,15 @@ namespace WpfApp3D
 
             // Step 2: 控制算法
             var (djpitch, djyaw, speedPitch, speedYaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
-
+            indexi++;
+            if (indexi++ >= datalist.Count - 10) indexi = 0;
+            if (datalist != null && datalist.Count > 0)
+            {
+                pitch = datalist[indexi].船横滚角度;
+                //pitch1 = datalist[indexi].声呐横滚角度;
+                //yaw = datalist[indexi].船俯仰角度;
+                //yaw1 = datalist[indexi].声呐俯仰角度;
+            }
             // Step 3: 模拟电机反馈（简单身份模拟，或添加延迟）
             var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw, speedPitch, speedYaw);
 
@@ -339,7 +350,7 @@ namespace WpfApp3D
                 BoXing.Instance.SetBoXing(new double[] { pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji });
 
             // 更新3D模型
-            if (ishide.SelectedIndex == 1)
+            if (start.Content.ToString() == "暂停")
                 UpdateTransform();
         }
         // 更新方向角度
@@ -400,19 +411,21 @@ namespace WpfApp3D
         }
         private void UpdateTransform()
         {
-            var yawRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitch));
-            var pitchRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw));
+            var yawRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitch * 1.3));
+            var pitchRotation = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw * 1.3));
             boxModel.Transform = new Transform3DGroup { Children = { yawRotation, pitchRotation } };
             var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
             var (djpitch, djyaw, speedPitch, speedYaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
             var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw, speedPitch, speedYaw);
             var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
-            var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitc_back));
-            var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw_back));
+            var yawRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), pitch1));
+            var pitchRotation1 = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), yaw1));
             boxModel1.Transform = new Transform3DGroup { Children = { yawRotation1, pitchRotation1 } };
             UpdateSpringGeometry(boxModel, boxModel1, springModel);
-            x1.Text = (pitc_back).ToString("F2");
-            //y1.Text = (yaw_back).ToString("F2");
+            x1.Text = (pitch).ToString("F2");
+            y1.Text = (yaw).ToString("F2");
+            x2.Text = (pitch1).ToString("F2");
+            y2.Text = (yaw1).ToString("F2");
 
         }
         #endregion
@@ -702,8 +715,8 @@ namespace WpfApp3D
             if (BoXing.Instance == null)
                 BoXing.Instance = new BoXing();
             BoXing.Instance.Show();
-            //WaveformChartFY = new WaveformChartFY();
-            //WaveformChartFY.Show();
+            //WaveformChart = new WaveformChart();
+            //WaveformChart.Show();
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -740,92 +753,6 @@ namespace WpfApp3D
         private void serialPort2_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
 
-            try
-            {
-                SerialPort sp = (SerialPort)sender;
-                int bytesToRead = sp.BytesToRead;
-                byte[] buffer = new byte[bytesToRead];
-
-                // 读取数据到缓冲区  
-                int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
-                if (nbrDataRead == 0)
-                    return;
-                G_btList_RecBuf_R.Clear();
-                foreach (byte tmpByte in buffer)
-                {
-                    switch (G_int_ComStatus)
-                    {
-                        case (int)enum_ComStatus.COM_STATUS_HEAD1:
-                            G_btList_RecBuf.Clear();
-
-                            if (tmpByte == 0xAA)
-                            {
-                                // tmpHEAD1 = tmpByte;
-                                //切换协议解析状态
-                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
-                                G_btList_RecBuf.Add(tmpByte);
-                            }
-                            break;
-                        case (int)enum_ComStatus.COM_STATUS_HEAD2:
-                            if (tmpByte == 0x55)
-                            {
-                                //切换协议解析状态
-                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
-                                G_btList_RecBuf.Add(tmpByte);
-                            }
-                            break;
-                        case (int)enum_ComStatus.COM_STATUS_DATA:
-                            G_btList_RecBuf.Add(tmpByte);
-
-                            //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf.Count == 12)  //包接收完成
-                            {
-                                byte[] Rbuffer = G_btList_RecBuf.ToArray();
-                                yaw = MoliDj.RawToAngle(Rbuffer[6]);
-                                y1.Dispatcher.BeginInvoke((Action)(() =>
-                                {
-                                    y1.Text = yaw.ToString("F2");
-                                }));
-
-                                //string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
-                                //// 使用BitConverter将字节数组转换为float
-                                //pitch = BitConverter.ToSingle(Rbuffer, 19);
-                                //yaw = BitConverter.ToSingle(Rbuffer, 23);
-                                //pitch *= 57.3; //滚转
-                                //yaw *= 57.3;
-                                // UpdateYaw();
-                                //UpdatePitch();
-                                G_btList_RecBuf.Clear();
-                                //切换协议解析状态
-                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
-                            }
-
-                            //数据包长度超限检查
-                            if (G_btList_RecBuf.Count >= 56)
-                            {
-                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
-
-                                //str_ErrorInfo += "“";
-                                //for (int i = 0; i < 6; i++)
-                                //{
-                                //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
-                                //}
-                                //str_ErrorInfo += "......”该帧数据长度超限！";
-
-                                //清空相关缓存
-                                G_btList_RecBuf.Clear();
-                            }
-                            break;
-
-                        default:
-                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
-                            break;
-                    }
-
-                }
-            }
-            catch { }
-
             //try
             //{
             //    SerialPort sp = (SerialPort)sender;
@@ -844,7 +771,7 @@ namespace WpfApp3D
             //            case (int)enum_ComStatus.COM_STATUS_HEAD1:
             //                G_btList_RecBuf.Clear();
 
-            //                if (tmpByte == 0xFC)
+            //                if (tmpByte == 0xAA)
             //                {
             //                    // tmpHEAD1 = tmpByte;
             //                    //切换协议解析状态
@@ -853,7 +780,7 @@ namespace WpfApp3D
             //                }
             //                break;
             //            case (int)enum_ComStatus.COM_STATUS_HEAD2:
-            //                if (tmpByte == 0x41)
+            //                if (tmpByte == 0x55)
             //                {
             //                    //切换协议解析状态
             //                    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
@@ -864,21 +791,24 @@ namespace WpfApp3D
             //                G_btList_RecBuf.Add(tmpByte);
 
             //                //数据接收完成后的有效性判断
-            //                if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //包接收完成
+            //                if (G_btList_RecBuf.Count == 12)  //包接收完成
             //                {
             //                    byte[] Rbuffer = G_btList_RecBuf.ToArray();
-            //                    string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
-            //                    // 使用BitConverter将字节数组转换为float
-            //                    pitch = BitConverter.ToSingle(Rbuffer, 19);
-            //                    yaw = BitConverter.ToSingle(Rbuffer, 23);
-            //                    pitch *= 57.3; //滚转
-            //                    yaw *= 57.3;
+            //                    yaw = MoliDj.RawToAngle(Rbuffer[6]);
+            //                    y1.Dispatcher.BeginInvoke((Action)(() =>
+            //                    {
+            //                        y1.Text = yaw.ToString("F2");
+            //                    }));
 
+            //                    //string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+            //                    //// 使用BitConverter将字节数组转换为float
+            //                    //pitch = BitConverter.ToSingle(Rbuffer, 19);
+            //                    //yaw = BitConverter.ToSingle(Rbuffer, 23);
+            //                    //pitch *= 57.3; //滚转
+            //                    //yaw *= 57.3;
             //                    // UpdateYaw();
             //                    //UpdatePitch();
             //                    G_btList_RecBuf.Clear();
-
-
             //                    //切换协议解析状态
             //                    G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
             //                }
@@ -908,6 +838,89 @@ namespace WpfApp3D
             //    }
             //}
             //catch { }
+
+            try
+            {
+                SerialPort sp = (SerialPort)sender;
+                int bytesToRead = sp.BytesToRead;
+                byte[] buffer = new byte[bytesToRead];
+
+                // 读取数据到缓冲区  
+                int nbrDataRead = sp.Read(buffer, 0, bytesToRead);
+                if (nbrDataRead == 0)
+                    return;
+                G_btList_RecBuf_R.Clear();
+                foreach (byte tmpByte in buffer)
+                {
+                    switch (G_int_ComStatus)
+                    {
+                        case (int)enum_ComStatus.COM_STATUS_HEAD1:
+                            G_btList_RecBuf.Clear();
+
+                            if (tmpByte == 0xFC)
+                            {
+                                // tmpHEAD1 = tmpByte;
+                                //切换协议解析状态
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
+                                G_btList_RecBuf.Add(tmpByte);
+                            }
+                            break;
+                        case (int)enum_ComStatus.COM_STATUS_HEAD2:
+                            if (tmpByte == 0x41)
+                            {
+                                //切换协议解析状态
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
+                                G_btList_RecBuf.Add(tmpByte);
+                            }
+                            break;
+                        case (int)enum_ComStatus.COM_STATUS_DATA:
+                            G_btList_RecBuf.Add(tmpByte);
+
+                            //数据接收完成后的有效性判断
+                            if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //包接收完成
+                            {
+                                byte[] Rbuffer = G_btList_RecBuf.ToArray();
+                                string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+                                // 使用BitConverter将字节数组转换为float
+                                pitch = BitConverter.ToSingle(Rbuffer, 19);
+                                yaw = BitConverter.ToSingle(Rbuffer, 23);
+                                pitch *= 57.3; //滚转
+                                yaw *= 57.3;
+
+                                // UpdateYaw();
+                                //UpdatePitch();
+                                G_btList_RecBuf.Clear();
+
+
+                                //切换协议解析状态
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                            }
+
+                            //数据包长度超限检查
+                            if (G_btList_RecBuf.Count >= 56)
+                            {
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+                                //str_ErrorInfo += "“";
+                                //for (int i = 0; i < 6; i++)
+                                //{
+                                //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
+                                //}
+                                //str_ErrorInfo += "......”该帧数据长度超限！";
+
+                                //清空相关缓存
+                                G_btList_RecBuf.Clear();
+                            }
+                            break;
+
+                        default:
+                            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                            break;
+                    }
+
+                }
+            }
+            catch { }
         }
 
         private void openclosecom2_Click(object sender, RoutedEventArgs e)
@@ -1209,6 +1222,13 @@ namespace WpfApp3D
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
             new MoliDevice().Show();
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            if (start.Content.ToString() == "开始")
+                start.Content = "暂停";
+            else start.Content = "开始";
         }
     }
     #region 读本地日志文件生成动作

@@ -42,23 +42,40 @@
             <GridSplitter  Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Background="Gray" ResizeDirection="Rows" Margin="8"/>
             <TextBlock Text="稳定平台信息" Margin="5"/>
-            <TextBlock Text="俯仰角度：" Margin="5"/>
+            <TextBlock Text="船体俯仰角度（大平板）：" Margin="5"/>
             <TextBlock x:Name="x1" Text="0" Margin="5"/>
-            <TextBlock Text="滚转角度："/>
+            <TextBlock Text="船体滚转角度（大平板）："/>
             <TextBlock x:Name="y1" Text="0" Margin="5"/>
+            <TextBlock Text="声呐俯仰角度（小平板）：" Margin="5"/>
+            <TextBlock x:Name="x2" Text="0" Margin="5"/>
+            <TextBlock Text="声呐滚转角度（小平板）："/>
+            <TextBlock x:Name="y2" Text="0" Margin="5"/>
             <TextBlock Visibility="Collapsed" Text="幅值（°）"/>
             <TextBox Visibility="Collapsed"  x:Name="fuzhi" Width="100" Text="9" IsReadOnly="False"/>
             <TextBlock Visibility="Collapsed"  Text="频率(Hz)"/>
             <TextBox Visibility="Collapsed"  x:Name="pinlv" Width="100" Text="1" IsReadOnly="False"/>
             <Button Visibility="Collapsed"  Content="生成正玄波" Click="Button_Click_2" Margin="5"/>
-            <TextBlock Text="是否显示3d状态" Margin="5"/>
+            <TextBlock Visibility="Collapsed" Text="是否显示3d状态" Margin="5"/>
+            <Button  Content="开始" Click="Button_Click_4" Name="start" Margin="5"/>
+            <TextBlock Text="时间比例" Margin="0 0 0 5"/>
+            <ComboBox Name="liusu" Margin="0 0 0 10" Width="120" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" SelectedIndex="0">
+                <ComboBoxItem Content="1s 对应 1s"/>
+                <ComboBoxItem Content="1s 对应 1min"/>
+                <ComboBoxItem Content="1s 对应 1h"/>
+                <ComboBoxItem Content="1s 对应 1d"/>
+            </ComboBox>
+            <TextBlock Text="采集的数据开始时间："/>
+            <TextBlock Foreground="Green" Text="2025/8/19 15:36"/>
+            <TextBlock Text="采集的数据结束时间："/>
+            <TextBlock Foreground="Green"  Text="2025/8/19 16:08"/>
 
-            <ComboBox Name="ishide" Margin="20 0" Width="120" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" SelectedIndex="0">
+            <ComboBox Visibility="Collapsed" Name="ishide" Margin="20 0" Width="120" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" SelectedIndex="0">
                 <ComboBoxItem Content="不显示"/>
                 <ComboBoxItem Content="显示"/>
             </ComboBox>
-            <ToggleButton  Height="25" Margin="20" Content="模拟设备" IsChecked="False" Click="ToggleButton_Click"/>
+            <ToggleButton Height="25" Margin="20" Content="模拟设备" IsChecked="False" Click="ToggleButton_Click"/>
             <Button Content="显示波形" Margin="20" Width="100"  Click="Button_Click_1"/>
+            <Button Content="查看历史波形" Width="100" Margin="5"  Click="Button_Click_3"/>
 
         </StackPanel>
      
@@ -76,7 +93,7 @@
                 <PerspectiveCamera Position="-0.671713226056439,153.944354616116,36.0650035792227" x:Name="dssd" LookDirection="0.671713226056439,-153.944354616116,-36.0650035792227" UpDirection="-0.000399249862283209,0.091500747633941,0.995804927574662" FieldOfView="45"/>
             </ht:HelixViewport3D.Camera>
         </ht:HelixViewport3D>
-        <StackPanel Grid.Row="0" Grid.Column="2"  Visibility="Collapsed" Orientation="Vertical" Margin="10,40,0,0">
+        <StackPanel Grid.Row="0" Visibility="Collapsed" Grid.Column="2"   Orientation="Vertical" Margin="10,40,0,0">
             <TextBlock    Text="串口号:"  />
             <ComboBox  Name="comlist1"  Margin="20 0"/>
             <TextBlock   Text="波特率:"  />
@@ -89,7 +106,6 @@
             <ComboBox  Name="botelv2" Width="100" Margin="20 0" />
             <ToggleButton   x:Name="openclosecom2" Height="25" Margin="5" Content="打开平台MU串口" IsChecked="False" Click="openclosecom2_Click">
             </ToggleButton>
-            <Button Content="查看历史波形" Width="100" Margin="5"  Click="Button_Click_3"/>
 
             <!-- 算法选择与参数控制区域（右侧，显示波形下方） -->
             <Border Margin="0,15,0,0" Background="#F8F8F8" Opacity="0.98" CornerRadius="6" Padding="8">

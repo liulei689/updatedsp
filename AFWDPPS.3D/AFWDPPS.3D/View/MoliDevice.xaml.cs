@@ -331,14 +331,13 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         {
             if (CmbOption.SelectedIndex == 0)
             {
-                if (Dome1.Dome1Instance.generator == null) return;
+                //if (Dome1.Dome1Instance.generator == null) return;
 
-                // 生成振动信号（正弦波）
-                double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
-                double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
-                Dome1.Dome1Instance.pitch = vibrationYaw;
-                //if (BoXing.Instance != null)
-                //    BoXing.Instance.SetBoXing(new double[6] { vibrationPitch, 0, 0, 0, 0, 0 });
+                //// 生成振动信号（正弦波）
+                //double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
+                //double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
+                //Dome1.Dome1Instance.pitch = vibrationYaw;
+                double vibrationPitch = Dome1.Dome1Instance.pitch;
                 byte[] data = MoliDj.BuildFrame(vibrationPitch);
                 sendData(data, data.Length);
             }
@@ -590,16 +589,14 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             }
 
         }
-        bool isread = true;
+        bool isread = true; bool sendcmdt = false;
         private void BtnRead_Click(object sender, RoutedEventArgs e)
         {
-            CmbOption.SelectedIndex = 1;
             if ((sender as Button).Name == "BtnRead")
             { isread = true; }
             else
                 isread = false;
-            SendCmd();
-
+            sendcmdt = true;
         }
         private void SendCmd()
         {
