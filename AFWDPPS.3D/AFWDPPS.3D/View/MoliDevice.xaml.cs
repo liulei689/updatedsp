@@ -331,13 +331,13 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         {
             if (CmbOption.SelectedIndex == 0)
             {
-                //if (Dome1.Dome1Instance.generator == null) return;
+                if (Dome1.Dome1Instance.generator == null) return;
 
-                //// 生成振动信号（正弦波）
-                //double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
-                //double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
-                //Dome1.Dome1Instance.pitch = vibrationYaw;
-                double vibrationPitch = Dome1.Dome1Instance.pitch;
+                // 生成振动信号（正弦波）
+                double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
+                double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
+                Dome1.Dome1Instance.pitch = vibrationYaw;
+                //double vibrationPitch = Dome1.Dome1Instance.pitch;
                 byte[] data = MoliDj.BuildFrame(vibrationPitch);
                 sendData(data, data.Length);
             }

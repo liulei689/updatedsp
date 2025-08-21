@@ -308,15 +308,15 @@ namespace WpfApp3D
 
             // Step 2: 控制算法
             var (djpitch, djyaw, speedPitch, speedYaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
-            indexi++;
-            if (indexi++ >= datalist.Count - 10) indexi = 0;
-            if (datalist != null && datalist.Count > 0)
-            {
-                pitch = datalist[indexi].船横滚角度;
-                //pitch1 = datalist[indexi].声呐横滚角度;
-                //yaw = datalist[indexi].船俯仰角度;
-                //yaw1 = datalist[indexi].声呐俯仰角度;
-            }
+            //indexi++;
+            //if (indexi++ >= datalist.Count - 10) indexi = 0;
+            //if (datalist != null && datalist.Count > 0)
+            //{
+            //    pitch = datalist[indexi].船横滚角度;
+            //    //pitch1 = datalist[indexi].声呐横滚角度;
+            //    //yaw = datalist[indexi].船俯仰角度;
+            //    //yaw1 = datalist[indexi].声呐俯仰角度;
+            //}
             // Step 3: 模拟电机反馈（简单身份模拟，或添加延迟）
             var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw, speedPitch, speedYaw);
 
