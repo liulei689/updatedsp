@@ -80,7 +80,7 @@ namespace WpfApp3D.View
         private async void InitDataAndPlot()
         {
             // var data = WDPT.AdjustSonarPitchAnglehx();
-            //  var data1 = WDPT.AdjustSonarPitchAngle();
+            // var data1 = WDPT.AdjustSonarPitchAngle();
 
             if (WpfPlot1 == null) return;
             // 清空旧曲线
@@ -112,13 +112,23 @@ namespace WpfApp3D.View
                 //    datas[i][j] = walkers[i].Next();
                 signals[i] = WpfPlot1.Plot.Add.Signal(datas[i]);
                 signals[i].LegendText = channelNames[i];
+                WpfPlot1.Plot.Legend.FontSize = 40; // 设置字体大小为 16，适合根据需要调整
                 signals[i].Color = palette.GetColor(i); // 这里获取颜色
                 signals[i].IsVisible = GetCheckBox(i)?.IsChecked == true;
             }
             // ⬇⬇ 让横坐标完整显示所有点
             WpfPlot1.Plot.Axes.SetLimitsX(0, res.Count);
-
-
+            // 设置 Y 轴刻度字体大小
+            var plt = WpfPlot1.Plot;
+            // 设置 X 轴刻度字体大小（如果需要）
+            var yAxis = plt.Axes.GetYAxes().FirstOrDefault();
+            yAxis.TickLabelStyle = new ScottPlot.LabelStyle
+            {
+                FontSize = 40,  // 设置字体大小为 16
+                Italic = false,  // 如果需要斜体设置为 true
+                                 // 如果需要字体颜色，可以设置：
+                                 // FontColor = Color.Red
+            };
             WpfPlot1.Plot.Legend.FontName = "微软雅黑";
             WpfPlot1.Plot.ShowLegend();
             CH = WpfPlot1.Plot.Add.Crosshair(0, 0);

@@ -326,7 +326,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         }
 
         private bool sendcmd = true;
-
+        public double datas = 0;
         private void Timer12_Tick(object sender, EventArgs e)
         {
             if (CmbOption.SelectedIndex == 0)
@@ -336,6 +336,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                 // 生成振动信号（正弦波）
                 double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
                 double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
+
                 Dome1.Dome1Instance.pitch = vibrationYaw + Dome1.Dome1Instance.pitchdianji;
                 //double vibrationPitch = Dome1.Dome1Instance.pitch;
                 byte[] data = MoliDj.BuildFrame(Dome1.Dome1Instance.pitch);
