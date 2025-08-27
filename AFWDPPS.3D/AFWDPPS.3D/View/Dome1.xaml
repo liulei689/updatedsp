@@ -76,7 +76,23 @@
             <ToggleButton Height="25" Margin="20" Content="模拟设备" IsChecked="False" Click="ToggleButton_Click"/>
             <Button Content="显示波形" Margin="20" Width="100"  Click="Button_Click_1"/>
             <Button Content="查看历史波形" Width="100" Margin="5"  Click="Button_Click_3"/>
-
+            <!-- 算法选择与参数控制区域（右侧，显示波形下方） -->
+            <Border Margin="0,15,0,0" Background="#F8F8F8" Opacity="0.98" CornerRadius="6" Padding="8">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="算法选择" FontWeight="Bold" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="AlgorithmComboBox" Width="160" Margin="0,0,0,8" SelectionChanged="AlgorithmComboBox_SelectionChanged">
+                        <ComboBoxItem Content="PID" Tag="PID"/>
+                        <ComboBoxItem Content="LADRC" Tag="LADRC"/>
+                        <ComboBoxItem Content="SMC" Tag="SMC"/>
+                    </ComboBox>
+                    <StackPanel x:Name="AlgorithmParamsPanel" Orientation="Vertical"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
+                        <Button x:Name="BtnAutoOptimize" Content="自动优化参数" Width="100" Margin="0,0,8,0" Click="BtnAutoOptimize_Click"/>
+                        <Button x:Name="BtnStopOptimize" Content="停止优化" Width="100" Click="BtnStopOptimize_Click"/>
+                    </StackPanel>
+                    <TextBlock x:Name="BestParamsTextBlock" Text="" Margin="0,8,0,0" Foreground="DarkGreen" FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
         </StackPanel>
      
         <!-- 右侧3D视图 -->
@@ -107,23 +123,7 @@
             <ToggleButton   x:Name="openclosecom2" Height="25" Margin="5" Content="打开平台MU串口" IsChecked="False" Click="openclosecom2_Click">
             </ToggleButton>
 
-            <!-- 算法选择与参数控制区域（右侧，显示波形下方） -->
-            <Border Margin="0,15,0,0" Background="#F8F8F8" Opacity="0.98" CornerRadius="6" Padding="8">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="算法选择" FontWeight="Bold" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="AlgorithmComboBox" Width="160" Margin="0,0,0,8" SelectionChanged="AlgorithmComboBox_SelectionChanged">
-                        <ComboBoxItem Content="PID" Tag="PID"/>
-                        <ComboBoxItem Content="LADRC" Tag="LADRC"/>
-                        <ComboBoxItem Content="SMC" Tag="SMC"/>
-                    </ComboBox>
-                    <StackPanel x:Name="AlgorithmParamsPanel" Orientation="Vertical"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
-                        <Button x:Name="BtnAutoOptimize" Content="自动优化参数" Width="100" Margin="0,0,8,0" Click="BtnAutoOptimize_Click"/>
-                        <Button x:Name="BtnStopOptimize" Content="停止优化" Width="100" Click="BtnStopOptimize_Click"/>
-                    </StackPanel>
-                    <TextBlock x:Name="BestParamsTextBlock" Text="" Margin="0,8,0,0" Foreground="DarkGreen" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+    
         </StackPanel>
     </Grid>
 </UserControl>

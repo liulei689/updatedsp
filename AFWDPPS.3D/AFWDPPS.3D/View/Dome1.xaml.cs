@@ -296,13 +296,13 @@ namespace WpfApp3D
         {
             if (generator == null) return;
 
-            //// 生成振动信号（正弦波）
-            //double vibrationPitch = generator.GenerateNextValue();
-            //double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
+            // 生成振动信号（正弦波）
+            double vibrationPitch = generator.GenerateNextValue();
+            double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
 
-            //// Step 1: 读取平台数据（添加振动）
-            //pitch = vibrationPitch;
-            //yaw = vibrationYaw;
+            // Step 1: 读取平台数据（添加振动）
+            pitch = vibrationPitch;
+            yaw = vibrationYaw;
 
             var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
 
