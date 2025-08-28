@@ -325,9 +325,9 @@ namespace WpfApp3D
 
             // 更新用于显示的角度
             pitch1 = pitchdianji + pitch;
-            //yaw1 = yaw_back;
-            //pitchdianji = djpitc_back;
-            //yawdianji = djyaw_back;
+            yaw1 = yaw_back;
+            pitchdianji = djpitc_back;
+            yawdianji = djyaw_back;
 
             // 记录数据
             AFWDPPS.DB.稳定平台数据 data = new AFWDPPS.DB.稳定平台数据();
