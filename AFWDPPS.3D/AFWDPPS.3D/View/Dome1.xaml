@@ -109,7 +109,7 @@
                 <PerspectiveCamera Position="-0.671713226056439,153.944354616116,36.0650035792227" x:Name="dssd" LookDirection="0.671713226056439,-153.944354616116,-36.0650035792227" UpDirection="-0.000399249862283209,0.091500747633941,0.995804927574662" FieldOfView="45"/>
             </ht:HelixViewport3D.Camera>
         </ht:HelixViewport3D>
-        <StackPanel Grid.Row="0" Visibility="Collapsed" Grid.Column="2"   Orientation="Vertical" Margin="10,40,0,0">
+        <StackPanel Grid.Row="0" Visibility="Visible" Grid.Column="2"   Orientation="Vertical" Margin="10,40,0,0">
             <TextBlock    Text="串口号:"  />
             <ComboBox  Name="comlist1"  Margin="20 0"/>
             <TextBlock   Text="波特率:"  />
