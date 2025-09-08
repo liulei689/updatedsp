@@ -752,6 +752,7 @@ namespace WpfApp3D
             COM_STATUS_LEN,
             COM_STATUS_DATA
         }
+
         private void serialPort2_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
 
@@ -773,7 +774,7 @@ namespace WpfApp3D
                         case (int)enum_ComStatus.COM_STATUS_HEAD1:
                             G_btList_RecBuf.Clear();
 
-                            if (tmpByte == 0xFC)
+                            if (tmpByte == 0xA5)
                             {
                                 // tmpHEAD1 = tmpByte;
                                 //切换协议解析状态
@@ -782,7 +783,15 @@ namespace WpfApp3D
                             }
                             break;
                         case (int)enum_ComStatus.COM_STATUS_HEAD2:
-                            if (tmpByte == 0x41)
+                            if (tmpByte == 0xCC)
+                            {
+                                //切换协议解析状态
+                                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DEVICE_ID;
+                                G_btList_RecBuf.Add(tmpByte);
+                            }
+                            break;
+                        case (int)enum_ComStatus.COM_STATUS_DEVICE_ID:
+                            if (tmpByte == 0x20)
                             {
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
@@ -793,21 +802,32 @@ namespace WpfApp3D
                             G_btList_RecBuf.Add(tmpByte);
 
                             //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //包接收完成
+                            if (ProtocolParser.IsValidData(G_btList_RecBuf.ToArray()))
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
                                 string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+
                                 // 使用BitConverter将字节数组转换为float
-                                pitch = BitConverter.ToSingle(Rbuffer, 19);
-                                yaw = BitConverter.ToSingle(Rbuffer, 23);
-                                pitch *= 57.3; //滚转
-                                yaw *= 57.3;
-                                new 船体姿态数据() { Timestamp = DateTime.Now, 船俯仰角度 = pitch, 船横滚角度 = yaw }.AddBoardData();
+                                var x = ProtocolParser.ParseAngularVelocity(Rbuffer, 3);
+
+                                var y = ProtocolParser.ParseAngularVelocity(Rbuffer, 6);
+
+                                var z = ProtocolParser.ParseAngularVelocity(Rbuffer, 9);
+
+                                this.Dispatcher.BeginInvoke((Action)(() =>
+                                {
+                                    x1.Text = x.ToString();
+                                    y1.Text = y.ToString();
+                                    x2.Text = z.ToString();
+                                }));
+
+                                //new 船体姿态数据() { Timestamp = DateTime.Now, 船俯仰角度 = pitch, 船横滚角度 = yaw }.AddBoardData();
                                 // UpdateYaw();
                                 //UpdatePitch();
                                 G_btList_RecBuf.Clear();
 
-
+                                new 船体姿态数据() { Timestamp = DateTime.Now, 船俯仰角度 = pitch, 船横滚角度 = yaw }.AddBoardData();
+                                // UpdateYaw();
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
                             }
@@ -835,6 +855,76 @@ namespace WpfApp3D
                     }
 
                 }
+
+                //foreach (byte tmpByte in buffer)
+                //{
+                //    switch (G_int_ComStatus)
+                //    {
+                //        case (int)enum_ComStatus.COM_STATUS_HEAD1:
+                //            G_btList_RecBuf.Clear();
+
+                //            if (tmpByte == 0xFC)
+                //            {
+                //                // tmpHEAD1 = tmpByte;
+                //                //切换协议解析状态
+                //                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD2;
+                //                G_btList_RecBuf.Add(tmpByte);
+                //            }
+                //            break;
+                //        case (int)enum_ComStatus.COM_STATUS_HEAD2:
+                //            if (tmpByte == 0x41)
+                //            {
+                //                //切换协议解析状态
+                //                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_DATA;
+                //                G_btList_RecBuf.Add(tmpByte);
+                //            }
+                //            break;
+                //        case (int)enum_ComStatus.COM_STATUS_DATA:
+                //            G_btList_RecBuf.Add(tmpByte);
+
+                //            //数据接收完成后的有效性判断
+                //            if (G_btList_RecBuf.Count == 56 && G_btList_RecBuf[0] == 0xFC && G_btList_RecBuf[1] == 0x41 && G_btList_RecBuf[55] == 0xFD)  //包接收完成
+                //            {
+                //                byte[] Rbuffer = G_btList_RecBuf.ToArray();
+                //                string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
+                //                // 使用BitConverter将字节数组转换为float
+                //                pitch = BitConverter.ToSingle(Rbuffer, 19);
+                //                yaw = BitConverter.ToSingle(Rbuffer, 23);
+                //                pitch *= 57.3; //滚转
+                //                yaw *= 57.3;
+                //                new 船体姿态数据() { Timestamp = DateTime.Now, 船俯仰角度 = pitch, 船横滚角度 = yaw }.AddBoardData();
+                //                // UpdateYaw();
+                //                //UpdatePitch();
+                //                G_btList_RecBuf.Clear();
+
+
+                //                //切换协议解析状态
+                //                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                //            }
+
+                //            //数据包长度超限检查
+                //            if (G_btList_RecBuf.Count >= 56)
+                //            {
+                //                G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+
+                //                //str_ErrorInfo += "“";
+                //                //for (int i = 0; i < 6; i++)
+                //                //{
+                //                //    str_ErrorInfo += G_btList_RecBuf[i].ToString("X2") + " ";
+                //                //}
+                //                //str_ErrorInfo += "......”该帧数据长度超限！";
+
+                //                //清空相关缓存
+                //                G_btList_RecBuf.Clear();
+                //            }
+                //            break;
+
+                //        default:
+                //            G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
+                //            break;
+                //    }
+
+                //}
             }
             catch { }
         }
@@ -1276,12 +1366,13 @@ namespace WpfApp3D
             File.AppendAllLines("1.txt", new string[1] { $"{startBytes} {selfCheck} {xAngularVelocity} {yAngularVelocity} {zAngularVelocity} {temperature} {spareByte} {checksum}" });
         }
 
-        private static double ParseAngularVelocity(byte[] data, int startIndex)
+        public static double ParseAngularVelocity(byte[] data, int startIndex)
         {
             byte[] angularVelocityBytes = new byte[] { data[startIndex], data[startIndex + 1], data[startIndex + 2] };
 
             if ((angularVelocityBytes[2] & 0x80) == 0x80)
             {
+                Int16[] DDD = { angularVelocityBytes[0], angularVelocityBytes[1], angularVelocityBytes[2], 0xFF }
                 byte[] extendedBytes = new byte[] { angularVelocityBytes[0], angularVelocityBytes[1], angularVelocityBytes[2], 0xFF };
                 int angularVelocityRaw = BitConverter.ToInt32(extendedBytes, 0);
                 return angularVelocityRaw / 256.0;
