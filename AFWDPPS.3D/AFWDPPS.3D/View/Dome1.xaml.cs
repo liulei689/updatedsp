@@ -826,7 +826,7 @@ namespace WpfApp3D
                                 //UpdatePitch();
                                 G_btList_RecBuf.Clear();
 
-                                new ´¬Ìå×ËÌ¬Êý¾Ý() { Timestamp = DateTime.Now, ´¬¸©Ñö½Ç¶È = pitch, ´¬ºá¹ö½Ç¶È = yaw }.AddBoardData();
+                                new ´¬Ìå×ËÌ¬Êý¾ÝÍÓÂÝ() { Timestamp = DateTime.Now, x = x, y = y, z = z, ÎÂ¶È = ProtocolParser.ParseTemperature(Rbuffer, 12) }.AddTLData();
                                 // UpdateYaw();
                                 //ÇÐ»»Ð­Òé½âÎö×´Ì¬
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
@@ -1372,7 +1372,6 @@ namespace WpfApp3D
 
             if ((angularVelocityBytes[2] & 0x80) == 0x80)
             {
-                Int16[] DDD = { angularVelocityBytes[0], angularVelocityBytes[1], angularVelocityBytes[2], 0xFF }
                 byte[] extendedBytes = new byte[] { angularVelocityBytes[0], angularVelocityBytes[1], angularVelocityBytes[2], 0xFF };
                 int angularVelocityRaw = BitConverter.ToInt32(extendedBytes, 0);
                 return angularVelocityRaw / 256.0;
@@ -1385,7 +1384,7 @@ namespace WpfApp3D
             }
         }
 
-        private static double ParseTemperature(byte[] data, int startIndex)
+        public static double ParseTemperature(byte[] data, int startIndex)
         {
             byte[] temperatureBytes = new byte[] { data[startIndex + 1], data[startIndex] };
             short temperatureRaw = BitConverter.ToInt16(temperatureBytes, 0);
