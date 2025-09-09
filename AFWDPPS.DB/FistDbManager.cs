@@ -135,8 +135,10 @@ namespace AFWDPPS.DB
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id { get; set; }
 
+        [SugarColumn(IsNullable = true)]
+        public string 原始数据 { get; set; }
         [SugarColumn(ColumnDataType = "TEXT")]
-        public DateTime Timestamp { get; set; }
+        public DateTime 接受时间 { get; set; }
 
 
     }
