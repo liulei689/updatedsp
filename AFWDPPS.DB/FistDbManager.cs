@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace AFWDPPS.DB
@@ -54,12 +55,28 @@ namespace AFWDPPS.DB
             queue4.Add(data);
         }
         static int buffecounts = 500;
+        static string isFirstDbName = "";
         // 后台数据库写线程
         private static async Task DbWriter()
         {
+            string dbFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "采集的数据");
+
+            // 如果文件夹不存在则创建
+            if (!Directory.Exists(dbFolder))
+            {
+                Directory.CreateDirectory(dbFolder);
+            }
+            if (isFirstDbName == "")
+            {
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                isFirstDbName = $"test_{timestamp}.db";
+            }
+
+            // 完整路径
+            string dbPath = Path.Combine(dbFolder, isFirstDbName);
             var db = new SqlSugarClient(new ConnectionConfig
             {
-                ConnectionString = "DataSource=test_multi.db",
+                ConnectionString = $"Data Source={dbPath};",
                 DbType = DbType.Sqlite,
                 InitKeyType = InitKeyType.Attribute,
                 IsAutoCloseConnection = true
@@ -127,6 +144,30 @@ namespace AFWDPPS.DB
                 });
             }
         }
+
+        public static async Task<List<声呐姿态数据>> GetList(string dbFilePath)
+        {
+            try
+            {
+                using (var db = new SqlSugarClient(new ConnectionConfig
+                {
+                    ConnectionString = $"Data Source={dbFilePath};",
+                    DbType = DbType.Sqlite,
+                    InitKeyType = InitKeyType.Attribute,
+                    IsAutoCloseConnection = true
+                }))
+                {
+                    return await db.Queryable<声呐姿态数据>().ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("error.log", $"[{DateTime.Now}] {ex.Message}\n");
+                return new List<声呐姿态数据>();
+            }
+        }
+
+        // 调用时：var data = await GetList(@"C:\data\mydb.db");
     }
 
     // 基类

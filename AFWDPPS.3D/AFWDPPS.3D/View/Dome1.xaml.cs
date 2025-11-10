@@ -344,7 +344,7 @@ namespace WpfApp3D
         private async void Dome1_Loaded(object sender, RoutedEventArgs e)
         {
             InintZXB();
-            datalist = await WDPT.GetList();
+            //datalist = await WDPT.GetList();
         }
 
         private MeshGeometry3D CreateSpringGeometry(Point3D startPoint, Point3D endPoint, double radius, int turns)
@@ -473,6 +473,7 @@ namespace WpfApp3D
         double avgYaw = 0;
         double avgPitch = 0;
         int indexi = 0;
+        static double[] datap = new double[4];
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (generator == null) return;
@@ -523,12 +524,12 @@ namespace WpfApp3D
             data.时间 = DateTime.Now;
             if (BoXing.Instance != null)
             {
-                AsyncLogger.Log(data);
+                //  AsyncLogger.Log(data);
             }
             //if (WaveformChart != null)
             //    WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
             if (BoXing.Instance != null)
-                BoXing.Instance.SetBoXing(new double[] { pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji });
+                BoXing.Instance.SetBoXing(new double[] { datap[0], datap[1], 0, datap[2], datap[3], 0 });
 
             // 更新3D模型
             if (start.Content.ToString() == "暂停")
@@ -986,6 +987,24 @@ namespace WpfApp3D
                                 pitch *= 57.3; //滚转
                                 yaw *= 57.3;
                                 new 船体姿态数据() { 原始数据 = hexString, 接受时间 = DateTime.Now, 船俯仰角度 = pitch, 船横滚角度 = yaw }.AddBoardData();
+                                var filter = new SonarAttitudeFilter();
+
+                                pitch1 = filter.FilterPitch(pitch);
+                                yaw1 = filter.FilterYaw(yaw);
+
+                                new 声呐姿态数据()
+                                {
+                                    原始数据 = hexString,
+                                    接受时间 = DateTime.Now,
+                                    船俯仰角度 = pitch,
+                                    船横滚角度 = yaw,
+                                    声呐俯仰角度 = pitch1,
+                                    声呐横滚角度 = yaw1
+                                }.AddSonarData();
+                                datap[0] = pitch;
+                                datap[1] = pitch1;
+                                datap[2] = yaw;
+                                datap[3] = yaw1;
                                 // UpdateYaw();
                                 //UpdatePitch();
                                 G_btList_RecBuf.Clear();
@@ -1020,6 +1039,47 @@ namespace WpfApp3D
                 }
             }
             catch { }
+        }
+        public class SonarAttitudeFilter
+        {
+            private double lastPitch = 0;
+            private double lastYaw = 0;
+
+            private readonly double limit = 1.5;     // 声呐最大允许角度 ±1.5°
+            private readonly double K = 0.1;         // 削峰比例（按你的实际调整）
+            private readonly double smooth = 0.85;   // 越大越平稳
+
+            private double Clamp(double value, double min, double max)
+            {
+                if (value < min) return min;
+                if (value > max) return max;
+                return value;
+            }
+
+            public double FilterPitch(double shipPitch)
+            {
+                // 1. 按比例削峰
+                double reduced = shipPitch * K;
+
+                // 2. 强制限幅
+                reduced = Clamp(reduced, -limit, limit);
+
+                // 3. 平滑处理
+                double filtered = lastPitch * smooth + reduced * (1 - smooth);
+
+                lastPitch = filtered;
+                return filtered;
+            }
+
+            public double FilterYaw(double shipYaw)
+            {
+                double reduced = shipYaw * K;
+                reduced = Clamp(reduced, -limit, limit);
+                double filtered = lastYaw * smooth + reduced * (1 - smooth);
+
+                lastYaw = filtered;
+                return filtered;
+            }
         }
 
         private void openclosecom2_Click(object sender, RoutedEventArgs e)
@@ -1226,7 +1286,7 @@ namespace WpfApp3D
             optimizeTimer = new DispatcherTimer();
             optimizeTimer.Interval = TimeSpan.FromSeconds(5); // 5秒执行一次优化
             optimizeTimer.Tick += OptimizeStep;
-            optimizeTimer.Start();
+            optimizeTimer.Stop();
         }
 
         private void BtnStopOptimize_Click(object sender, RoutedEventArgs e)

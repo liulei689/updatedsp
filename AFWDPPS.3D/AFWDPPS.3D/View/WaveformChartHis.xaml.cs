@@ -89,54 +89,63 @@ namespace WpfApp3D.View
             signals = new ScottPlot.Plottables.Signal[channelCount];
             walkers = new ScottPlot.DataGenerators.RandomWalker[channelCount];
             var palette = new ScottPlot.Palettes.Category10();
-
-            var res = await WDPT.GetList();
-            // 初始化一个 6 行 5 万列的二维数组
-            double[][] resultArray = new double[6][];
-
-
-
-            // 分别提取每个属性，存放到对应的 double[] 中
-            resultArray[0] = res.Select(item => item.船横滚角度).ToArray();
-            resultArray[1] = res.Select(item => item.声呐横滚角度).ToArray();
-            resultArray[2] = res.Select(item => item.横滚电机动作角度).ToArray();
-            resultArray[3] = res.Select(item => item.船俯仰角度).ToArray();
-            resultArray[4] = res.Select(item => item.声呐俯仰角度).ToArray();
-            resultArray[5] = res.Select(item => item.俯仰电机动作角度).ToArray();
-
-            for (int i = 0; i < channelCount; i++)
+            // 1. 打开文件夹选择DB文件
+            var dialog = new Microsoft.Win32.OpenFileDialog
             {
-                datas[i] = resultArray[i];
-                //walkers[i] = new ScottPlot.DataGenerators.RandomWalker(i);
-                //for (int j = 0; j < pointCount; j++)
-                //    datas[i][j] = walkers[i].Next();
-                signals[i] = WpfPlot1.Plot.Add.Signal(datas[i]);
-                signals[i].LegendText = channelNames[i];
-                WpfPlot1.Plot.Legend.FontSize = 40; // 设置字体大小为 16，适合根据需要调整
-                signals[i].Color = palette.GetColor(i); // 这里获取颜色
-                signals[i].IsVisible = GetCheckBox(i)?.IsChecked == true;
-            }
-            // ⬇⬇ 让横坐标完整显示所有点
-            WpfPlot1.Plot.Axes.SetLimitsX(0, res.Count);
-            // 设置 Y 轴刻度字体大小
-            var plt = WpfPlot1.Plot;
-            // 设置 X 轴刻度字体大小（如果需要）
-            var yAxis = plt.Axes.GetYAxes().FirstOrDefault();
-            yAxis.TickLabelStyle = new ScottPlot.LabelStyle
-            {
-                FontSize = 40,  // 设置字体大小为 16
-                Italic = false,  // 如果需要斜体设置为 true
-                                 // 如果需要字体颜色，可以设置：
-                                 // FontColor = Color.Red
+                Filter = "SQLite数据库|*.db;*.sqlite;*.sqlite3|所有文件|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
-            WpfPlot1.Plot.Legend.FontName = "微软雅黑";
-            WpfPlot1.Plot.ShowLegend();
-            CH = WpfPlot1.Plot.Add.Crosshair(0, 0);
-            CH.TextColor = Colors.Red;
-            CH.TextBackgroundColor = Colors.White;
-            CH.HorizontalLine.Color = Colors.Black; // 设置水平线颜色
-            CH.VerticalLine.Color = Colors.Black;   // 设置垂直线颜色
-            WpfPlot1.Refresh();
+
+            if (dialog.ShowDialog() == true)
+            {
+                var res = await FistDbManager.GetList(dialog.FileName);
+                // 初始化一个 6 行 5 万列的二维数组
+                double[][] resultArray = new double[6][];
+
+
+
+                // 分别提取每个属性，存放到对应的 double[] 中
+                resultArray[0] = res.Select(item => item.船横滚角度).ToArray();
+                resultArray[1] = res.Select(item => item.声呐横滚角度).ToArray();
+                resultArray[2] = res.Select(item => item.横滚电机动作角度).ToArray();
+                resultArray[3] = res.Select(item => item.船俯仰角度).ToArray();
+                resultArray[4] = res.Select(item => item.声呐俯仰角度).ToArray();
+                resultArray[5] = res.Select(item => item.俯仰电机动作角度).ToArray();
+
+                for (int i = 0; i < channelCount; i++)
+                {
+                    datas[i] = resultArray[i];
+                    //walkers[i] = new ScottPlot.DataGenerators.RandomWalker(i);
+                    //for (int j = 0; j < pointCount; j++)
+                    //    datas[i][j] = walkers[i].Next();
+                    signals[i] = WpfPlot1.Plot.Add.Signal(datas[i]);
+                    signals[i].LegendText = channelNames[i];
+                    WpfPlot1.Plot.Legend.FontSize = 40; // 设置字体大小为 16，适合根据需要调整
+                    signals[i].Color = palette.GetColor(i); // 这里获取颜色
+                    signals[i].IsVisible = GetCheckBox(i)?.IsChecked == true;
+                }
+                // ⬇⬇ 让横坐标完整显示所有点
+                WpfPlot1.Plot.Axes.SetLimitsX(0, res.Count);
+                // 设置 Y 轴刻度字体大小
+                var plt = WpfPlot1.Plot;
+                // 设置 X 轴刻度字体大小（如果需要）
+                var yAxis = plt.Axes.GetYAxes().FirstOrDefault();
+                yAxis.TickLabelStyle = new ScottPlot.LabelStyle
+                {
+                    FontSize = 40,  // 设置字体大小为 16
+                    Italic = false,  // 如果需要斜体设置为 true
+                                     // 如果需要字体颜色，可以设置：
+                                     // FontColor = Color.Red
+                };
+                WpfPlot1.Plot.Legend.FontName = "微软雅黑";
+                WpfPlot1.Plot.ShowLegend();
+                CH = WpfPlot1.Plot.Add.Crosshair(0, 0);
+                CH.TextColor = Colors.Red;
+                CH.TextBackgroundColor = Colors.White;
+                CH.HorizontalLine.Color = Colors.Black; // 设置水平线颜色
+                CH.VerticalLine.Color = Colors.Black;   // 设置垂直线颜色
+                WpfPlot1.Refresh();
+            }
         }
 
         private void ChannelCheckBoxChanged(object sender, RoutedEventArgs e)
@@ -179,7 +188,7 @@ namespace WpfApp3D.View
         private async void DisplayScaling_MouseMove(object sender, MouseEventArgs e)
         {
             if (WpfPlot1 == null) return;
-
+            if (CH == null) return;
             // 1. 立刻更新十字线（轻量）
             var p = e.GetPosition(WpfPlot1);
             var px = new ScottPlot.Pixel(p.X * WpfPlot1.DisplayScale, p.Y * WpfPlot1.DisplayScale);
