@@ -1,0 +1,68 @@
+﻿<Window x:Class="WpfApp3D.View.BoXingTl"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"    xmlns:wpf="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+    Title="多通道实时波形" Height="600" Width="1000">
+    <Window.Resources>
+        <Style x:Key="ToggleSwitch" TargetType="ToggleButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="Back"
+                                Width="40" Height="20"
+                                CornerRadius="10"
+                                Background="#FFCCCCCC"/>
+                            <Border x:Name="Slider"
+                                Width="16" Height="16"
+                                CornerRadius="8"
+                                HorizontalAlignment="Left"
+                                Margin="2,0,0,0"
+                                Background="White"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Back"  Property="Background" Value="#FF0078D4"/>
+                                <Setter TargetName="Slider" Property="Margin" Value="22,0,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0" VerticalAlignment="Center" >
+            <TextBlock Text="显示通道：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <CheckBox x:Name="cb1" Content="陀螺横滚" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb2" Content="陀螺俯仰" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb3" Content="陀螺方位" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb4" Content="陀螺温度" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                  <TextBlock Text="点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <ComboBox x:Name="PointCountCombo" Width="80" SelectionChanged="PointCountCombo_SelectionChanged">
+                <ComboBoxItem Content="100" />
+                <ComboBoxItem Content="500"/>
+                <ComboBoxItem Content="1000" IsSelected="True" />
+                <ComboBoxItem Content="2000"/>
+                <ComboBoxItem Content="3000"/>
+                <ComboBoxItem Content="10000"/>
+            </ComboBox>
+            <Label Content="波形自适应(关闭后可手动调整)" />
+            <ToggleButton x:Name="AutoScaleToggle"
+              Content="波形自适应" IsChecked="True"
+                Checked="AutoScaleToggle_Checked"
+                Unchecked="AutoScaleToggle_Checked"
+              Style="{StaticResource ToggleSwitch}"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top" Margin="0,0,8,0"
+               />
+        </StackPanel>
+        <wpf:WpfPlot x:Name="WpfPlot1" Grid.Row="1" Margin="10"/>
+    </Grid>
+</Window>

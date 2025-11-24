@@ -14,7 +14,7 @@ namespace WpfApp3D
         {
             InitializeComponent();
             this.DataContext = new MainViewModel();
-            var data = NativeMethods.add(11, 33);
+
 
         }
 

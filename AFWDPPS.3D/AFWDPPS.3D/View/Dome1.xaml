@@ -127,7 +127,9 @@
             <TextBlock   Text="波特率:"  />
             <ComboBox  Name="botelv3" Width="100" Margin="20 0" />
             <ToggleButton   x:Name="openclosecom3" Height="25" Margin="5" Content="打开陀螺TJMG3QFB0串口" IsChecked="False" Click="openclosecom3_Click">
+
             </ToggleButton>
+            <ToggleButton    Height="25" Margin="5" Content="陀螺实时数据" IsChecked="False" Click="Button_Click_411" />
 
         </StackPanel>
     </Grid>

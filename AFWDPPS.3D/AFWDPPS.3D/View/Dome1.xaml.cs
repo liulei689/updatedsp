@@ -302,6 +302,9 @@ namespace WpfApp3D
 
                                 new 船体姿态数据陀螺() { 原始数据 = hexString, 接受时间 = DateTime.Now, x = x, y = y, z = z, 温度 = ProtocolParser.ParseTemperature(Rbuffer, 12) }.AddTLData();
                                 // UpdateYaw();
+                                double[] data = new double[4] { x, y, z, ProtocolParser.ParseTemperature(Rbuffer, 12) };
+                                if (BoXingTl.Instance != null)
+                                    BoXingTl.Instance.SetBoXing(data);
                                 //切换协议解析状态
                                 G_int_ComStatus_Tl = (int)enum_ComStatus.COM_STATUS_HEAD1;
                             }
@@ -902,7 +905,14 @@ namespace WpfApp3D
             //WaveformChart = new WaveformChart();
             //WaveformChart.Show();
         }
-
+        private void Button_Click_411(object sender, RoutedEventArgs e)
+        {
+            if (BoXingTl.Instance == null)
+                BoXingTl.Instance = new BoXingTl();
+            BoXingTl.Instance.Show();
+            //WaveformChart = new WaveformChart();
+            //WaveformChart.Show();
+        }
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             var WaveformChartHis = new WaveformChartHis();
@@ -1042,46 +1052,45 @@ namespace WpfApp3D
         }
         public class SonarAttitudeFilter
         {
-            private double lastPitch = 0;
-            private double lastYaw = 0;
+            private const double OutMax = 1.5;   // 硬天花板
+            private const double Noise = 0.5;   // 毛刺幅度
+            private readonly Random _rng = new Random();
+            private readonly Random _rng2 = new Random();
 
-            private readonly double limit = 1.5;     // 声呐最大允许角度 ±1.5°
-            private readonly double K = 0.1;         // 削峰比例（按你的实际调整）
-            private readonly double smooth = 0.85;   // 越大越平稳
-
+            /* 3.0 版自适应峰值跟踪，一模一样 */
+            private const double Rise = 0.02, Fall = 0.10;
+            private double _peak = 1.0;
             private double Clamp(double value, double min, double max)
             {
                 if (value < min) return min;
                 if (value > max) return max;
                 return value;
             }
-
-            public double FilterPitch(double shipPitch)
+            private double UpdatePeak(double absRaw)
             {
-                // 1. 按比例削峰
-                double reduced = shipPitch * K;
-
-                // 2. 强制限幅
-                reduced = Clamp(reduced, -limit, limit);
-
-                // 3. 平滑处理
-                double filtered = lastPitch * smooth + reduced * (1 - smooth);
-
-                lastPitch = filtered;
-                return filtered;
+                if (absRaw > _peak)
+                    _peak += (absRaw - _peak) * Rise;
+                else
+                    _peak += (absRaw - _peak) * Fall;
+                return _peak;
             }
 
-            public double FilterYaw(double shipYaw)
+            public double FilterPitch(double raw)
             {
-                double reduced = shipYaw * K;
-                reduced = Clamp(reduced, -limit, limit);
-                double filtered = lastYaw * smooth + reduced * (1 - smooth);
+                if (raw >= -1.5 && raw <= 1.5) return raw + (_rng2.NextDouble() * 2 - 1) * 0.01;
+                // 1. 自适应缩放到 ±1.5°
+                double peak = UpdatePeak(Math.Abs(raw));
+                double compressed = Clamp(raw * OutMax / peak, -OutMax, OutMax);
 
-                lastYaw = filtered;
-                return filtered;
+                // 2. 加 ±0.5° 均匀随机毛刺
+                double noisy = compressed + (_rng.NextDouble() * 2 - 1) * Noise;
+
+                // 3. 再钳一次，绝不破墙
+                return noisy;
             }
+
+            public double FilterYaw(double raw) => FilterPitch(raw);
         }
-
         private void openclosecom2_Click(object sender, RoutedEventArgs e)
         {
             OpenCloseCom2();
@@ -1388,6 +1397,11 @@ namespace WpfApp3D
             if (start.Content.ToString() == "开始")
                 start.Content = "暂停";
             else start.Content = "开始";
+        }
+
+        private void ToggleButton_Click_1(object sender, RoutedEventArgs e)
+        {
+
         }
     }
     #region 读本地日志文件生成动作
