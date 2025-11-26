@@ -200,6 +200,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             }
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
+            serialPort2.Parity =Parity.Even;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort2_DataReceived);
             #endregion
             CmbOption.SelectedIndex = 0; // 默认选中第一个选项
@@ -563,7 +564,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                     serialPort2.PortName = comname;
                     serialPort2.BaudRate = Convert.ToInt32(botelv1.SelectedItem);
                     serialPort2.StopBits = StopBits.One;
-                    serialPort2.Parity = Parity.None;
+                    serialPort2.Parity = Parity.Even;
                     serialPort2.DataBits = 8;
                     serialPort2.Open();//打开串口
                     openclosecom1.Content = "关闭稳定平台串口";

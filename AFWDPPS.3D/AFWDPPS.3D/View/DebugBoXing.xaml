@@ -50,7 +50,7 @@
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
                     <CheckBox x:Name="cb2"  Content="横滚角速度" Margin="0,0,12,0"
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-                    <CheckBox x:Name="cb3"  Content="横滚上一周期速度" Margin="0,0,12,0"
+                    <CheckBox x:Name="cb3"  Content="横滚滤波后最终角速度" Margin="0,0,12,0"
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
                     <CheckBox x:Name="cb4"  Content="横滚上一周期滤波后速度" Margin="0,0,12,0"
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
@@ -70,7 +70,7 @@
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
                     <CheckBox x:Name="cb10" Content="俯仰角速度" Margin="0,0,12,0"
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-                    <CheckBox x:Name="cb11" Content="俯仰上一周期速度" Margin="0,0,12,0"
+                    <CheckBox x:Name="cb11" Content="俯仰滤波后最终角速度" Margin="0,0,12,0"
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
                     <CheckBox x:Name="cb12" Content="俯仰上一周期滤波后速度" Margin="0,0,12,0"
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>

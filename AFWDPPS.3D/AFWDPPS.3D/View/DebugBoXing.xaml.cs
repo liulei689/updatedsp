@@ -141,6 +141,17 @@ namespace WpfApp3D.View
                 case 3: return cb4;
                 case 4: return cb5;
                 case 5: return cb6;
+                case 6: return cb7;
+                case 7: return cb8;
+                case 8: return cb9;
+                case 9: return cb10;
+                case 10: return cb11;
+                case 11: return cb12;
+                case 12: return cb13;
+                case 13: return cb14;
+                case 14: return cb15;
+                case 15: return cb16;
+            
                 default: return null;
             }
         }
