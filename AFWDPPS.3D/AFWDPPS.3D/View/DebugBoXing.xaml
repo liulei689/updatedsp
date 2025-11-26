@@ -1,0 +1,108 @@
+﻿<Window x:Class="WpfApp3D.View.DebugBoXing"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"    xmlns:wpf="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+    Title="多通道实时波形" Height="600" Width="1000">
+    <Window.Resources>
+        <Style x:Key="ToggleSwitch" TargetType="ToggleButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="Back"
+                                Width="40" Height="20"
+                                CornerRadius="10"
+                                Background="#FFCCCCCC"/>
+                            <Border x:Name="Slider"
+                                Width="16" Height="16"
+                                CornerRadius="8"
+                                HorizontalAlignment="Left"
+                                Margin="2,0,0,0"
+                                Background="White"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Back"  Property="Background" Value="#FF0078D4"/>
+                                <Setter TargetName="Slider" Property="Margin" Value="22,0,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!-- 单行区域：横向滚动，不占多行高 -->
+        <ScrollViewer Grid.Row="0"
+              HorizontalScrollBarVisibility="Auto"
+              VerticalScrollBarVisibility="Hidden"
+              Height="50" Margin="10,0,0,0">
+            <StackPanel Orientation="Horizontal">
+                <!-- 第一组 8 个 -->
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="cb1"  Content="横滚角度"   Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb2"  Content="横滚角速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb3"  Content="横滚上一周期速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb4"  Content="横滚上一周期滤波后速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb5"  Content="横滚平均角速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb6"  Content="横滚零漂补偿后的角速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb7"  Content="横滚零漂补偿后的角速度上一次" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb8"  Content="横滚零漂" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                </StackPanel>
+
+                <!-- 第二组 8 个 -->
+                <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                    <CheckBox x:Name="cb9"  Content="俯仰角度"   Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb10" Content="俯仰角速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb11" Content="俯仰上一周期速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb12" Content="俯仰上一周期滤波后速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb13" Content="俯仰平均角速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb14" Content="俯仰零漂补偿后的角速度" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb15" Content="俯仰零漂补偿后的角速度上一次" Margin="0,0,12,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb16" Content="俯仰零漂" Margin="0,0,0,0"
+                      Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                </StackPanel>
+                <TextBlock Text="点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox x:Name="PointCountCombo" Width="80" SelectionChanged="PointCountCombo_SelectionChanged">
+                    <ComboBoxItem Content="100" />
+                    <ComboBoxItem Content="500"/>
+                    <ComboBoxItem Content="1000" IsSelected="True" />
+                    <ComboBoxItem Content="2000"/>
+                    <ComboBoxItem Content="3000"/>
+                    <ComboBoxItem Content="10000"/>
+                </ComboBox>
+                <Label Content="波形自适应(关闭后可手动调整)" />
+                <ToggleButton x:Name="AutoScaleToggle"
+              Content="波形自适应" IsChecked="True"
+                Checked="AutoScaleToggle_Checked"
+                Unchecked="AutoScaleToggle_Checked"
+              Style="{StaticResource ToggleSwitch}"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top" Margin="0,0,8,0"
+               />
+            </StackPanel>
+        </ScrollViewer>
+        <wpf:WpfPlot x:Name="WpfPlot1" Grid.Row="1" Margin="10"/>
+    </Grid>
+</Window>

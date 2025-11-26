@@ -129,6 +129,7 @@
                     Grid.Column="3"
                     Content="打开"
                     HorizontalAlignment="Left" Click="BtnOpenSerial_Click"/>
+                <Button Grid.Column="4" Content="波形" Click="Button_Click" />
             </Grid>
         </Border>
 

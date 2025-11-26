@@ -224,6 +224,9 @@
     <Compile Include="MoliDj.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="View\DebugBoXing.xaml.cs">
+      <DependentUpon>DebugBoXing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\BoXingTl.xaml.cs">
       <DependentUpon>BoXingTl.xaml</DependentUpon>
     </Compile>
@@ -264,6 +267,10 @@
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
     <Compile Include="WaveformChartFY.xaml.cs" />
+    <Page Include="View\DebugBoXing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\BoXingTl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

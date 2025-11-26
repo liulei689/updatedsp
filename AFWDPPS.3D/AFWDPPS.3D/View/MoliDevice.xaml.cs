@@ -259,19 +259,22 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                             G_btList_RecBuf.Add(tmpByte);
 
                             //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf.Count == 12 && G_btList_RecBuf[0] == 0xAA)  //包接收完成
+                            if (G_btList_RecBuf.Count == 80 && G_btList_RecBuf[0] == 0xAA && G_btList_RecBuf[1] == 0x55)  //包接收完成
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
-                                if (Rbuffer[0] == 0xAA) //包头1
-                                {
 
-                                    var yaw = MoliDj.RawToAngle(Rbuffer[6]);
-                                    Dome1.Dome1Instance.pitchdianji = yaw;
-                                }
+
+                                var yaw = MoliDj.RawToAngle(Rbuffer[6]);
+                                Dome1.Dome1Instance.pitchdianji = yaw;
+
                                 //string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
                                 //// 使用BitConverter将字节数组转换为float
-                                //pitch = BitConverter.ToSingle(Rbuffer, 19);
-                                //yaw = BitConverter.ToSingle(Rbuffer, 23);
+
+                                double[] floats = Enumerable.Range(0, 16)
+                           .Select(i => (double)BitConverter.ToSingle(Rbuffer, 11 + i * 4))
+                           .ToArray();
+                                if (DebugBoXing.Instance != null)
+                                    DebugBoXing.Instance.SetBoXing(floats);
                                 //pitch *= 57.3; //滚转
                                 //yaw *= 57.3;
                                 // UpdateYaw();
@@ -280,7 +283,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
                             }
-                            else if (G_btList_RecBuf.Count == 19 && G_btList_RecBuf[0] == 0xEB)
+                            else if (G_btList_RecBuf.Count == 19 && G_btList_RecBuf[0] == 0xEB && G_btList_RecBuf[0] == 0x90)
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
                                 if (Rbuffer[0] == 0xEB) //包头1
@@ -298,7 +301,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                             }
 
                             //数据包长度超限检查
-                            if (G_btList_RecBuf.Count >= 56)
+                            if (G_btList_RecBuf.Count >= 256)
                             {
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
 
@@ -722,6 +725,13 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             }
 
             return hexBuilder.ToString() + ")";
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (DebugBoXing.Instance == null)
+                DebugBoXing.Instance = new DebugBoXing();
+            DebugBoXing.Instance.Show();
         }
     }
 }

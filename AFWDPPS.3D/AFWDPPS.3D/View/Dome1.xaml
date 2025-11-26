@@ -130,6 +130,7 @@
 
             </ToggleButton>
             <ToggleButton    Height="25" Margin="5" Content="陀螺实时数据" IsChecked="False" Click="Button_Click_411" />
+            <ToggleButton    Height="25" Margin="5" Content="设备模拟" IsChecked="False" Click="ToggleButton_Click" />
 
         </StackPanel>
     </Grid>

@@ -946,6 +946,8 @@ namespace AFWDPP.Views
                         l6.Visibility = Visibility.Collapsed;
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
+                    if (l8 != null)
+                        l8.Visibility = Visibility.Collapsed;
                     if (status != null)
                         status.Visibility = Visibility.Collapsed;
 
@@ -965,6 +967,8 @@ namespace AFWDPP.Views
                         l6.Visibility = Visibility.Collapsed;
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
+                    if (l8 != null)
+                        l8.Visibility = Visibility.Collapsed;
                     if (status != null)
                         status.Visibility = Visibility.Collapsed;
 
@@ -984,6 +988,8 @@ namespace AFWDPP.Views
                         l6.Visibility = Visibility.Collapsed;
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
+                    if (l8 != null)
+                        l8.Visibility = Visibility.Collapsed;
                     if (status != null)
                         status.Visibility = Visibility.Collapsed;
 
@@ -1001,6 +1007,8 @@ namespace AFWDPP.Views
                         l5.Visibility = Visibility.Visible;
                     if (l6 != null)
                         l6.Visibility = Visibility.Visible;
+                    if (l8 != null)
+                        l8.Visibility = Visibility.Visible;
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
                     if (status != null)
@@ -1022,6 +1030,8 @@ namespace AFWDPP.Views
                         l6.Visibility = Visibility.Collapsed;
                     if (l7 != null)
                         l7.Visibility = Visibility.Visible;
+                    if (l8 != null)
+                        l8.Visibility = Visibility.Collapsed;
                     if (status != null)
                         status.Visibility = Visibility.Visible;
 
@@ -1057,11 +1067,23 @@ namespace AFWDPP.Views
                     }
                     for (int i = 0; i < 5; i++)
                     {
-                        sendduoji(2);
+                        sendduoji(18);
                         await Task.Delay(50);
                     }
                 }
-
+                else if (btn.Name == "l8")
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sendduoji(0);
+                        await Task.Delay(50);
+                    }
+                    for (int i = 0; i < 5; i++)
+                    {
+                        sendduoji(36);
+                        await Task.Delay(50);
+                    }
+                }
             }
         }
 

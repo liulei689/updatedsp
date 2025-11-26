@@ -48,5 +48,6 @@
 
         <ToggleButton Name="openclosecom2" Grid.Row="6" Grid.ColumnSpan="2" Height="25" Margin="0,5"
                   Content="打开平台MU串口" IsChecked="False" />
+        <ToggleButton Content="波形" Click="Button_Click"/>
     </Grid>
 </Window>
