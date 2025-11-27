@@ -18,7 +18,7 @@ namespace WpfApp3D.View
         private double[][] datas;
         private ScottPlot.Plottables.Signal[] signals;
         private ScottPlot.DataGenerators.RandomWalker[] walkers;
-        private readonly string[] channelNames = new string[16] { "横滚角度", "横滚角速度", "横滚上一周期速度 ", "横滚上一周期滤波后速度", "横滚平均角速度", "横滚零漂补偿后的角速度", "横滚零漂补偿后的角速度上一次", "横滚零漂", "俯仰角度", "俯仰角速度", "俯仰上一周期速度 ", "俯仰上一周期滤波后速度", "俯仰平均角速度", "俯仰零漂补偿后的角速度", "俯仰零漂补偿后的角速度上一次", "俯仰零漂" };
+        private readonly string[] channelNames = new string[16] { "横滚角度", "横滚角速度", "横滚滤波后角速度 ", "横滚上一周期滤波后速度", "横滚平均角速度", "横滚零漂补偿后的角速度", "横滚零漂补偿后的角速度上一次", "横滚零漂", "俯仰角度", "俯仰角速度", "俯仰上一周期速度 ", "俯仰上一周期滤波后速度", "俯仰平均角速度", "俯仰零漂补偿后的角速度", "俯仰零漂补偿后的角速度上一次", "俯仰零漂" };
         private ScottPlot.Plottables.Crosshair CH;
         private readonly DispatcherTimer _autoScaleTimer =
     new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(1000) };   // 2 Hz
@@ -104,7 +104,8 @@ namespace WpfApp3D.View
             CH = WpfPlot1.Plot.Add.Crosshair(0, 0);
             CH.TextColor = Colors.White;
             CH.TextBackgroundColor = CH.HorizontalLine.Color;
-
+            // 把 Y 轴锁在 [-500, 500]
+            WpfPlot1.Plot.Axes.SetLimitsY(-250, 250);
             WpfPlot1.Refresh();
         }
 
@@ -151,7 +152,7 @@ namespace WpfApp3D.View
                 case 13: return cb14;
                 case 14: return cb15;
                 case 15: return cb16;
-            
+
                 default: return null;
             }
         }

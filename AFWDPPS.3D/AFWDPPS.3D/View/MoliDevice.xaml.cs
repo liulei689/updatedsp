@@ -200,7 +200,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             }
             this.serialPort2 = new System.IO.Ports.SerialPort();
             serialPort2.RtsEnable = true;
-            serialPort2.Parity =Parity.Even;
+            serialPort2.Parity = Parity.Even;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort2_DataReceived);
             #endregion
             CmbOption.SelectedIndex = 0; // 默认选中第一个选项
@@ -274,8 +274,12 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 double[] floats = Enumerable.Range(0, 16)
                            .Select(i => (double)BitConverter.ToSingle(Rbuffer, 11 + i * 4))
                            .ToArray();
-                                if (DebugBoXing.Instance != null)
-                                    DebugBoXing.Instance.SetBoXing(floats);
+                                bool ok = !floats.Any(x => x > 500 || x < -500);
+                                if (ok)
+                                {
+                                    if (DebugBoXing.Instance != null)
+                                        DebugBoXing.Instance.SetBoXing(floats);
+                                }
                                 //pitch *= 57.3; //滚转
                                 //yaw *= 57.3;
                                 // UpdateYaw();

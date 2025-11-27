@@ -44,6 +44,24 @@
               VerticalScrollBarVisibility="Hidden"
               Height="50" Margin="10,0,0,0">
             <StackPanel Orientation="Horizontal">
+                <TextBlock Text="点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox x:Name="PointCountCombo" Width="80" SelectionChanged="PointCountCombo_SelectionChanged">
+                    <ComboBoxItem Content="100" />
+                    <ComboBoxItem Content="500"/>
+                    <ComboBoxItem Content="1000" IsSelected="True" />
+                    <ComboBoxItem Content="2000"/>
+                    <ComboBoxItem Content="3000"/>
+                    <ComboBoxItem Content="10000"/>
+                </ComboBox>
+                <Label Content="波形自适应(关闭后可手动调整)" />
+                <ToggleButton x:Name="AutoScaleToggle"
+    Content="波形自适应" IsChecked="False"
+      Checked="AutoScaleToggle_Checked"
+      Unchecked="AutoScaleToggle_Checked"
+    Style="{StaticResource ToggleSwitch}"
+    HorizontalAlignment="Left"
+    VerticalAlignment="Top" Margin="0,0,8,0"
+     />
                 <!-- 第一组 8 个 -->
                 <StackPanel Orientation="Horizontal">
                     <CheckBox x:Name="cb1"  Content="横滚角度"   Margin="0,0,12,0"
@@ -83,24 +101,7 @@
                     <CheckBox x:Name="cb16" Content="俯仰零漂" Margin="0,0,0,0"
                       Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
                 </StackPanel>
-                <TextBlock Text="点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <ComboBox x:Name="PointCountCombo" Width="80" SelectionChanged="PointCountCombo_SelectionChanged">
-                    <ComboBoxItem Content="100" />
-                    <ComboBoxItem Content="500"/>
-                    <ComboBoxItem Content="1000" IsSelected="True" />
-                    <ComboBoxItem Content="2000"/>
-                    <ComboBoxItem Content="3000"/>
-                    <ComboBoxItem Content="10000"/>
-                </ComboBox>
-                <Label Content="波形自适应(关闭后可手动调整)" />
-                <ToggleButton x:Name="AutoScaleToggle"
-              Content="波形自适应" IsChecked="True"
-                Checked="AutoScaleToggle_Checked"
-                Unchecked="AutoScaleToggle_Checked"
-              Style="{StaticResource ToggleSwitch}"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Top" Margin="0,0,8,0"
-               />
+          
             </StackPanel>
         </ScrollViewer>
         <wpf:WpfPlot x:Name="WpfPlot1" Grid.Row="1" Margin="10"/>
