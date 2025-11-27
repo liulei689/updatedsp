@@ -13,7 +13,7 @@ using System.Windows.Threading;
 namespace WpfApp3D.View
 {
     /// <summary>
-    /// MoliDevice.xaml 的交互逻辑
+    /// MoliDevice.xaml 的交互逻辑 
     /// </summary>
     public partial class MoliDevice : Window
     {
