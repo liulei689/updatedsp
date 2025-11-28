@@ -278,7 +278,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 bool ok = !floats.Any(x => x > 500 || x < -500);
                                 if (ok)
                                 {
-                                    new 船体姿态数据陀螺() { 原始数据 = Rbuffer.ToString(), 接受时间 = DateTime.Now, 船俯仰角度 = floats[10], 船横滚角度 = floats[2] }.AddTLData();
+                                    new 船体姿态数据陀螺() { 原始数据 = Rbuffer.ToString(), 接受时间 = DateTime.Now, 船俯仰角度 = floats[8], 船横滚角度 = floats[0], x = floats[1], y = floats[9] }.AddTLData();
                                     if (DebugBoXing.Instance != null)
                                         DebugBoXing.Instance.SetBoXing(floats);
                                 }

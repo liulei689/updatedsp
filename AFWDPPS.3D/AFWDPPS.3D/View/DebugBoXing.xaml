@@ -55,7 +55,7 @@
                 </ComboBox>
                 <Label Content="波形自适应(关闭后可手动调整)" />
                 <ToggleButton x:Name="AutoScaleToggle"
-    Content="波形自适应" IsChecked="False"
+    Content="波形自适应" IsChecked="True"
       Checked="AutoScaleToggle_Checked"
       Unchecked="AutoScaleToggle_Checked"
     Style="{StaticResource ToggleSwitch}"
