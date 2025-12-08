@@ -70,15 +70,40 @@
                                 </Button>
                                 <Button Name="l4" Style="{StaticResource TextButton}" Width="80" Content="向右" Visibility="Collapsed"  rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"  PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown"  Cursor="Hand">
                                 </Button>
-                                <Button Name="l5" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="0°" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
-                                </Button>
-                                <Button Name="l6" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="18°" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
-                                </Button>
-                                <Button Name="l8" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="36°" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
-                                </Button>
                                 <Button Name="l7" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="开始自检" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l7_PreviewMouseLeftButtonUp"   Cursor="Hand">
                                 </Button>
                                 <Label Name="status" Visibility="Collapsed" />
+
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Vertical" Margin="20">
+                                        <Button Name="l5" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="开始控制" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp_1"   Cursor="Hand">
+                                        </Button>
+                                        <Button Name="l8" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="速度设置" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
+                                        </Button>
+                                    </StackPanel>
+                                    <StackPanel Margin="20" Orientation="Vertical">
+                                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"
+               Text="{Binding Value, ElementName=slider, StringFormat={}{0:F0}°}"/>
+                                        <Slider x:Name="slider" AutoToolTipPlacement="BottomRight" IsEnabled="False"
+            Minimum="0" Maximum="30" Value="10" Width="250"  rubyer:SliderHelper.GripDiameter="15"   rubyer:SliderHelper.TrackThickness="10"
+            TickFrequency="1"
+            TickPlacement="Both"
+            IsSnapToTickEnabled="True"
+                                           />
+
+                                        <!-- 每 5 一格：0 5 10 15 20 25 30 -->
+                                        <UniformGrid Columns="7" Margin="0,2"
+                 Width="{Binding ActualWidth,ElementName=slider}">
+                                            <TextBlock Text="0"  HorizontalAlignment="Left" FontSize="10"/>
+                                            <TextBlock Text="5"  HorizontalAlignment="Center" FontSize="10"/>
+                                            <TextBlock Text="10" HorizontalAlignment="Center" FontSize="10"/>
+                                            <TextBlock Text="15" HorizontalAlignment="Center" FontSize="10"/>
+                                            <TextBlock Text="20" HorizontalAlignment="Center" FontSize="10"/>
+                                            <TextBlock Text="25" HorizontalAlignment="Center" FontSize="10"/>
+                                            <TextBlock Text="30" HorizontalAlignment="Right" FontSize="10"/>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </StackPanel>
                             </StackPanel>
                         </rubyer:DescriptionItem>
                     </rubyer:Description>

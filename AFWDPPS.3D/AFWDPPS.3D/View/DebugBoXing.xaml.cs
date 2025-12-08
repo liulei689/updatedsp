@@ -1,5 +1,9 @@
 ﻿using ScottPlot;
+using ScottPlot.TickGenerators;
+using SkiaSharp;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -97,7 +101,7 @@ namespace WpfApp3D.View
             }
             // ⬇⬇ 让横坐标完整显示所有点
             // WpfPlot1.Plot.Axes.SetLimitsX(0, pointCount - 1);
-
+            WpfPlot1.Plot.Axes.Bottom.TickGenerator = new TimeTickGenerator();
 
             WpfPlot1.Plot.Legend.FontName = "微软雅黑";
             WpfPlot1.Plot.ShowLegend();
@@ -106,9 +110,30 @@ namespace WpfApp3D.View
             CH.TextBackgroundColor = CH.HorizontalLine.Color;
             // 把 Y 轴锁在 [-500, 500]
             WpfPlot1.Plot.Axes.SetLimitsY(-250, 250);
+            WpfPlot1.Plot.Axes.DateTimeTicksBottom();
             WpfPlot1.Refresh();
         }
+        /// <summary>
+        /// 把“秒”刻度转成 hh:mm:ss 的 TickGenerator
+        /// </summary>
+        internal class TimeTickGenerator : ITickGenerator
+        {
+            private readonly NumericAutomatic _auto = new NumericAutomatic();
 
+            public IEnumerable<Tick> Ticks =>
+                _auto.Ticks.Select(t => new Tick(
+                    position: t.Position,
+                    label: TimeSpan.FromSeconds(t.Position).ToString(@"hh\:mm\:ss")));
+
+            public int MaxTickCount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+            Tick[] ITickGenerator.Ticks => throw new NotImplementedException();
+
+            public void Regenerate(CoordinateRange range, Edge edge, PixelLength size, SKPaint paint, LabelStyle labelStyle)
+            {
+                _auto.Regenerate(range, edge, size, paint, labelStyle);
+            }
+        }
         private void ChannelCheckBoxChanged(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < channelCount; i++)

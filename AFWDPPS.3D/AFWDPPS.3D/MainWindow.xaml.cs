@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using AFWDPPS.DB;
+using System.Windows;
 using WpfApp3D.ViewModels;
 
 namespace WpfApp3D
@@ -14,7 +15,10 @@ namespace WpfApp3D
         {
             InitializeComponent();
             this.DataContext = new MainViewModel();
-
+            this.Closing += (s, e) =>
+            {
+                FistDbManager.CloseDb();
+            };
 
         }
 

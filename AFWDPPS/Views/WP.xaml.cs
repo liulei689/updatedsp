@@ -144,6 +144,7 @@ namespace AFWDPP.Views
         {
             Logger.Initialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "发送数据"));
             Logger.Initialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据"));
+
         }
 
         byte[] SendCacheToZhangPengFeiB = new byte[7];
@@ -185,6 +186,28 @@ namespace AFWDPP.Views
                 SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
                 sendData(SendCacheToZhangPengFeiB, 7);
             }
+
+            if (searchtime.SelectedIndex == 3 && slider.IsEnabled)
+            {
+                SendCacheToZhangPengFeiB[0] = 0xA5;
+                SendCacheToZhangPengFeiB[1] = 0x03;
+
+                // Step 1: Multiply by 1000 and cast to short.
+                short angleValue = (short)(32768 / 360 * 24 * (int)slider.Value);
+
+                // Step 2: Extract high and low bytes.
+                SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
+                SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
+
+                short angleValue1 = (short)(y1.Value * 1000);
+
+                // Step 2: Extract high and low bytes.
+                SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
+                SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
+                SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
+                sendData(SendCacheToZhangPengFeiB, 7);
+            }
+
         }
 
         public byte GetSum(byte[] data)
@@ -926,6 +949,7 @@ namespace AFWDPP.Views
         {
             try
             {
+                SetDuojiDisable();
 
                 if (searchtime.SelectedIndex == 0)
                 {
@@ -942,8 +966,7 @@ namespace AFWDPP.Views
 
                     if (l5 != null)
                         l5.Visibility = Visibility.Collapsed;
-                    if (l6 != null)
-                        l6.Visibility = Visibility.Collapsed;
+
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
                     if (l8 != null)
@@ -963,8 +986,7 @@ namespace AFWDPP.Views
 
                     if (l5 != null)
                         l5.Visibility = Visibility.Collapsed;
-                    if (l6 != null)
-                        l6.Visibility = Visibility.Collapsed;
+
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
                     if (l8 != null)
@@ -984,8 +1006,7 @@ namespace AFWDPP.Views
 
                     if (l5 != null)
                         l5.Visibility = Visibility.Collapsed;
-                    if (l6 != null)
-                        l6.Visibility = Visibility.Collapsed;
+
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
                     if (l8 != null)
@@ -1005,8 +1026,7 @@ namespace AFWDPP.Views
 
                     if (l5 != null)
                         l5.Visibility = Visibility.Visible;
-                    if (l6 != null)
-                        l6.Visibility = Visibility.Visible;
+
                     if (l8 != null)
                         l8.Visibility = Visibility.Visible;
                     if (l7 != null)
@@ -1026,8 +1046,7 @@ namespace AFWDPP.Views
 
                     if (l5 != null)
                         l5.Visibility = Visibility.Collapsed;
-                    if (l6 != null)
-                        l6.Visibility = Visibility.Collapsed;
+
                     if (l7 != null)
                         l7.Visibility = Visibility.Visible;
                     if (l8 != null)
@@ -1207,9 +1226,33 @@ namespace AFWDPP.Views
             sendData(SendCacheToZhangPengFeiB, 7);
         }
 
+        private void l5_PreviewMouseLeftButtonUp_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (slider.IsEnabled)
+            {
+                SetDuojiDisable();
+            }
+            else
+            {
+                l5.Content = "停止控制";
+                l5.Foreground = new SolidColorBrush(Colors.Red);
+                slider.IsEnabled = true;
+            }
+        }
 
-
-
+        private void SetDuojiDisable()
+        {
+            try
+            {
+                if (l5 != null && slider != null)
+                {
+                    l5.Content = "开始控制";
+                    l5.Foreground = new SolidColorBrush(Colors.Green);
+                    slider.IsEnabled = false;
+                }
+            }
+            catch { }
+        }
     }
 
 }

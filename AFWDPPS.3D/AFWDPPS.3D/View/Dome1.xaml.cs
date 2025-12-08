@@ -532,7 +532,7 @@ namespace WpfApp3D
             //if (WaveformChart != null)
             //    WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
             if (BoXing.Instance != null)
-                BoXing.Instance.SetBoXing(new double[] { datap[0], datap[1], 0, datap[2], datap[3], 0 });
+                BoXing.Instance.SetBoXing(new double[] { datap[0], datap[1], pitchdianji, datap[2], datap[3], yawdianji });
 
             // 更新3D模型
             if (start.Content.ToString() == "暂停")
@@ -999,8 +999,8 @@ namespace WpfApp3D
                                 new 船体姿态数据() { 原始数据 = hexString, 接受时间 = DateTime.Now, 船俯仰角度 = pitch, 船横滚角度 = yaw }.AddBoardData();
                                 var filter = new SonarAttitudeFilter();
 
-                                pitch1 = filter.FilterPitch(pitch);
-                                yaw1 = filter.FilterYaw(yaw);
+                                //pitch1 = filter.FilterPitch(pitch);
+                                //yaw1 = filter.FilterYaw(yaw);
 
                                 new 声呐姿态数据()
                                 {
@@ -1143,7 +1143,7 @@ namespace WpfApp3D
                 return;
                 //RecDataDeal.Abort();
             }
-            openclosecom1.IsChecked = serialPort3.IsOpen;
+            openclosecom3.IsChecked = serialPort3.IsOpen;
             if (serialPort3.IsOpen)
             {
             }

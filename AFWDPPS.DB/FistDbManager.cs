@@ -54,6 +54,26 @@ namespace AFWDPPS.DB
         {
             queue4.Add(data);
         }
+
+        public static void CloseDb()
+        {
+            string dbFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "采集的数据");
+            string dbPath = Path.Combine(dbFolder, isFirstDbName);
+            // 如果文件夹不存在则创建
+            if (!File.Exists(dbPath))
+            {
+                return;
+            }
+            var db = new SqlSugarClient(new ConnectionConfig
+            {
+                ConnectionString = $"Data Source={dbPath};",
+                DbType = DbType.Sqlite,
+                InitKeyType = InitKeyType.Attribute,
+                IsAutoCloseConnection = true
+            });
+            db.Ado.ExecuteCommand("PRAGMA wal_checkpoint(TRUNCATE);");   // 立即合并
+        }
+
         static int buffecounts = 500;
         static string isFirstDbName = "";
         // 后台数据库写线程
