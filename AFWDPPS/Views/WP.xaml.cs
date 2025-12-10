@@ -192,18 +192,13 @@ namespace AFWDPP.Views
                 SendCacheToZhangPengFeiB[0] = 0xA5;
                 SendCacheToZhangPengFeiB[1] = 0x03;
 
-                // Step 1: Multiply by 1000 and cast to short.
-                short angleValue = (short)(32768 / 360 * 24 * (int)slider.Value);
+                short angleValue = (short)(slider.Value * 1000);
 
                 // Step 2: Extract high and low bytes.
                 SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
                 SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
-
-                short angleValue1 = (short)(y1.Value * 1000);
-
-                // Step 2: Extract high and low bytes.
-                SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
-                SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
+                SendCacheToZhangPengFeiB[4] = 0; // High byte
+                SendCacheToZhangPengFeiB[5] = 0; // Low byte
                 SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
                 sendData(SendCacheToZhangPengFeiB, 7);
             }
@@ -950,7 +945,8 @@ namespace AFWDPP.Views
             try
             {
                 SetDuojiDisable();
-
+                if (l3m != null)
+                    l3m.Visibility = Visibility.Collapsed;
                 if (searchtime.SelectedIndex == 0)
                 {
                     if (cmd != null)
@@ -964,19 +960,20 @@ namespace AFWDPP.Views
                     //if (l4 != null)
                     //    l4.Visibility = Visibility.Visible;
 
+
                     if (l5 != null)
                         l5.Visibility = Visibility.Collapsed;
 
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
-                    if (l8 != null)
-                        l8.Visibility = Visibility.Collapsed;
+
                     if (status != null)
                         status.Visibility = Visibility.Collapsed;
 
                 }
                 else if (searchtime.SelectedIndex == 1)
                 {
+
                     cmd.Visibility = Visibility.Visible;
 
                     l1.Visibility = Visibility.Collapsed;
@@ -989,14 +986,14 @@ namespace AFWDPP.Views
 
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
-                    if (l8 != null)
-                        l8.Visibility = Visibility.Collapsed;
+
                     if (status != null)
                         status.Visibility = Visibility.Collapsed;
 
                 }
                 else if (searchtime.SelectedIndex == 2)
                 {
+
                     cmd.Visibility = Visibility.Visible;
 
                     l1.Visibility = Visibility.Collapsed;
@@ -1009,14 +1006,15 @@ namespace AFWDPP.Views
 
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
-                    if (l8 != null)
-                        l8.Visibility = Visibility.Collapsed;
+
                     if (status != null)
                         status.Visibility = Visibility.Collapsed;
 
                 }
                 else if (searchtime.SelectedIndex == 3)
                 {
+                    if (l3m != null)
+                        l3m.Visibility = Visibility.Visible;
                     cmd.Visibility = Visibility.Collapsed;
 
                     l1.Visibility = Visibility.Collapsed;
@@ -1027,8 +1025,6 @@ namespace AFWDPP.Views
                     if (l5 != null)
                         l5.Visibility = Visibility.Visible;
 
-                    if (l8 != null)
-                        l8.Visibility = Visibility.Visible;
                     if (l7 != null)
                         l7.Visibility = Visibility.Collapsed;
                     if (status != null)
@@ -1037,6 +1033,7 @@ namespace AFWDPP.Views
                 }
                 else if (searchtime.SelectedIndex == 4)
                 {
+
                     cmd.Visibility = Visibility.Collapsed;
 
                     l1.Visibility = Visibility.Collapsed;
@@ -1049,8 +1046,7 @@ namespace AFWDPP.Views
 
                     if (l7 != null)
                         l7.Visibility = Visibility.Visible;
-                    if (l8 != null)
-                        l8.Visibility = Visibility.Collapsed;
+
                     if (status != null)
                         status.Visibility = Visibility.Visible;
 
@@ -1234,7 +1230,7 @@ namespace AFWDPP.Views
             }
             else
             {
-                l5.Content = "停止控制";
+                l5.Content = "停止";
                 l5.Foreground = new SolidColorBrush(Colors.Red);
                 slider.IsEnabled = true;
             }
@@ -1246,7 +1242,7 @@ namespace AFWDPP.Views
             {
                 if (l5 != null && slider != null)
                 {
-                    l5.Content = "开始控制";
+                    l5.Content = "开始下发";
                     l5.Foreground = new SolidColorBrush(Colors.Green);
                     slider.IsEnabled = false;
                 }

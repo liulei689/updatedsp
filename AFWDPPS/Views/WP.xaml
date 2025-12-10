@@ -40,7 +40,7 @@
                         <rubyer:DescriptionItem  Description="开启接发数据显示"  >
                             <ToggleButton  x:Name="rxtxshow" Style="{DynamicResource SwitchToggleButton}" Margin="0" IsChecked="True" />
                         </rubyer:DescriptionItem>
-                        <rubyer:DescriptionItem  Description="方位角度"   >
+                        <rubyer:DescriptionItem  Description="滚转角度"   >
                             <rubyer:NumericBox x:Name="x1" Interval="5" MinValue="-30.5" MaxValue="30.5" rubyer:InputBoxHelper.PostContent="°" Style="{StaticResource FrontBackNumericBox}" MinWidth="120" Value="0" NumericType="Double" Cursor="IBeam" />
                         </rubyer:DescriptionItem>
                         <rubyer:DescriptionItem  Description="俯仰角度"   >
@@ -76,12 +76,11 @@
 
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel Orientation="Vertical" Margin="20">
-                                        <Button Name="l5" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="开始控制" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp_1"   Cursor="Hand">
+                                        <Button Name="l5" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="开始下发" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp_1"   Cursor="Hand">
                                         </Button>
-                                        <Button Name="l8" Visibility="Collapsed" Style="{StaticResource TextButton}" Width="80" Content="速度设置" rubyer:ButtonHelper.Shape="Circle" PreviewMouseLeftButtonUp="l5_PreviewMouseLeftButtonUp"   Cursor="Hand">
-                                        </Button>
+                                       
                                     </StackPanel>
-                                    <StackPanel Margin="20" Orientation="Vertical">
+                                    <StackPanel Margin="20" Orientation="Vertical" x:Name="l3m" Visibility="Collapsed">
                                         <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"
                Text="{Binding Value, ElementName=slider, StringFormat={}{0:F0}°}"/>
                                         <Slider x:Name="slider" AutoToolTipPlacement="BottomRight" IsEnabled="False"
