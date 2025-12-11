@@ -64,19 +64,22 @@ namespace WpfApp3D.View
         {
             InitDataAndPlot();
         }
-        int countd = 300;
+        int countd = 0;
+
         public void SetBoXing(double[] data)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            countd++;
+            Action update = () =>
             {
                 for (int i = 0; i < channelCount; i++)
                 {
                     Array.Copy(datas[i], 1, datas[i], 0, datas[i].Length - 1);
                     datas[i][datas[i].Length - 1] = data[i];
                 }
-
                 WpfPlot1.Refresh();
-            });
+            };
+
+            Application.Current.Dispatcher.BeginInvoke(update);
         }
 
         private void InitDataAndPlot()
@@ -101,7 +104,7 @@ namespace WpfApp3D.View
             }
             // ⬇⬇ 让横坐标完整显示所有点
             // WpfPlot1.Plot.Axes.SetLimitsX(0, pointCount - 1);
-            WpfPlot1.Plot.Axes.Bottom.TickGenerator = new TimeTickGenerator();
+            //  WpfPlot1.Plot.Axes.Bottom.TickGenerator = new TimeTickGenerator();
 
             WpfPlot1.Plot.Legend.FontName = "微软雅黑";
             WpfPlot1.Plot.ShowLegend();
@@ -109,9 +112,11 @@ namespace WpfApp3D.View
             CH.TextColor = Colors.White;
             CH.TextBackgroundColor = CH.HorizontalLine.Color;
             // 把 Y 轴锁在 [-500, 500]
-            WpfPlot1.Plot.Axes.SetLimitsY(-250, 250);
-            WpfPlot1.Plot.Axes.DateTimeTicksBottom();
+            //WpfPlot1.Plot.Axes.SetLimitsY(-25, 25);
+            //WpfPlot1.Plot.Axes.DateTimeTicksBottom();
             WpfPlot1.Refresh();
+            WpfPlot1.Plot.Axes.AutoScale();
+            WpfPlot1.Plot.Axes.SetLimitsY(-25, 25);
         }
         /// <summary>
         /// 把“秒”刻度转成 hh:mm:ss 的 TickGenerator

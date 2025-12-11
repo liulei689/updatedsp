@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -220,6 +221,18 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             COM_STATUS_LEN,
             COM_STATUS_DATA
         }
+        public bool CheckSum_ZeroMinusBytesSum(byte[] btAry_Data)
+        {
+            int m_int_CheckSum1 = 0;
+            for (int index = 0; index < btAry_Data.Length - 1; index++)
+            {
+                m_int_CheckSum1 += btAry_Data[index];
+            }
+            byte data = (byte)(0 - m_int_CheckSum1);
+            if (data == btAry_Data[btAry_Data.Length - 1])
+                return true;
+            return false;
+        }
         private void serialPort2_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
 
@@ -261,7 +274,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                             G_btList_RecBuf.Add(tmpByte);
 
                             //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf.Count == 80 && G_btList_RecBuf[0] == 0xAA && G_btList_RecBuf[1] == 0x55)  //包接收完成
+                            if (G_btList_RecBuf.Count == 21 && G_btList_RecBuf[0] == 0xAA && G_btList_RecBuf[1] == 0x55 && CheckSum_ZeroMinusBytesSum(G_btList_RecBuf.ToArray()))  //包接收完成
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
 
@@ -271,17 +284,24 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
                                 //string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
                                 //// 使用BitConverter将字节数组转换为float
+                                ///
+                                double[] floats = new double[16];
+                                floats[0] = BitConverter.ToSingle(Rbuffer, 4);
+                                floats[1] = BitConverter.ToSingle(Rbuffer, 8);
+                                floats[8] = BitConverter.ToSingle(Rbuffer, 12);
+                                floats[9] = BitConverter.ToSingle(Rbuffer, 16);
 
-                                double[] floats = Enumerable.Range(0, 16)
-                           .Select(i => (double)BitConverter.ToSingle(Rbuffer, 11 + i * 4))
-                           .ToArray();
-                                bool ok = !floats.Any(x => x > 500 || x < -500);
-                                if (ok)
+
+                                Task.Run(() =>
                                 {
                                     new 船体姿态数据陀螺() { 原始数据 = Rbuffer.ToString(), 接受时间 = DateTime.Now, 船俯仰角度 = floats[8], 船横滚角度 = floats[0], x = floats[1], y = floats[9] }.AddTLData();
-                                    if (DebugBoXing.Instance != null)
-                                        DebugBoXing.Instance.SetBoXing(floats);
-                                }
+                                });
+
+
+
+                                if (DebugBoXing.Instance != null)
+                                    DebugBoXing.Instance.SetBoXing(floats);
+
                                 //pitch *= 57.3; //滚转
                                 //yaw *= 57.3;
                                 // UpdateYaw();
@@ -334,7 +354,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             catch { }
 
         }
-
+        private int dsdadsd = 0;
         private bool sendcmd = true;
         public double datas = 0;
         private void Timer12_Tick(object sender, EventArgs e)
