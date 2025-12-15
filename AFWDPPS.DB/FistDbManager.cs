@@ -247,6 +247,20 @@ namespace AFWDPPS.DB
         public double 声呐横滚角度 { get; set; }
         [SugarColumn(IsNullable = true)]
         public double 横滚电机动作角度 { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public double 陀螺横摇角速度 { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public double 陀螺俯仰角速度 { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public double 陀螺横摇角速度积分 { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public double 陀螺俯仰角速度积分 { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public double 横摇电流 { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public double 俯仰电流 { get; set; }
+        [SugarColumn(IsNullable = true)]
+        public string 预留状态 { get; set; }
     }
     [SugarTable("控制数据")] public class 控制数据 : BaseData { }
 }

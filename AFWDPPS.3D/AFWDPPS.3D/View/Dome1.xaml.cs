@@ -665,7 +665,7 @@ namespace WpfApp3D
                             G_btList_RecBuf1.Add(tmpByte);
 
                             //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf1.Count == 7)  //包接收完成
+                            if (G_btList_RecBuf1.Count == 35)  //包接收完成
                             {
                                 byte[] Rbuffer = G_btList_RecBuf1.ToArray();
                                 string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
@@ -674,7 +674,7 @@ namespace WpfApp3D
                                 //{
 
 
-                                if (Rbuffer.Length == 7 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[6])
+                                if (Rbuffer.Length == 35 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[34])
                                 {
                                     //if (COUNTS++ > 10)
                                     //{
@@ -690,16 +690,16 @@ namespace WpfApp3D
                                     pitchdianji = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
                                     yawdianji = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
                                     // Removed manual adjustments to let algorithm handle stable angles
-                                    pitch1 = pitch - pitchdianji;
-                                    if (pitch1 < 0) pitch1 += 1.5;
-                                    else
-                                        pitch1 -= 1.5;
 
-                                    yaw1 = yaw - yawdianji;
-                                    if (yaw1 < 0) yaw1 += 1.5;
-                                    yaw1 -= 1.5;
+                                    float[] angles = new float[7];
+                                    for (int i = 0; i < 6; ++i)
+                                    {
+                                        int idx = 6 + i * 4;                 // 帧内起始下标
+                                        byte[] le = { Rbuffer[idx + 3], Rbuffer[idx + 2], Rbuffer[idx + 1], Rbuffer[idx] }; // 大端→小端
+                                        angles[i] = BitConverter.ToSingle(le, 0);
+                                    }
 
-                                    new 声呐姿态数据 { 原始数据 = hexString, 接受时间 = DateTime.Now, 船俯仰角度 = yaw, 船横滚角度 = pitch, 声呐俯仰角度 = yaw1, 俯仰电机动作角度 = yawdianji, 声呐横滚角度 = pitch1, 横滚电机动作角度 = pitchdianji }.AddSonarData();
+                                    new 声呐姿态数据 { 原始数据 = hexString, 接受时间 = DateTime.Now, 船俯仰角度 = yaw, 船横滚角度 = pitch, 声呐俯仰角度 = yaw1, 俯仰电机动作角度 = yawdianji, 声呐横滚角度 = pitch1, 横滚电机动作角度 = pitchdianji, 陀螺横摇角速度 = angles[0], 陀螺俯仰角速度 = angles[1], 陀螺横摇角速度积分 = angles[2], 陀螺俯仰角速度积分 = angles[3], 横摇电流 = angles[4], 俯仰电流 = angles[5], 预留状态 = Rbuffer[30].ToString("X2") + Rbuffer[31].ToString("X2") + Rbuffer[32].ToString("X2") + Rbuffer[33].ToString("X2") }.AddSonarData();
 
                                 }
 
@@ -729,7 +729,7 @@ namespace WpfApp3D
                             }
 
                             //数据包长度超限检查
-                            if (G_btList_RecBuf1.Count >= 7)
+                            if (G_btList_RecBuf1.Count >= 35)
                             {
                                 G_int_ComStatus1 = (int)enum_ComStatus.COM_STATUS_HEAD1;
 

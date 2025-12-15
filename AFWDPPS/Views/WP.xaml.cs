@@ -356,7 +356,7 @@ namespace AFWDPP.Views
                                     x2.Content = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
                                     y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
                                     float[] angles = new float[7];
-                                    for (int i = 0; i < 7; ++i)
+                                    for (int i = 0; i < 6; ++i)
                                     {
                                         int idx = 6 + i * 4;                 // 帧内起始下标
                                         byte[] le = { Rbuffer[idx + 3], Rbuffer[idx + 2], Rbuffer[idx + 1], Rbuffer[idx] }; // 大端→小端
@@ -368,7 +368,7 @@ namespace AFWDPP.Views
                                     F6.Content = angles[3];
                                     F7.Content = angles[4];
                                     F8.Content = angles[5];
-                                    U9.Content = angles[6];
+                                    U9.Content = Rbuffer[30].ToString("X2") + Rbuffer[31].ToString("X2") + Rbuffer[32].ToString("X2") + Rbuffer[33].ToString("X2");
 
                                     string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
                                     s3.Content = ParseHexData(Rbuffer);
