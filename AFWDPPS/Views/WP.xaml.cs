@@ -994,10 +994,22 @@ namespace AFWDPP.Views
             sendermodel.IsChecked = false;
         }
 
+
         private void searchtime_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
+                if (t1 != null)
+                    t1.Visibility = Visibility.Collapsed;
+                if (t2 != null)
+                    t2.Visibility = Visibility.Collapsed;
+                if (t3 != null)
+                    t3.Visibility = Visibility.Collapsed;
+                if (t4 != null)
+                    t4.Visibility = Visibility.Collapsed;
+                if (t5 != null)
+                    t5.Visibility = Visibility.Collapsed;
+
                 SetDuojiDisable();
                 if (l3m != null)
                     l3m.Visibility = Visibility.Collapsed;
@@ -1103,6 +1115,36 @@ namespace AFWDPP.Views
 
                     if (status != null)
                         status.Visibility = Visibility.Visible;
+
+                }
+                else if (searchtime.SelectedIndex == 5)
+                {
+
+                    cmd.Visibility = Visibility.Collapsed;
+
+                    l1.Visibility = Visibility.Collapsed;
+                    l2.Visibility = Visibility.Collapsed;
+                    l3.Visibility = Visibility.Collapsed;
+                    l4.Visibility = Visibility.Collapsed;
+
+                    if (l5 != null)
+                        l5.Visibility = Visibility.Collapsed;
+
+                    if (l7 != null)
+                        l7.Visibility = Visibility.Collapsed;
+
+                    if (status != null)
+                        status.Visibility = Visibility.Collapsed;
+                    if (t1 != null)
+                        t1.Visibility = Visibility.Visible;
+                    if (t2 != null)
+                        t2.Visibility = Visibility.Visible;
+                    if (t3 != null)
+                        t3.Visibility = Visibility.Visible;
+                    if (t4 != null)
+                        t4.Visibility = Visibility.Visible;
+                    if (t5 != null)
+                        t5.Visibility = Visibility.Visible;
 
                 }
             }
@@ -1302,6 +1344,67 @@ namespace AFWDPP.Views
                 }
             }
             catch { }
+        }
+
+        private void t1_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn != null)
+                SetTlLp(btn.Name);
+        }
+        private async void SetTlLp(string cmdm)
+        {
+
+            SendCacheToZhangPengFeiB[0] = 0xA5;
+            if (cmdm == "t1")
+                SendCacheToZhangPengFeiB[1] = 0x05;
+            else
+                SendCacheToZhangPengFeiB[1] = 0x06;
+            // Step 1: Multiply by 1000 and cast to short.
+            if (cmdm == "t1")
+            {
+                SendCacheToZhangPengFeiB[2] = 0; // High byte
+                SendCacheToZhangPengFeiB[3] = 0; // Low byte
+                SendCacheToZhangPengFeiB[4] = 0; // High byte
+                SendCacheToZhangPengFeiB[5] = 0; // Low byte
+            }
+            else if (cmdm == "t2")
+            {
+                SendCacheToZhangPengFeiB[2] = 0x10; // High byte
+                SendCacheToZhangPengFeiB[3] = 0; // Low byte
+                SendCacheToZhangPengFeiB[4] = 0; // High byte
+                SendCacheToZhangPengFeiB[5] = 0; // Low byte
+            }
+            else if (cmdm == "t3")
+            {
+                SendCacheToZhangPengFeiB[2] = 0x00; // High byte
+                SendCacheToZhangPengFeiB[3] = 0x01; // Low byte
+                SendCacheToZhangPengFeiB[4] = 0; // High byte
+                SendCacheToZhangPengFeiB[5] = 0; // Low byte
+            }
+            else if (cmdm == "t4")
+            {
+                SendCacheToZhangPengFeiB[2] = 0x00; // High byte
+                SendCacheToZhangPengFeiB[3] = 0x00; // Low byte
+                SendCacheToZhangPengFeiB[4] = 0x10; // High byte
+                SendCacheToZhangPengFeiB[5] = 0; // Low byte
+            }
+            else if (cmdm == "t5")
+            {
+                SendCacheToZhangPengFeiB[2] = 0x00; // High byte
+                SendCacheToZhangPengFeiB[3] = 0x00; // Low byte
+                SendCacheToZhangPengFeiB[4] = 0; // High byte
+                SendCacheToZhangPengFeiB[5] = 0x01; // Low byte
+            }
+
+            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
+
+            for (int i = 0; i < 5; i++)
+            {
+                sendData(SendCacheToZhangPengFeiB, 7);
+                await Task.Delay(80);
+            }
+
         }
     }
 
