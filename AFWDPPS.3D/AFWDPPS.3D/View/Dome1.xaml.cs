@@ -1002,7 +1002,7 @@ namespace WpfApp3D
                                 //pitch1 = filter.FilterPitch(pitch);
                                 //yaw1 = filter.FilterYaw(yaw);
 
-                                new 声呐姿态数据()
+                                new 控制数据()
                                 {
                                     原始数据 = hexString,
                                     接受时间 = DateTime.Now,
@@ -1010,7 +1010,7 @@ namespace WpfApp3D
                                     船横滚角度 = yaw,
                                     声呐俯仰角度 = pitch1,
                                     声呐横滚角度 = yaw1
-                                }.AddSonarData();
+                                }.AddControlData();
                                 datap[0] = pitch;
                                 datap[1] = pitch1;
                                 datap[2] = yaw;

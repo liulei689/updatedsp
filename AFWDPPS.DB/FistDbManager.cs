@@ -262,5 +262,5 @@ namespace AFWDPPS.DB
         [SugarColumn(IsNullable = true)]
         public string 预留状态 { get; set; }
     }
-    [SugarTable("控制数据")] public class 控制数据 : BaseData { }
+    [SugarTable("控制数据")] public class 控制数据 : 声呐姿态数据 { }
 }
