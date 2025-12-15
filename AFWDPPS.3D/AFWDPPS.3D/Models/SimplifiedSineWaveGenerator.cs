@@ -20,7 +20,7 @@ namespace WpfApp3D.Models
         public SimplifiedSineWaveGenerator(double amplitude, double frequency, double timeStep = 0.001)
         {
             this.amplitude = 5;
-            this.frequency = 12;
+            this.frequency = 5;
             this.phase = 0;
             this.currentTime = 0;
             this.timeStep = timeStep; // 默认时间步长为 0.01 秒

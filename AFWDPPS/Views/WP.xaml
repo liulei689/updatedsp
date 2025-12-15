@@ -113,10 +113,17 @@
                     <Label Content="DSP回传数据" />
                     <rubyer:Description Style="{StaticResource BorderDescription}"
                         Margin="1"
-                        Columns="3">
+                        Columns="4">
                         <rubyer:DescriptionItem Name="IDC_EDIT_CHECKA_0_0"       Description="接受帧数" />
                         <rubyer:DescriptionItem Name="x2"       Description="方位角度" />
                         <rubyer:DescriptionItem Name="y2"       Description="俯仰角度" />
+                        <rubyer:DescriptionItem Name="F3"       Description="陀螺横摇角速度" />
+                        <rubyer:DescriptionItem Name="F4"       Description="陀螺俯仰角速度" />
+                        <rubyer:DescriptionItem Name="F5"       Description="陀螺横摇角速度积分" />
+                        <rubyer:DescriptionItem Name="F6"       Description="陀螺俯仰角速度积分" />
+                        <rubyer:DescriptionItem Name="F7"       Description="横摇电流" />
+                        <rubyer:DescriptionItem Name="F8"       Description="俯仰电流" />
+                        <rubyer:DescriptionItem Name="U9"       Description="预留" />
                         <rubyer:DescriptionItem Name="s3"       Description="状态" />
 
                     </rubyer:Description>

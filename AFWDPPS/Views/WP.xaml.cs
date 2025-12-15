@@ -146,6 +146,44 @@ namespace AFWDPP.Views
             Logger.Initialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据"));
 
         }
+        byte[] SendCacheToZhangPengFeiBtest = new byte[35];
+        private void TestMiniSends()
+        {
+            SendCacheToZhangPengFeiBtest[0] = 0xA5;
+
+            SendCacheToZhangPengFeiBtest[1] = 0x01;
+
+            // Step 1: Multiply by 1000 and cast to short.
+            short angleValue = (short)(x1.Value * 1000);
+
+            // Step 2: Extract high and low bytes.
+            SendCacheToZhangPengFeiBtest[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
+            SendCacheToZhangPengFeiBtest[3] = (byte)(angleValue & 0xFF); // Low byte
+
+            short angleValue1 = (short)(y1.Value * 1000);
+
+            // Step 2: Extract high and low bytes.
+            SendCacheToZhangPengFeiBtest[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
+            SendCacheToZhangPengFeiBtest[5] = (byte)(angleValue1 & 0xFF); // Low byte
+
+            // 7 个固定测试值，顺序不能变
+            float[] f = { 1.23f, -2.34f, 3.45f, -4.56f, 5.67f, -6.78f, 7.89f };
+
+            // 依次写进 6-33 字节
+            for (int i = 0; i < 7; ++i)
+            {
+                uint raw = BitConverter.ToUInt32(BitConverter.GetBytes(f[i]), 0); // 小端→uint
+                int idx = 6 + i * 4;                                                // 帧内起始下标
+                SendCacheToZhangPengFeiBtest[idx + 0] = (byte)(raw >> 24);          // 最高字节
+                SendCacheToZhangPengFeiBtest[idx + 1] = (byte)(raw >> 16);
+                SendCacheToZhangPengFeiBtest[idx + 2] = (byte)(raw >> 8);
+                SendCacheToZhangPengFeiBtest[idx + 3] = (byte)raw;                 // 最低字节
+            }
+
+            SendCacheToZhangPengFeiBtest[34] = 0;
+            SendCacheToZhangPengFeiBtest[34] = GetSum(SendCacheToZhangPengFeiBtest);
+            sendData(SendCacheToZhangPengFeiBtest, 35);
+        }
 
         byte[] SendCacheToZhangPengFeiB = new byte[7];
         byte[] SendCacheToZhangPengFeiC = new byte[56]; //模拟MU数据
@@ -153,6 +191,7 @@ namespace AFWDPP.Views
         byte da = 0;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
+            //TestMiniSends(); return;
             //#region 模拟MU数据发送
             //SendCacheToZhangPengFeiC[0] = 0x7F;
             //SendCacheToZhangPengFeiC[1] = 0x80;
@@ -299,7 +338,7 @@ namespace AFWDPP.Views
                         G_btList_RecBuf.Add(tmpByte);
 
                         //数据接收完成后的有效性判断
-                        if (G_btList_RecBuf.Count == 7)  //包接收完成
+                        if (G_btList_RecBuf.Count == 35)  //包接收完成
                         {
                             byte[] Rbuffer = G_btList_RecBuf.ToArray();
                             string hexString = BitConverter.ToString(Rbuffer).Replace("-", " ").ToUpper();
@@ -310,18 +349,33 @@ namespace AFWDPP.Views
                                 if (!rx.IsEnabled)
                                     rx.IsEnabled = true;
 
-                                if (Rbuffer.Length == 7 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[6])
+                                if (Rbuffer.Length == 35 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[34])
                                 {
                                     if (rxtxshow.IsChecked == true)
                                         rxlog.AddOne(hexString, "收←◆");
                                     x2.Content = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
                                     y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
+                                    float[] angles = new float[7];
+                                    for (int i = 0; i < 7; ++i)
+                                    {
+                                        int idx = 6 + i * 4;                 // 帧内起始下标
+                                        byte[] le = { Rbuffer[idx + 3], Rbuffer[idx + 2], Rbuffer[idx + 1], Rbuffer[idx] }; // 大端→小端
+                                        angles[i] = BitConverter.ToSingle(le, 0);
+                                    }
+                                    F3.Content = angles[0];
+                                    F4.Content = angles[1];
+                                    F5.Content = angles[2];
+                                    F6.Content = angles[3];
+                                    F7.Content = angles[4];
+                                    F8.Content = angles[5];
+                                    U9.Content = angles[6];
+
                                     string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
                                     s3.Content = ParseHexData(Rbuffer);
                                     if (countred++ > 50)
                                     {
                                         countred = 0;
-                                        Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content, LogFolderPath);
+                                        Logger.WriteLog(hexString + "," + x2.Content + "," + y2.Content + "," + F3.Content + "," + F4.Content + "," + F5.Content + "," + F6.Content + "," + F7.Content + "," + F8.Content + "," + U9.Content, LogFolderPath);
                                     }
                                 }
                                 //  }
@@ -356,7 +410,7 @@ namespace AFWDPP.Views
                         }
 
                         //数据包长度超限检查
-                        if (G_btList_RecBuf.Count >= 7)
+                        if (G_btList_RecBuf.Count >= 35)
                         {
                             G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
 

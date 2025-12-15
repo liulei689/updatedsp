@@ -184,8 +184,8 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             _autoScaleTimer.Tick += _autoScaleTimer_Tick;
             Closed += MoliDevice_Closed;
             timer12 = new DispatcherTimer();
-            timer12.Interval = TimeSpan.FromMilliseconds(10);
-            timer12.Tick += Timer12_Tick; ;
+            timer12.Interval = TimeSpan.FromMilliseconds(1);
+            timer12.Tick += Timer12_Tick;
             timer12.Stop();
             #region  串口信息稳定设备
             botelv1.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
@@ -274,7 +274,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                             G_btList_RecBuf.Add(tmpByte);
 
                             //数据接收完成后的有效性判断
-                            if (G_btList_RecBuf.Count == 21 && G_btList_RecBuf[0] == 0xAA && G_btList_RecBuf[1] == 0x55 && CheckSum_ZeroMinusBytesSum(G_btList_RecBuf.ToArray()))  //包接收完成
+                            if (G_btList_RecBuf.Count == 29 && G_btList_RecBuf[0] == 0xAA && G_btList_RecBuf[1] == 0x55 && CheckSum_ZeroMinusBytesSum(G_btList_RecBuf.ToArray()))  //包接收完成
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
 
@@ -290,11 +290,12 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 floats[1] = BitConverter.ToSingle(Rbuffer, 8);
                                 floats[8] = BitConverter.ToSingle(Rbuffer, 12);
                                 floats[9] = BitConverter.ToSingle(Rbuffer, 16);
-
-
+                                roll = floats[2] = BitConverter.ToSingle(Rbuffer, 20);
+                                floats[3] = BitConverter.ToSingle(Rbuffer, 24);
+                                floats[4] = sendjiaodu;
                                 Task.Run(() =>
                                 {
-                                    new 船体姿态数据陀螺() { 原始数据 = Rbuffer.ToString(), 接受时间 = DateTime.Now, 船俯仰角度 = floats[8], 船横滚角度 = floats[0], x = floats[1], y = floats[9] }.AddTLData();
+                                    new 船体姿态数据陀螺() { 原始数据 = Rbuffer.ToString(), 接受时间 = DateTime.Now, 船俯仰角度 = floats[8], 船横滚角度 = floats[3], x = floats[1], y = floats[9] }.AddTLData();
                                 });
 
 
@@ -310,16 +311,16 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
                             }
-                            else if (G_btList_RecBuf.Count == 19 && G_btList_RecBuf[0] == 0xEB && G_btList_RecBuf[0] == 0x90)
+                            if (G_btList_RecBuf.Count == 19 && G_btList_RecBuf[0] == 0xEB && G_btList_RecBuf[1] == 0x90)
                             {
                                 byte[] Rbuffer = G_btList_RecBuf.ToArray();
                                 if (Rbuffer[0] == 0xEB) //包头1
                                 {
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
-                                        TbP1.Text = GetGateStatusHex(Rbuffer, 6, 9);
-                                        TbI1.Text = GetGateStatusHex(Rbuffer, 10, 13);
-                                        TbD1.Text = GetGateStatusHex(Rbuffer, 14, 17);
+                                        TbP1.Text = BitConverter.ToSingle(Rbuffer, 6).ToString();
+                                        TbI1.Text = BitConverter.ToSingle(Rbuffer, 10).ToString();
+                                        TbD1.Text = BitConverter.ToSingle(Rbuffer, 14).ToString();
                                     });
                                     G_btList_RecBuf.Clear();
                                     //切换协议解析状态
@@ -354,9 +355,12 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             catch { }
 
         }
-        private int dsdadsd = 0;
-        private bool sendcmd = true;
+
         public double datas = 0;
+        public double roll = 0;
+        static public double feedbackAngle = 0;
+        static public double sendjiaodu = 0;
+        BrushlessMotorSim motor = new BrushlessMotorSim(initialAngle: 10);
         private void Timer12_Tick(object sender, EventArgs e)
         {
             if (CmbOption.SelectedIndex == 0)
@@ -369,13 +373,32 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
                 Dome1.Dome1Instance.pitch = vibrationYaw + Dome1.Dome1Instance.pitchdianji;
                 //double vibrationPitch = Dome1.Dome1Instance.pitch;
-                byte[] data = MoliDj.BuildFrame(Dome1.Dome1Instance.pitch);
+                if (feedbackAngle > 12) feedbackAngle = 0;
+                sendjiaodu = vibrationYaw - feedbackAngle;
+                byte[] data = MoliDj.BuildFrame(sendjiaodu);
+
+
+                motor.CommandDelayMs = 50;   // 50ms 延迟
+                motor.MaxSpeed = 200;
+                motor.MaxAccel = 800;
+                motor.Damping = 0.95;
+
+
+                // 下位机每 10ms 都会发，现在模拟持续发送（即使值相同也会发）
+
+                motor.ReceiveCommand(roll);
+
+                // 上位机每 10ms 调用一次 Update（并把角度回传）
+                motor.Update10ms();
+
+                feedbackAngle = motor.Angle;
+                //SendFeedbackToController(feedbackAngle);
+
+
+
                 sendData(data, data.Length);
             }
-            else
-            {
-                SendCmd();
-            }
+
 
         }
         private void sendData(byte[] databuf, int datalength)
@@ -621,15 +644,20 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
         }
         bool isread = true; bool sendcmdt = false;
-        private void BtnRead_Click(object sender, RoutedEventArgs e)
+        private async void BtnRead_Click(object sender, RoutedEventArgs e)
         {
             {
-                CmbOption.SelectedIndex = 1;
+
                 if ((sender as Button).Name == "BtnRead")
                 { isread = true; }
                 else
                     isread = false;
-                SendCmd();
+                for (int i = 0; i < 5; i++)
+                {
+                    SendCmd();
+                    await Task.Delay(50);
+                }
+
             }
         }
         private void SendCmd()
@@ -761,4 +789,150 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             DebugBoXing.Instance.Show();
         }
     }
+
+
+
+
+
+
+
+    //////
+    //////
+    //////
+    public class BrushlessMotorSim
+    {
+        // ---- 状态 ----
+        private double _angle;           // 当前角度（0~360）
+        private double _velocity;        // 当前角速度（°/s）
+        private double _targetAngle;     // 实际目标角度（电机开始运动后要到达的角度）
+        private double _pendingAngle;    // 新命令的待应用角度（在延迟期间保存）
+        private bool _hasPending = false;
+
+        // 延迟计时器（ms）
+        private double _commandDelayTimerMs = 0;
+
+        // ---- 可配置参数 ----
+        public double CommandDelayMs { get; set; } = 30;    // 指令延迟（ms）
+        public double MaxSpeed { get; set; } = 250;         // 最大速度 °/s
+        public double MaxAccel { get; set; } = 1200;        // 最大加速度 °/s²
+        public double Damping { get; set; } = 0.92;         // 阻尼（0..1，越小衰减越强）
+        public double CommandEpsilon { get; set; } = 0.01;  // 判定命令变化的容差（度）
+
+        // 对外只读的角度（0..360）
+        public double Angle => _angle;
+
+        public BrushlessMotorSim(double initialAngle = 0)
+        {
+            _angle = Clamp360(initialAngle);
+            _targetAngle = _angle;
+            _pendingAngle = _angle;
+            _velocity = 0;
+            _hasPending = false;
+        }
+
+        /// <summary>
+        /// 下位机每 10ms 会调用这个方法传入当前的命令角度（0..360）
+        /// 若与上一次真正的命令不同（差值超过 CommandEpsilon），则设置延迟并保存为 pending。
+        /// 若命令与上一次相同，则不会重置延迟（避免一直等待）。
+        /// </summary>
+        public void ReceiveCommand(double angleCmd)
+        {
+            double normalized = Clamp360(angleCmd);
+
+            // 如果无 pending 且当前 pending==target 且 normalized==target => nothing changed
+            // 只在命令与上一次 pending（或已经生效的 target）不同时触发延迟
+            double compareBase = _hasPending ? _pendingAngle : _targetAngle;
+
+            // 计算最短差（带 wrap）
+            double diff = ShortestAngleDiff(compareBase, normalized);
+
+            if (Math.Abs(diff) > CommandEpsilon)
+            {
+                // 只有在“真正变化”时才设置 pending 并重置延迟
+                _pendingAngle = normalized;
+                _hasPending = true;
+                _commandDelayTimerMs = CommandDelayMs;
+            }
+            // else: 命令与上一条近似相同，忽略（不重置延迟）
+        }
+
+        /// <summary>
+        /// 上位机每 10ms 调用一次（固定频率），内部会拆成 1ms 子步保证平滑
+        /// </summary>
+        public void Update10ms()
+        {
+            // 拆成 10 个 1ms 步长
+            for (int i = 0; i < 10; i++)
+                Step1ms(0.001);
+        }
+
+        // 单步 1ms 仿真
+        private void Step1ms(double dt)
+        {
+            // 如果存在 pending 命令，处理延迟计时
+            if (_hasPending)
+            {
+                if (_commandDelayTimerMs > 0)
+                {
+                    _commandDelayTimerMs -= dt * 1000.0;
+                    if (_commandDelayTimerMs <= 0)
+                    {
+                        // 延迟到期：把 pending 生成为实际 target 开始运动
+                        _targetAngle = _pendingAngle;
+                        _hasPending = false;
+                        _commandDelayTimerMs = 0;
+                    }
+                    else
+                    {
+                        // 仍在延迟期间，电机不响应新命令，但仍可继续之前的运动（如果有）
+                        // 我们不 return；允许电机在延迟期间按已有速度继续运动（或你也可以选择 return;）
+                    }
+                }
+            }
+
+            // 计算最短角差（signed -180..180）
+            double diff = ShortestAngleDiff(_angle, _targetAngle);
+
+            // 如果到位足够近，停止并置角度为 target（避免振荡）
+            if (Math.Abs(diff) < 0.02)
+            {
+                _angle = _targetAngle;
+                _velocity = 0;
+                return;
+            }
+
+            // 计算期望加速度方向（朝向 target）
+            double accelSign = Math.Sign(diff);
+            double accel = accelSign * MaxAccel;
+
+            // 更新速度（v = v + a*dt）
+            _velocity += accel * dt;
+
+            // 限制速度
+            if (_velocity > MaxSpeed) _velocity = MaxSpeed;
+            if (_velocity < -MaxSpeed) _velocity = -MaxSpeed;
+
+            // 阻尼（简单乘因子）
+            _velocity *= Damping;
+
+            // 更新角度
+            _angle = Clamp360(_angle + _velocity * dt);
+        }
+
+        // ===== 辅助 =====
+        private double Clamp360(double a)
+        {
+            a %= 360;
+            return a < 0 ? a + 360 : a;
+        }
+
+        // 得到 current -> target 的最短带符号差（-180,180]
+        private double ShortestAngleDiff(double current, double target)
+        {
+            double diff = (target - current + 540.0) % 360.0 - 180.0;
+            return diff;
+        }
+    }
+
+
 }
