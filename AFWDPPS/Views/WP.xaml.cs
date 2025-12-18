@@ -3,12 +3,14 @@ using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -170,7 +172,7 @@ namespace AFWDPP.Views
             float[] f = { 1.23f, -2.34f, 3.45f, -4.56f, 5.67f, -6.78f, 7.89f };
 
             // 依次写进 6-33 字节
-            for (int i = 0; i < 7; ++i)
+            for (int i = 0; i < 6; ++i)
             {
                 uint raw = BitConverter.ToUInt32(BitConverter.GetBytes(f[i]), 0); // 小端→uint
                 int idx = 6 + i * 4;                                                // 帧内起始下标
@@ -179,7 +181,10 @@ namespace AFWDPP.Views
                 SendCacheToZhangPengFeiBtest[idx + 2] = (byte)(raw >> 8);
                 SendCacheToZhangPengFeiBtest[idx + 3] = (byte)raw;                 // 最低字节
             }
-
+            SendCacheToZhangPengFeiBtest[30] = 0x01;
+            SendCacheToZhangPengFeiBtest[31] = 0xFF;
+            SendCacheToZhangPengFeiBtest[32] = 0xFF;
+            SendCacheToZhangPengFeiBtest[33] = 0xFF;
             SendCacheToZhangPengFeiBtest[34] = 0;
             SendCacheToZhangPengFeiBtest[34] = GetSum(SendCacheToZhangPengFeiBtest);
             sendData(SendCacheToZhangPengFeiBtest, 35);
@@ -302,6 +307,66 @@ namespace AFWDPP.Views
             COM_STATUS_LEN,
             COM_STATUS_DATA
         }
+
+
+        public static class U9Parser
+        {
+            // 直接返回所有状态的拼接字符串，用换行分隔（你可以改成逗号等）
+            public static string ParseU9ToString(byte[] frame)
+            {
+                if (frame == null || frame.Length < 34)
+                    return "";
+
+                // 读取偏移30的4字节（大端 uint32）
+                uint u9 = BinaryPrimitives.ReadUInt32BigEndian(frame.AsSpan(30));
+
+                var sb = new StringBuilder();
+
+                // --- X 轴 ---
+                if ((u9 & (1U << 0)) != 0) sb.AppendLine("横摇（X 轴）电机驱动欠压");
+                if ((u9 & (1U << 1)) != 0) sb.AppendLine("横摇（X 轴）电机驱动过温");
+                if ((u9 & (1U << 2)) != 0) sb.AppendLine("横摇（X 轴）电机驱动过压");
+                if ((u9 & (1U << 3)) != 0) sb.AppendLine("横摇（X 轴）电机驱动过流");
+                if ((u9 & (1U << 4)) != 0) sb.AppendLine("横摇（X 轴）电机功率超限");
+                if ((u9 & (1U << 5)) != 0) sb.AppendLine("横摇（X 轴）电机软件刹车");
+                if ((u9 & (1U << 6)) != 0) sb.AppendLine("横摇（X 轴）电机驱动正在寻零");
+                if ((u9 & (1U << 7)) != 0) sb.AppendLine("横摇（X 轴）电机编码器异常");
+                if ((u9 & (1U << 8)) != 0) sb.AppendLine("横摇（X 轴）电机驱动连接超时");
+                if ((u9 & (1U << 9)) != 0) sb.AppendLine("横摇（X 轴）编码器上限位");
+                if ((u9 & (1U << 10)) != 0) sb.AppendLine("横摇（X 轴）编码器下限位");
+
+                // --- Y 轴 ---
+                if ((u9 & (1U << 11)) != 0) sb.AppendLine("纵倾（Y 轴）电机驱动欠压");
+                if ((u9 & (1U << 12)) != 0) sb.AppendLine("纵倾（Y 轴）电机驱动过温");
+                if ((u9 & (1U << 13)) != 0) sb.AppendLine("纵倾（Y 轴）电机驱动过压");
+                if ((u9 & (1U << 14)) != 0) sb.AppendLine("纵倾（Y 轴）电机驱动过流");
+                if ((u9 & (1U << 15)) != 0) sb.AppendLine("纵倾（Y 轴）电机功率超限");
+                if ((u9 & (1U << 16)) != 0) sb.AppendLine("纵倾（Y 轴）电机软件刹车");
+                if ((u9 & (1U << 17)) != 0) sb.AppendLine("纵倾（Y 轴）电机驱动正在寻零");
+                if ((u9 & (1U << 18)) != 0) sb.AppendLine("纵倾（Y 轴）电机编码器异常");
+                if ((u9 & (1U << 19)) != 0) sb.AppendLine("纵倾（Y 轴）电机驱动连接超时");
+                if ((u9 & (1U << 20)) != 0) sb.AppendLine("纵倾（Y 轴）编码器上限位");
+                if ((u9 & (1U << 21)) != 0) sb.AppendLine("纵倾（Y 轴）编码器下限位");
+
+                // --- 其他 ---
+                if ((u9 & (1U << 22)) != 0) sb.AppendLine("陀螺连接超时");
+
+                // --- 工作状态（Bit23 + Bit24）---
+                int state = (int)((u9 >> 23) & 0x03);
+                string workState = state switch
+                {
+                    1 => "工作状态：编码器位置锁定",
+                    3 => "工作状态：陀螺稳定",
+                    _ => "工作状态：未知工作状态"
+                };
+                sb.AppendLine(workState);
+
+                // 如果没有任何异常，只显示工作状态
+                string result = sb.ToString().Trim();
+                return string.IsNullOrEmpty(result) ? "无异常" : result;
+            }
+        }
+
         int countred = 0;
         int COUNTS = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -369,7 +434,7 @@ namespace AFWDPP.Views
                                     F7.Content = angles[4];
                                     F8.Content = angles[5];
                                     U9.Content = Rbuffer[30].ToString("X2") + Rbuffer[31].ToString("X2") + Rbuffer[32].ToString("X2") + Rbuffer[33].ToString("X2");
-
+                                    U9D.Content = U9Parser.ParseU9ToString(Rbuffer);
                                     string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
                                     s3.Content = ParseHexData(Rbuffer);
                                     if (countred++ > 50)
@@ -1262,7 +1327,7 @@ namespace AFWDPP.Views
                 // Step 2: Extract high and low bytes.
                 SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
                 SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
-                // Step 2: Extract high and low bytes.
+                                                                         // Step 2: Extract high and low bytes.
                 SendCacheToZhangPengFeiB[4] = 0; // High byte
                 SendCacheToZhangPengFeiB[5] = 0; // Low byte
                 status.Content = $"【自检中】【横滚：{angleValue / 1000}度】";

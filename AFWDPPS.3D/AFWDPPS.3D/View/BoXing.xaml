@@ -46,6 +46,13 @@
             <CheckBox x:Name="cb4" Content="船体俯仰" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
             <CheckBox x:Name="cb5" Content="声呐俯仰" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
             <CheckBox x:Name="cb6" Content="电机俯仰动作" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb7" Content="陀螺横摇角速度" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb8" Content="陀螺俯仰角速度" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb9" Content="陀螺横摇角速度积分" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb10" Content="陀螺俯仰角速度积分" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb11" Content="横摇电流" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+            <CheckBox x:Name="cb12" Content="俯仰电流" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+
             <TextBlock Text="点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <ComboBox x:Name="PointCountCombo" Width="80" SelectionChanged="PointCountCombo_SelectionChanged">
                 <ComboBoxItem Content="100" />

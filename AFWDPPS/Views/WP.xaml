@@ -136,9 +136,11 @@
                         <rubyer:DescriptionItem Name="F8"       Description="俯仰电流" />
                         <rubyer:DescriptionItem Name="U9"       Description="预留" />
                         <rubyer:DescriptionItem Name="s3"       Description="状态" />
-
                     </rubyer:Description>
-                                </StackPanel>
+                    <rubyer:Description Style="{StaticResource BorderDescription}" Margin="1" Columns="1">
+                            <rubyer:DescriptionItem Name="U9D" Description="预留位解析" />
+                        </rubyer:Description>
+                </StackPanel>
             </GroupBox>
             <GroupBox Grid.Row="2" Header="数据显示" >
                 <Grid  Margin="1">

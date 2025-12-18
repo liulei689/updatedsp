@@ -13,12 +13,12 @@ namespace WpfApp3D.View
     /// </summary>
     public partial class BoXing : Window
     {
-        private readonly int channelCount = 6;
+        private readonly int channelCount = 12;
         private int pointCount = 1000;
         private double[][] datas;
         private ScottPlot.Plottables.Signal[] signals;
         private ScottPlot.DataGenerators.RandomWalker[] walkers;
-        private readonly string[] channelNames = { "船体横滚", "声呐横滚", "电机横滚动作", "船体俯仰", "声呐俯仰", "电机俯仰动作" };
+        private readonly string[] channelNames = { "船体横滚", "声呐横滚", "电机横滚动作", "船体俯仰", "声呐俯仰", "电机俯仰动作", "陀螺横摇角速度", "陀螺俯仰角速度", "陀螺横摇角速度积分", "陀螺俯仰角速度积分", "横摇电流", "俯仰电流" };
         private ScottPlot.Plottables.Crosshair CH;
         private readonly DispatcherTimer _autoScaleTimer =
     new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(1000) };   // 2 Hz
@@ -141,6 +141,12 @@ namespace WpfApp3D.View
                 case 3: return cb4;
                 case 4: return cb5;
                 case 5: return cb6;
+                case 6: return cb7;
+                case 7: return cb8;
+                case 8: return cb9;
+                case 9: return cb10;
+                case 10: return cb11;
+                case 11: return cb12;
                 default: return null;
             }
         }
