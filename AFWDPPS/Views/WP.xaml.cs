@@ -196,57 +196,59 @@ namespace AFWDPP.Views
         byte da = 0;
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
-            //TestMiniSends(); return;
-            //#region 模拟MU数据发送
-            //SendCacheToZhangPengFeiC[0] = 0x7F;
-            //SendCacheToZhangPengFeiC[1] = 0x80;
-            //SendCacheToZhangPengFeiC[2] = 0;
-            //SendCacheToZhangPengFeiC[3] = 0xC1;
-            //if (da > 255) da = 0;
-            //SendCacheToZhangPengFeiC[53] = da++;
-            //sendData(SendCacheToZhangPengFeiC, 56);
-
-            //#endregion
-            if (istartbit)
-                Senbit();
-            if (sendermodel.IsChecked == true)
+            Application.Current.Dispatcher.BeginInvoke(() =>
             {
-                SendCacheToZhangPengFeiB[0] = 0xA5;
+                //TestMiniSends(); return;
+                //#region 模拟MU数据发送
+                //SendCacheToZhangPengFeiC[0] = 0x7F;
+                //SendCacheToZhangPengFeiC[1] = 0x80;
+                //SendCacheToZhangPengFeiC[2] = 0;
+                //SendCacheToZhangPengFeiC[3] = 0xC1;
+                //if (da > 255) da = 0;
+                //SendCacheToZhangPengFeiC[53] = da++;
+                //sendData(SendCacheToZhangPengFeiC, 56);
 
-                SendCacheToZhangPengFeiB[1] = 0x02;
+                //#endregion
+                if (istartbit)
+                    Senbit();
+                if (sendermodel.IsChecked == true)
+                {
+                    SendCacheToZhangPengFeiB[0] = 0xA5;
 
-                // Step 1: Multiply by 1000 and cast to short.
-                short angleValue = (short)(x1.Value * 1000);
+                    SendCacheToZhangPengFeiB[1] = 0x02;
 
-                // Step 2: Extract high and low bytes.
-                SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
-                SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
+                    // Step 1: Multiply by 1000 and cast to short.
+                    short angleValue = (short)(x1.Value * 1000);
 
-                short angleValue1 = (short)(y1.Value * 1000);
+                    // Step 2: Extract high and low bytes.
+                    SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
+                    SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
 
-                // Step 2: Extract high and low bytes.
-                SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
-                SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
-                SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-                sendData(SendCacheToZhangPengFeiB, 7);
-            }
+                    short angleValue1 = (short)(y1.Value * 1000);
 
-            if (searchtime.SelectedIndex == 3 && slider.IsEnabled)
-            {
-                SendCacheToZhangPengFeiB[0] = 0xA5;
-                SendCacheToZhangPengFeiB[1] = 0x03;
+                    // Step 2: Extract high and low bytes.
+                    SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
+                    SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
+                    SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
+                    sendData(SendCacheToZhangPengFeiB, 7);
+                }
 
-                short angleValue = (short)(slider.Value * 1000);
+                if (searchtime.SelectedIndex == 3 && slider.IsEnabled)
+                {
+                    SendCacheToZhangPengFeiB[0] = 0xA5;
+                    SendCacheToZhangPengFeiB[1] = 0x03;
 
-                // Step 2: Extract high and low bytes.
-                SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
-                SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
-                SendCacheToZhangPengFeiB[4] = 0; // High byte
-                SendCacheToZhangPengFeiB[5] = 0; // Low byte
-                SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-                sendData(SendCacheToZhangPengFeiB, 7);
-            }
+                    short angleValue = (short)(slider.Value * 1000);
 
+                    // Step 2: Extract high and low bytes.
+                    SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
+                    SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
+                    SendCacheToZhangPengFeiB[4] = 0; // High byte
+                    SendCacheToZhangPengFeiB[5] = 0; // Low byte
+                    SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
+                    sendData(SendCacheToZhangPengFeiB, 7);
+                }
+            });
         }
 
         public byte GetSum(byte[] data)
@@ -369,6 +371,7 @@ namespace AFWDPP.Views
 
         int countred = 0;
         int COUNTS = 0;
+        int countupdte = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -416,10 +419,15 @@ namespace AFWDPP.Views
 
                                 if (Rbuffer.Length == 35 && Rbuffer[0] == 0xA5 && GetSum(Rbuffer) == Rbuffer[34])
                                 {
+                                    if (countupdte++ < 10) return;
+                                    else countupdte = 0;
+
+
                                     if (rxtxshow.IsChecked == true)
                                         rxlog.AddOne(hexString, "收←◆");
                                     x2.Content = ParseAngleFromBytes(Rbuffer[2], Rbuffer[3]);
                                     y2.Content = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
+
                                     float[] angles = new float[7];
                                     for (int i = 0; i < 6; ++i)
                                     {
@@ -427,6 +435,8 @@ namespace AFWDPP.Views
                                         byte[] le = { Rbuffer[idx + 3], Rbuffer[idx + 2], Rbuffer[idx + 1], Rbuffer[idx] }; // 大端→小端
                                         angles[i] = BitConverter.ToSingle(le, 0);
                                     }
+                                    string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
+
                                     F3.Content = angles[0];
                                     F4.Content = angles[1];
                                     F5.Content = angles[2];
@@ -435,8 +445,9 @@ namespace AFWDPP.Views
                                     F8.Content = angles[5];
                                     U9.Content = Rbuffer[30].ToString("X2") + Rbuffer[31].ToString("X2") + Rbuffer[32].ToString("X2") + Rbuffer[33].ToString("X2");
                                     U9D.Content = U9Parser.ParseU9ToString(Rbuffer);
-                                    string LogFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "接受数据");
+
                                     s3.Content = ParseHexData(Rbuffer);
+
                                     if (countred++ > 50)
                                     {
                                         countred = 0;
