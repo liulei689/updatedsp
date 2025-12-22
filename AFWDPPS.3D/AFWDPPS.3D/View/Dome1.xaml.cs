@@ -481,38 +481,38 @@ namespace WpfApp3D
         {
             if (generator == null) return;
 
-            // 生成振动信号（正弦波）
-            double vibrationPitch = generator.GenerateNextValue();
-            double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
+            //// 生成振动信号（正弦波）
+            //double vibrationPitch = generator.GenerateNextValue();
+            //double vibrationYaw = generator.GenerateNextValue(); // 假设俯仰和滚转使用相同生成器，或创建另一个
 
-            // Step 1: 读取平台数据（添加振动）
-            pitch = vibrationPitch;
-            yaw = vibrationYaw;
+            //// Step 1: 读取平台数据（添加振动）
+            //pitch = vibrationPitch;
+            //yaw = vibrationYaw;
 
-            var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
+            //var (mupitch, muyaw) = datacontrl.Step1_ReadPlatformData(pitch, yaw);
 
-            // Step 2: 控制算法
-            var (djpitch, djyaw, speedPitch, speedYaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
-            //indexi++;
-            //if (indexi++ >= datalist.Count - 10) indexi = 0;
-            //if (datalist != null && datalist.Count > 0)
-            //{
-            //    pitch = datalist[indexi].船横滚角度;
-            //    //pitch1 = datalist[indexi].声呐横滚角度;
-            //    //yaw = datalist[indexi].船俯仰角度;
-            //    //yaw1 = datalist[indexi].声呐俯仰角度;
-            //}
-            // Step 3: 模拟电机反馈（简单身份模拟，或添加延迟）
-            var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw, speedPitch, speedYaw);
+            //// Step 2: 控制算法
+            //var (djpitch, djyaw, speedPitch, speedYaw) = datacontrl.Step2_ControlMotorAlgorithm(mupitch, muyaw);
+            ////indexi++;
+            ////if (indexi++ >= datalist.Count - 10) indexi = 0;
+            ////if (datalist != null && datalist.Count > 0)
+            ////{
+            ////    pitch = datalist[indexi].船横滚角度;
+            ////    //pitch1 = datalist[indexi].声呐横滚角度;
+            ////    //yaw = datalist[indexi].船俯仰角度;
+            ////    //yaw1 = datalist[indexi].声呐俯仰角度;
+            ////}
+            //// Step 3: 模拟电机反馈（简单身份模拟，或添加延迟）
+            //var (djpitc_back, djyaw_back) = datacontrl.Step3_SimulateMotorFeedback(djpitch, djyaw, speedPitch, speedYaw);
 
-            // Step 4: 反馈稳定平台角度（闭环）
-            var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
+            //// Step 4: 反馈稳定平台角度（闭环）
+            //var (pitc_back, yaw_back) = datacontrl.Step4_FeedbackStablePlatformAngle(pitch, yaw, djpitc_back, djyaw_back);
 
-            // 更新用于显示的角度
-            pitch1 = pitchdianji + pitch;
-            yaw1 = yaw_back;
-            pitchdianji = djpitc_back;
-            yawdianji = djyaw_back;
+            //// 更新用于显示的角度
+            //pitch1 = pitchdianji + pitch;
+            //yaw1 = yaw_back;
+            //pitchdianji = djpitc_back;
+            //yawdianji = djyaw_back;
 
             // 记录数据
             AFWDPPS.DB.稳定平台数据 data = new AFWDPPS.DB.稳定平台数据();
@@ -532,7 +532,7 @@ namespace WpfApp3D
             //if (WaveformChart != null)
             //    WaveformChart.OnUITimerTick(pitch, pitch1, pitchdianji, yaw, yaw1, yawdianji);
             if (BoXing.Instance != null)
-                BoXing.Instance.SetBoXing(new double[] { datap[0], datap[1], pitchdianji, datap[2], datap[3], yawdianji });
+                BoXing.Instance.SetBoXing(new double[] { datap[0], datap[1], pitchdianji, datap[2], datap[3], yawdianji, angles[0], angles[1], angles[2], angles[3], angles[4], angles[5] });
 
             // 更新3D模型
             if (start.Content.ToString() == "暂停")
@@ -622,7 +622,7 @@ namespace WpfApp3D
         double pitch1 = 0;
         public double pitchdianji = 0;
         double yawdianji = 0;
-
+        float[] angles = new float[6];
         double yaw1 = 0;
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -691,7 +691,7 @@ namespace WpfApp3D
                                     yawdianji = ParseAngleFromBytes(Rbuffer[4], Rbuffer[5]);
                                     // Removed manual adjustments to let algorithm handle stable angles
 
-                                    float[] angles = new float[7];
+
                                     for (int i = 0; i < 6; ++i)
                                     {
                                         int idx = 6 + i * 4;                 // 帧内起始下标
