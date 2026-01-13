@@ -788,6 +788,12 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                 DebugBoXing.Instance = new DebugBoXing();
             DebugBoXing.Instance.Show();
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            var win = new RobotArmHelix.MainWindow(); 
+            win.Show();
+        }
     }
 
 

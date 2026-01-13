@@ -420,6 +420,10 @@
       <Project>{38dcc404-48c6-4c16-bc64-fbf1f2546562}</Project>
       <Name>AFWDPPS.PDF</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\RobotArmHelix-master\RobotArmHelix\RobotArmHelix.csproj">
+      <Project>{e14738ae-af61-4f59-841e-0a81b4d85893}</Project>
+      <Name>RobotArmHelix</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
