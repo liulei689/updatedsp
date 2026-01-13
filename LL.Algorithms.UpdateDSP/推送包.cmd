@@ -16,7 +16,7 @@ for %%F in (*.nupkg) do (
 :found  
 :: 检查是否找到了文件  
 if defined firstNupkgName (  
-dotnet nuget push %firstNupkgName% --api-key **** --source https://api.nuget.org/v3/index.json
+dotnet nuget push %firstNupkgName% --api-key oy2du44cs3yvj4fdvx4qaharrmy2gwmulpsxms4mlnf4fe --source https://api.nuget.org/v3/index.json
     echo Found the first .nupkg file name: %firstNupkgName%  
 ) else (  
     echo No .nupkg files were found.  
