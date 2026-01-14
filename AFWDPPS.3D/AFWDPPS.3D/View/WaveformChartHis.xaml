@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"    xmlns:wpf="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
-    Title="多通道实时波形" Height="600" Width="1000">
+    Title="多通道历史波形" Height="650" Width="1200">
     <Window.Resources>
         <Style x:Key="ToggleSwitch" TargetType="ToggleButton">
             <Setter Property="Template">
@@ -38,32 +38,59 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0" VerticalAlignment="Center" >
-            <TextBlock Text="显示通道：" VerticalAlignment="Center" Margin="0,0,8,0"/>
-            <CheckBox x:Name="cb1" Content="船体横滚" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-            <CheckBox x:Name="cb2" Content="声呐横滚" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-            <CheckBox x:Name="cb3" Content="电机横滚动作" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-            <CheckBox x:Name="cb4" Content="船体俯仰" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-            <CheckBox x:Name="cb5" Content="声呐俯仰" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-            <CheckBox x:Name="cb6" Content="电机俯仰动作" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
-            <TextBlock Text="点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
-            <ComboBox Visibility="Collapsed" x:Name="PointCountCombo" Width="80" SelectionChanged="PointCountCombo_SelectionChanged">
-                <ComboBoxItem Content="100" />
-                <ComboBoxItem Content="500"/>
-                <ComboBoxItem Content="1000" IsSelected="True" />
-                <ComboBoxItem Content="2000"/>
-                <ComboBoxItem Content="3000"/>
-                <ComboBoxItem Content="10000"/>
-            </ComboBox>
-            <Label Visibility="Collapsed" Content="波形自适应(关闭后可手动调整)" />
-            <ToggleButton x:Name="AutoScaleToggle" Visibility="Collapsed"
-              Content="波形自适应" IsChecked="True"
-                Checked="AutoScaleToggle_Checked"
-                Unchecked="AutoScaleToggle_Checked"
-              Style="{StaticResource ToggleSwitch}"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Top" Margin="0,0,8,0"
-               />
+        <StackPanel Orientation="Vertical" Margin="10" Grid.Row="0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="选择DB..." Margin="0,0,12,0" Click="SelectDb_Click" />
+                <TextBlock Text="当前DB：" VerticalAlignment="Center"/>
+                <TextBlock x:Name="DbPathText" VerticalAlignment="Center" Margin="4,0,12,0" TextTrimming="CharacterEllipsis" Width="380"/>
+
+                <TextBlock Text="开始：" VerticalAlignment="Center"/>
+                <DatePicker x:Name="StartDatePicker" Width="130" Margin="4,0,4,0"/>
+                <TextBox x:Name="StartTimeText" Width="70" Margin="0,0,12,0" Text="00:00:00"/>
+
+                <TextBlock Text="结束：" VerticalAlignment="Center"/>
+                <DatePicker x:Name="EndDatePicker" Width="130" Margin="4,0,4,0"/>
+                <TextBox x:Name="EndTimeText" Width="70" Margin="0,0,12,0" Text="23:59:59"/>
+
+                <Button Content="查询" Margin="0,0,8,0" Click="Query_Click" />
+                <Button Content="最近10分钟" Margin="0,0,8,0" Click="Last10Min_Click" />
+                <Button Content="最近1小时" Click="Last1Hour_Click" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,8,0,0">
+                <WrapPanel VerticalAlignment="Center">
+                    <TextBlock Text="显示通道：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <CheckBox x:Name="cb1" Content="船体横滚" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb2" Content="声呐横滚" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb3" Content="电机横滚动作" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb4" Content="船体俯仰" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb5" Content="声呐俯仰" IsChecked="True" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb6" Content="电机俯仰动作" IsChecked="True" Margin="0,0,16,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb7" Content="陀螺横摇角速度" IsChecked="False" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb8" Content="陀螺俯仰角速度" IsChecked="False" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb9" Content="陀螺横摇角速度积分" IsChecked="False" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb10" Content="陀螺俯仰角速度积分" IsChecked="False" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb11" Content="横摇电流" IsChecked="False" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                    <CheckBox x:Name="cb12" Content="俯仰电流" IsChecked="False" Margin="0,0,8,0" Checked="ChannelCheckBoxChanged" Unchecked="ChannelCheckBoxChanged"/>
+                </WrapPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,0">
+                    <TextBlock Text="最大行数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBox x:Name="MaxRowsText" Width="80" Text="200000" Margin="0,0,16,0"/>
+
+                    <TextBlock Text="显示点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox x:Name="PointCountCombo" Width="90" SelectionChanged="PointCountCombo_SelectionChanged">
+                        <ComboBoxItem Content="1000" />
+                        <ComboBoxItem Content="2000" />
+                        <ComboBoxItem Content="5000" />
+                        <ComboBoxItem Content="10000" />
+                        <ComboBoxItem Content="20000" />
+                        <ComboBoxItem Content="50000" IsSelected="True" />
+                    </ComboBox>
+
+                    <TextBlock x:Name="StatusText" VerticalAlignment="Center" Margin="16,0,0,0" Foreground="Gray"/>
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
         <wpf:WpfPlot x:Name="WpfPlot1" Grid.Row="1" Margin="10"/>
     </Grid>

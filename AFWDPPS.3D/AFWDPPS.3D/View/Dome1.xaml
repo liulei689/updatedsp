@@ -75,7 +75,8 @@
             </ComboBox>
             <ToggleButton Height="25" Margin="20" Content="模拟设备" IsChecked="False" Click="ToggleButton_Click"/>
             <Button Content="显示波形" Margin="20" Width="100"  Click="Button_Click_1"/>
-            <Button Content="查看历史波形" Width="100" Margin="5"  Click="Button_Click_3"/>
+            <Button Content="显示历史波形" Width="100" Margin="5" Click="Button_Click_3"/>
+            <Button Content="显示最新历史波形" Width="120" Margin="5" Click="Button_Click_LatestHistory"/>
             <!-- 算法选择与参数控制区域（右侧，显示波形下方） -->
             <Border Margin="0,15,0,0" Background="#F8F8F8" Opacity="0.98" CornerRadius="6" Padding="8">
                 <StackPanel Orientation="Vertical">

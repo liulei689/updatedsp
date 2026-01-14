@@ -918,6 +918,12 @@ namespace WpfApp3D
             var WaveformChartHis = new WaveformChartHis();
             WaveformChartHis.Show();
         }
+
+        private void Button_Click_LatestHistory(object sender, RoutedEventArgs e)
+        {
+            var waveformChartHis = new WaveformChartHis(loadLatestOnStartup: true);
+            waveformChartHis.Show();
+        }
         /// <summary>
         /// Éú³ÉÕýÐþ²¨
         /// </summary>

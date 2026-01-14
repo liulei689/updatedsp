@@ -74,6 +74,52 @@ namespace AFWDPPS.DB
             db.Ado.ExecuteCommand("PRAGMA wal_checkpoint(TRUNCATE);");   // 立即合并
         }
 
+        public static string GetDbFolder()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "采集的数据");
+        }
+
+        public static string TryGetLatestDbPath()
+        {
+            try
+            {
+                string dbFolder = GetDbFolder();
+                if (!Directory.Exists(dbFolder))
+                    return null;
+
+                var files = Directory.GetFiles(dbFolder, "*.db", SearchOption.TopDirectoryOnly);
+                if (files == null || files.Length == 0)
+                    return null;
+
+                string latest = null;
+                DateTime latestTime = DateTime.MinValue;
+                foreach (var file in files)
+                {
+                    DateTime t;
+                    try
+                    {
+                        t = File.GetLastWriteTime(file);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    if (t > latestTime)
+                    {
+                        latestTime = t;
+                        latest = file;
+                    }
+                }
+
+                return latest;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         static int buffecounts = 500;
         static string isFirstDbName = "";
         // 后台数据库写线程
@@ -178,6 +224,51 @@ namespace AFWDPPS.DB
                 }))
                 {
                     return await db.Queryable<声呐姿态数据>().ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("error.log", $"[{DateTime.Now}] {ex.Message}\n");
+                return new List<声呐姿态数据>();
+            }
+        }
+
+        public static async Task<List<声呐姿态数据>> QuerySonarData(
+            string dbFilePath,
+            DateTime? startTime,
+            DateTime? endTime,
+            int? maxRows,
+            bool latestFirst)
+        {
+            try
+            {
+                using (var db = new SqlSugarClient(new ConnectionConfig
+                {
+                    ConnectionString = $"Data Source={dbFilePath};",
+                    DbType = DbType.Sqlite,
+                    InitKeyType = InitKeyType.Attribute,
+                    IsAutoCloseConnection = true
+                }))
+                {
+                    var q = db.Queryable<声呐姿态数据>();
+
+                    if (startTime.HasValue)
+                        q = q.Where(it => it.接受时间 >= startTime.Value);
+                    if (endTime.HasValue)
+                        q = q.Where(it => it.接受时间 <= endTime.Value);
+
+                    if (latestFirst)
+                        q = q.OrderBy(it => it.接受时间, OrderByType.Desc);
+                    else
+                        q = q.OrderBy(it => it.接受时间, OrderByType.Asc);
+
+                    if (maxRows.HasValue && maxRows.Value > 0)
+                        q = q.Take(maxRows.Value);
+
+                    var list = await q.ToListAsync();
+                    if (latestFirst)
+                        list.Reverse();
+                    return list;
                 }
             }
             catch (Exception ex)
