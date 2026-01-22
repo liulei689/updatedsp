@@ -31,10 +31,12 @@ namespace RobotArmHelix
         public int rotAxisX = 0;
         public int rotAxisY = 0;
         public int rotAxisZ = 0;
+        public MotorSimulator Motor { get; set; }
 
         public Joint(Model3D pModel)
         {
             model = pModel;
+            Motor = new MotorSimulator();
         }
     }
 
@@ -84,6 +86,8 @@ namespace RobotArmHelix
         double j4SineAmplitudeDeg = 25;
         double j5SineAmplitudeDeg = 15;
         bool j4j5SineEnabled = true;
+        DispatcherTimer motorUpdateTimer;
+        double motorTime = 0.25; // 电机模拟时间，从sin(π/2)开始
 
 #if IRB6700
         //directroy of all stl files
@@ -167,20 +171,26 @@ namespace RobotArmHelix
             viewPort3d.PanGesture = new MouseGesture(MouseAction.LeftClick);
             viewPort3d.Children.Add(visual);
             viewPort3d.Children.Add(RoboticArm);
-            viewPort3d.Camera.LookDirection = new Vector3D(2038, -5200, -2930);
-            viewPort3d.Camera.UpDirection = new Vector3D(-0.145, 0.372, 0.917);
-            viewPort3d.Camera.Position = new Point3D(-1571, 4801, 3774);
+            viewPort3d.Camera.LookDirection = new Vector3D(-0.9997, -0.034, 0); // 正对j4 j5中心
+            viewPort3d.Camera.UpDirection = new Vector3D(0, 0, 1);
+            viewPort3d.Camera.Position = new Point3D(3408, -100, 2125); // 再拉远，向右移一点
 
             double[] angles = { joints[0].angle, joints[1].angle, joints[2].angle, joints[3].angle, joints[4].angle, joints[5].angle };
             ForwardKinematics(angles);
 
             changeSelectedJoint();
 
-            timer1 = new System.Windows.Forms.Timer();
-            timer1.Interval = 5;
-            timer1.Tick += new System.EventHandler(timer1_Tick);
+            // timer1 暂时禁用
+            // timer1 = new System.Windows.Forms.Timer();
+            // timer1.Interval = 5;
+            // timer1.Tick += new System.EventHandler(timer1_Tick);
 
-            Loaded += (_, __) => StartDefaultJ4J5SineMotionIfEnabled();
+            motorUpdateTimer = new DispatcherTimer();
+            motorUpdateTimer.Interval = TimeSpan.FromMilliseconds(10);
+            motorUpdateTimer.Tick += MotorUpdateTimer_Tick;
+            motorUpdateTimer.Start();
+
+            // Loaded += (_, __) => StartDefaultJ4J5SineMotionIfEnabled();
         }
 
         private static string EnsureTrailingSeparator(string path)
@@ -1016,6 +1026,37 @@ namespace RobotArmHelix
 #endif
 
             return new Vector3D(joints[5].model.Bounds.Location.X, joints[5].model.Bounds.Location.Y, joints[5].model.Bounds.Location.Z);
+        }
+
+        private void MotorUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            double dt = motorUpdateTimer.Interval.TotalSeconds; // 0.01 s
+            motorTime += dt;
+
+            // 只模拟j5电机 (joints[4])
+            var joint = joints[4];
+            if (joint.Motor != null)
+            {
+                // 生成波动电流：三角波，幅度0.1A，周期2秒
+                double phase = (motorTime % 2.0) / 2.0;
+                double triangle = phase < 0.5 ? 4 * phase - 1 : 3 - 4 * phase;
+                joint.Motor.I_ctrl = 0.1 * triangle;
+                joint.Motor.TL = 0.5;     // 示例负载转矩 0.5Nm
+                joint.Motor.T_amb = 25.0; // 环境温度 25°C
+
+                // 更新电机状态
+                joint.Motor.Update(dt);
+
+                // 将电机角度同步到关节角度，并限幅 -45° 到 +45°
+                joint.angle = Math.Max(-45, Math.Min(45, joint.Motor.Angle));
+            }
+
+            // 更新正向运动学
+            double[] angles = { joints[0].angle, joints[1].angle, joints[2].angle, joints[3].angle, joints[4].angle, joints[5].angle };
+            ForwardKinematics(angles);
+
+            // 更新UI显示电流 (显示j5的)
+            currentDisplay.Text = joints[4].Motor.I_ctrl.ToString("F2") + " A";
         }
 
     }
