@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
+using ScottPlot;
 
 namespace WpfApp3D.View
 {
@@ -46,7 +47,7 @@ namespace WpfApp3D.View
         bool switchingJoint = false;
         bool isAnimating = false;
 
-        Color oldColor = Colors.White;
+        System.Windows.Media.Color oldColor = System.Windows.Media.Colors.White;
         GeometryModel3D oldSelectedModel = null;
         string basePath = "";
         ModelVisual3D visual;
@@ -79,7 +80,17 @@ namespace WpfApp3D.View
         double j5SineAmplitudeDeg = 15;
         bool j4j5SineEnabled = true;
         DispatcherTimer motorUpdateTimer;
-        double motorTime = 0.25; // ç”µæœºæ¨¡æ‹Ÿæ—¶é—´ï¼Œä»Žsin(Ï€/2)å¼€å§‹
+        double motorTime = 0.25; // µç»úÄ£ÄâÊ±¼ä£¬´Ósin(¦Ð/2)¿ªÊ¼
+
+        // Waveform data
+        private const int DataPoints = 1000;
+        private double[] currentData = new double[DataPoints];
+        private double[] angleData = new double[DataPoints];
+        private double[] gyroData = new double[DataPoints];
+        private ScottPlot.Plottables.Signal currentSignal;
+        private ScottPlot.Plottables.Signal angleSignal;
+        private ScottPlot.Plottables.Signal gyroSignal;
+        DispatcherTimer updateTimer;
 
 #if IRB6700
         //directroy of all stl files
@@ -164,27 +175,87 @@ namespace WpfApp3D.View
             viewPort3d.PanGesture = new MouseGesture(MouseAction.LeftClick);
             viewPort3d.Children.Add(visual);
             viewPort3d.Children.Add(RoboticArm);
-            viewPort3d.Camera.LookDirection = new Vector3D(-0.9997, -0.034, 0); // æ­£å¯¹j4 j5ä¸­å¿ƒ
+            viewPort3d.Camera.LookDirection = new Vector3D(-0.9997, -0.034, 0); // Õý¶Ôj4 j5ÖÐÐÄ
             viewPort3d.Camera.UpDirection = new Vector3D(0, 0, 1);
-            viewPort3d.Camera.Position = new Point3D(3408, -100, 2125); // å†æ‹‰è¿œï¼Œå‘å³ç§»ä¸€ç‚¹
+            viewPort3d.Camera.Position = new Point3D(3408, -100, 2125); // ÔÙÀ­Ô¶£¬ÏòÓÒÒÆÒ»µã
 
             double[] angles = { joints[0].angle, joints[1].angle, joints[2].angle, joints[3].angle, joints[4].angle, joints[5].angle };
             ForwardKinematics(angles);
 
-            changeSelectedJoint();
-
-            // timer1 æš‚æ—¶ç¦ç”¨
-            // timer1 = new System.Windows.Forms.Timer();
-            // timer1.Interval = 5;
-            // timer1.Tick += new System.EventHandler(timer1_Tick);
+            InitializePlots();
 
             motorUpdateTimer = new DispatcherTimer();
-            motorUpdateTimer.Interval = TimeSpan.FromMilliseconds(10);
+            motorUpdateTimer.Interval = TimeSpan.FromSeconds(0.01);
             motorUpdateTimer.Tick += MotorUpdateTimer_Tick;
             motorUpdateTimer.Start();
 
-            // Loaded += (_, __) => StartDefaultJ4J5SineMotionIfEnabled();
+            updateTimer = new DispatcherTimer();
+            updateTimer.Interval = TimeSpan.FromMilliseconds(100);
+            updateTimer.Tick += (s, e) => UpdateMotors();
+            updateTimer.Start();
+
+            StartDefaultJ4J5SineMotionIfEnabled();
         }
+
+        private void InitializePlots()
+        {
+            // Initialize data with zeros
+            for (int i = 0; i < DataPoints; i++)
+            {
+                currentData[i] = 0;
+                angleData[i] = 0;
+                gyroData[i] = 0;
+            }
+            // Add signals
+            currentSignal = currentPlot.Plot.Add.Signal(currentData);
+            currentSignal.LegendText = "Current (A)";
+            currentSignal.Color = ScottPlot.Color.FromHex("#0000FF");
+            angleSignal = anglePlot.Plot.Add.Signal(angleData);
+            angleSignal.LegendText = "Angle (¡ã)";
+            angleSignal.Color = ScottPlot.Color.FromHex("#00FF00");
+            gyroSignal = gyroPlot.Plot.Add.Signal(gyroData);
+            gyroSignal.LegendText = "Gyro ¦¸ (rad/s)";
+            gyroSignal.Color = ScottPlot.Color.FromHex("#FF0000");
+            // Set axis labels
+            currentPlot.Plot.Axes.Title.Label.Text = "Current";
+            anglePlot.Plot.Axes.Title.Label.Text = "Angle";
+            gyroPlot.Plot.Axes.Title.Label.Text = "Gyro Angular Velocity";
+            // Refresh
+            currentPlot.Refresh();
+            anglePlot.Refresh();
+            gyroPlot.Refresh();
+        }
+
+        private void UpdateMotors()
+        {
+            foreach (var joint in joints) joint.Motor.Update(0.1);
+            // Set joint angles based on motor simulation
+            joints[3].Motor.TL = 0.0; // No load torque for j4
+            joints[3].angle = Math.Max(joints[3].angleMin, Math.Min(joints[3].angleMax, joints[3].Motor.Angle));
+            // joints[4].angle is set in the sine timer
+            // Add data for joint 3 (j4)
+            var motor = joints[3].Motor;
+            Array.Copy(currentData, 1, currentData, 0, DataPoints - 1);
+            currentData[DataPoints - 1] = motor.Ia;
+            Array.Copy(angleData, 1, angleData, 0, DataPoints - 1);
+            angleData[DataPoints - 1] = motor.Angle;
+            Array.Copy(gyroData, 1, gyroData, 0, DataPoints - 1);
+            gyroData[DataPoints - 1] = motor.GyroOmega;
+            // Update text values
+            currentValue.Text = motor.Ia.ToString("F2") + " A";
+            angleValue.Text = motor.Angle.ToString("F2") + " ¡ã";
+            gyroValue.Text = motor.GyroOmega.ToString("F2") + " rad/s";
+            // Refresh plots
+            currentPlot.Plot.Axes.AutoScale();
+            currentPlot.Refresh();
+            anglePlot.Plot.Axes.AutoScale();
+            anglePlot.Refresh();
+            gyroPlot.Plot.Axes.AutoScale();
+            gyroPlot.Refresh();
+            // Update 3D model
+            execute_fk();
+        }
+
 
         private static string EnsureTrailingSeparator(string path)
         {
@@ -303,10 +374,9 @@ namespace WpfApp3D.View
 
             // Update sliders without triggering joint_ValueChanged.
             isAnimating = true;
-            joints[3].angle = j4Target;
+            joints[3].Motor.I_ctrl = Math.Sin(w * t) * 1.0;
+            joints[4].Motor.I_ctrl = Math.Sin(w * t) * 1.0;
             joints[4].angle = j5Target;
-            joint4.Value = j4Target;
-            joint5.Value = j5Target;
             isAnimating = false;
 
             execute_fk();
@@ -322,7 +392,7 @@ namespace WpfApp3D.View
                 foreach (string modelName in modelsNames)
                 {
                     var materialGroup = new MaterialGroup();
-                    Color mainColor = Colors.White;
+                    System.Windows.Media.Color mainColor = System.Windows.Media.Colors.White;
                     EmissiveMaterial emissMat = new EmissiveMaterial(new SolidColorBrush(mainColor));
                     DiffuseMaterial diffMat = new DiffuseMaterial(new SolidColorBrush(mainColor));
                     SpecularMaterial specMat = new SpecularMaterial(new SolidColorBrush(mainColor), 200);
@@ -333,8 +403,8 @@ namespace WpfApp3D.View
                     var fullPath = System.IO.Path.Combine(basePath, modelName);
                     if (!System.IO.File.Exists(fullPath))
                     {
-                        var msg = "æœªæ‰¾åˆ° 3D æ¨¡åž‹æ–‡ä»¶: " + fullPath +
-                                  "\nè¯·å°† 3D_Models æ–‡ä»¶å¤¹æ”¾åœ¨ä»¥ä¸‹ä»»ä¸€ä½ç½®ï¼Œæˆ–åœ¨æž„é€  RobotArmWindow æ—¶ä¼ å…¥ç»å¯¹è·¯å¾„ï¼š\n - " + string.Join("\n - ", modelSearchPaths.ToArray());
+                        var msg = "Î´ÕÒµ½ 3D Ä£ÐÍÎÄ¼þ: " + fullPath +
+                                  "\nÇë½« 3D_Models ÎÄ¼þ¼Ð·ÅÔÚÒÔÏÂÈÎÒ»Î»ÖÃ£¬»òÔÚ¹¹Ôì RobotArmWindow Ê±´«Èë¾ø¶ÔÂ·¾¶£º\n - " + string.Join("\n - ", modelSearchPaths.ToArray());
                         throw new FileNotFoundException(msg, fullPath);
                     }
 
@@ -370,7 +440,7 @@ namespace WpfApp3D.View
 #endif
 
 #if IRB6700
-                Color cableColor = Colors.DarkSlateGray;
+                System.Windows.Media.Color cableColor = System.Windows.Media.Colors.DarkSlateGray;
                 changeModelColor(joints[6], cableColor);
                 changeModelColor(joints[7], cableColor);
                 changeModelColor(joints[8], cableColor);
@@ -380,14 +450,14 @@ namespace WpfApp3D.View
                 changeModelColor(joints[12], cableColor);
                 changeModelColor(joints[13], cableColor);
 
-                changeModelColor(joints[14], Colors.Gray);
+                changeModelColor(joints[14], System.Windows.Media.Colors.Gray);
 
-                changeModelColor(joints[15], Colors.Red);
-                changeModelColor(joints[16], Colors.Red);
-                changeModelColor(joints[17], Colors.Red);
+                changeModelColor(joints[15], System.Windows.Media.Colors.Red);
+                changeModelColor(joints[16], System.Windows.Media.Colors.Red);
+                changeModelColor(joints[17], System.Windows.Media.Colors.Red);
 
-                changeModelColor(joints[18], Colors.Gray);
-                changeModelColor(joints[19], Colors.Gray);
+                changeModelColor(joints[18], System.Windows.Media.Colors.Gray);
+                changeModelColor(joints[19], System.Windows.Media.Colors.Gray);
 
                 joints[0].angleMin = -180;
                 joints[0].angleMax = 180;
@@ -445,11 +515,11 @@ namespace WpfApp3D.View
 
 
 #else
-                changeModelColor(joints[6], Colors.Red);
-                changeModelColor(joints[7], Colors.Black);
-                changeModelColor(joints[8], Colors.Black);
-                changeModelColor(joints[9], Colors.Black);
-                changeModelColor(joints[10], Colors.Gray);
+                changeModelColor(joints[6], System.Windows.Media.Colors.Red);
+                changeModelColor(joints[7], System.Windows.Media.Colors.Black);
+                changeModelColor(joints[8], System.Windows.Media.Colors.Black);
+                changeModelColor(joints[9], System.Windows.Media.Colors.Black);
+                changeModelColor(joints[10], System.Windows.Media.Colors.Gray);
 
                 RA.Children.Add(joints[0].model);
                 RA.Children.Add(joints[1].model);
@@ -599,118 +669,102 @@ namespace WpfApp3D.View
             return result;
         }
 
-        private void ReachingPoint_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (TbX == null || TbY == null || TbZ == null)
-                return;
+        // private void ReachingPoint_TextChanged(object sender, TextChangedEventArgs e)
+        // {
+        //     if (TbX == null || TbY == null || TbZ == null)
+        //         return;
 
-            double x, y, z;
-            if (!double.TryParse(TbX.Text, out x)) return;
-            if (!double.TryParse(TbY.Text, out y)) return;
-            if (!double.TryParse(TbZ.Text, out z)) return;
+        //     double x, y, z;
+        //     if (!double.TryParse(TbX.Text, out x)) return;
+        //     if (!double.TryParse(TbY.Text, out y)) return;
+        //     if (!double.TryParse(TbZ.Text, out z)) return;
 
-            reachingPoint = new Vector3D(x, y, z);
-            if (geom != null)
-            {
-                geom.Transform = new TranslateTransform3D(reachingPoint);
-            }
-        }
+        //     reachingPoint = new Vector3D(x, y, z);
+        //     if (geom != null)
+        //     {
+        //         geom.Transform = new TranslateTransform3D(reachingPoint);
+        //     }
+        // }
 
-        private void jointSelector_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            changeSelectedJoint();
-        }
+        // private void jointSelector_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        // {
+        //     changeSelectedJoint();
+        // }
 
-        private void changeSelectedJoint()
-        {
-            if (joints == null)
-                return;
+        // private void changeSelectedJoint()
+        // {
+        //     if (joints == null)
+        //         return;
 
-            int sel = ((int)jointSelector.Value) - 1;
-            switchingJoint = true;
-            unselectModel();
-            if (sel < 0)
-            {
-                jointX.IsEnabled = false;
-                jointY.IsEnabled = false;
-                jointZ.IsEnabled = false;
-                jointXAxis.IsEnabled = false;
-                jointYAxis.IsEnabled = false;
-                jointZAxis.IsEnabled = false;
-            }
-            else
-            {
-                if (!jointX.IsEnabled)
-                {
-                    jointX.IsEnabled = true;
-                    jointY.IsEnabled = true;
-                    jointZ.IsEnabled = true;
+        //     int sel = ((int)jointSelector.Value) - 1;
+        //     switchingJoint = true;
+        //     unselectModel();
+        //     if (sel < 0)
+        //     {
+        //         jointX.IsEnabled = false;
+        //         jointY.IsEnabled = false;
+        //         jointZ.IsEnabled = false;
+        //         jointXAxis.IsEnabled = false;
+        //         jointYAxis.IsEnabled = false;
+        //         jointZAxis.IsEnabled = false;
+        //     }
+        //     else
+        //     {
+        //         if (!jointX.IsEnabled)
+        //         {
+        //             jointX.IsEnabled = true;
+        //             jointY.IsEnabled = true;
+        //             jointZ.IsEnabled = true;
 
-                    jointXAxis.IsEnabled = true;
-                    jointYAxis.IsEnabled = true;
-                    jointZAxis.IsEnabled = true;
-                }
-                jointX.Value = joints[sel].rotPointX;
-                jointY.Value = joints[sel].rotPointY;
-                jointZ.Value = joints[sel].rotPointZ;
-                jointXAxis.IsChecked = joints[sel].rotAxisX == 1 ? true : false;
-                jointYAxis.IsChecked = joints[sel].rotAxisY == 1 ? true : false;
-                jointZAxis.IsChecked = joints[sel].rotAxisZ == 1 ? true : false;
-                selectModel(joints[sel].model);
-                updateSpherePosition();
-            }
-            switchingJoint = false;
-        }
+        //             jointXAxis.IsEnabled = true;
+        //             jointYAxis.IsEnabled = true;
+        //             jointZAxis.IsEnabled = true;
+        //         }
+        //         jointX.Value = joints[sel].rotPointX;
+        //         jointY.Value = joints[sel].rotPointY;
+        //         jointZ.Value = joints[sel].rotPointZ;
+        //         jointXAxis.IsChecked = joints[sel].rotAxisX == 1 ? true : false;
+        //         jointYAxis.IsChecked = joints[sel].rotAxisY == 1 ? true : false;
+        //         jointZAxis.IsChecked = joints[sel].rotAxisZ == 1 ? true : false;
+        //         selectModel(joints[sel].model);
+        //         updateSpherePosition();
+        //     }
+        //     switchingJoint = false;
+        // }
 
-        private void rotationPointChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (switchingJoint)
-                return;
+        // private void rotationPointChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        // {
+        //     if (switchingJoint)
+        //         return;
 
-            int sel = ((int)jointSelector.Value) - 1;
-            joints[sel].rotPointX = (int)jointX.Value;
-            joints[sel].rotPointY = (int)jointY.Value;
-            joints[sel].rotPointZ = (int)jointZ.Value;
-            updateSpherePosition();
-        }
-
+        //     int sel = ((int)jointSelector.Value) - 1;
+        //     joints[sel].rotPointX = (int)jointX.Value;
+        //     joints[sel].rotPointY = (int)jointY.Value;
+        //     joints[sel].rotPointZ = (int)jointZ.Value;
+        //     updateSpherePosition();
+        // }
         private void updateSpherePosition()
         {
-            int sel = ((int)jointSelector.Value) - 1;
-            if (sel < 0)
-                return;
+            //int sel = ((int)jointSelector.Value) - 1;
+            //if (sel < 0)
+            //    return;
 
-            Transform3DGroup F = new Transform3DGroup();
-            F.Children.Add(new TranslateTransform3D(joints[sel].rotPointX, joints[sel].rotPointY, joints[sel].rotPointZ));
-            F.Children.Add(joints[sel].model.Transform);
-            geom.Transform = F;
+            //Transform3DGroup F = new Transform3DGroup();
+            //F.Children.Add(new TranslateTransform3D(joints[sel].rotPointX, joints[sel].rotPointY, joints[sel].rotPointZ));
+            //F.Children.Add(joints[sel].model.Transform);
+            //geom.Transform = F;
         }
 
-        private void joint_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (isAnimating)
-                return;
+        // private void CheckBox_StateChanged(object sender, RoutedEventArgs e)
+        // {
+        //     if (switchingJoint)
+        //         return;
 
-            joints[0].angle = joint1.Value;
-            joints[1].angle = joint2.Value;
-            joints[2].angle = joint3.Value;
-            joints[3].angle = joint4.Value;
-            joints[4].angle = joint5.Value;
-            joints[5].angle = joint6.Value;
-            execute_fk();
-        }
-
-
-        private void CheckBox_StateChanged(object sender, RoutedEventArgs e)
-        {
-            if (switchingJoint)
-                return;
-
-            int sel = ((int)jointSelector.Value) - 1;
-            joints[sel].rotAxisX = jointXAxis.IsChecked.Value ? 1 : 0;
-            joints[sel].rotAxisY = jointYAxis.IsChecked.Value ? 1 : 0;
-            joints[sel].rotAxisZ = jointZAxis.IsChecked.Value ? 1 : 0;
-        }
+        //     int sel = ((int)jointSelector.Value) - 1;
+        //     joints[sel].rotAxisX = jointXAxis.IsChecked.Value ? 1 : 0;
+        //     joints[sel].rotAxisY = jointYAxis.IsChecked.Value ? 1 : 0;
+        //     joints[sel].rotAxisZ = jointZAxis.IsChecked.Value ? 1 : 0;
+        // }
 
 
         /**
@@ -722,21 +776,21 @@ namespace WpfApp3D.View
              * This is useful when using x,y,z in the "new Point3D(x,y,z)* when defining a new RotateTransform3D() to check where the joints is actually  rotating */
             double[] angles = { joints[0].angle, joints[1].angle, joints[2].angle, joints[3].angle, joints[4].angle, joints[5].angle };
             ForwardKinematics(angles);
-            updateSpherePosition();
+            // updateSpherePosition(); // Removed as controls are removed
         }
 
-        private Color changeModelColor(Joint pJoint, Color newColor)
+        private System.Windows.Media.Color changeModelColor(Joint pJoint, System.Windows.Media.Color newColor)
         {
             Model3DGroup models = ((Model3DGroup)pJoint.model);
             return changeModelColor(models.Children[0] as GeometryModel3D, newColor);
         }
 
-        private Color changeModelColor(GeometryModel3D pModel, Color newColor)
+        private System.Windows.Media.Color changeModelColor(GeometryModel3D pModel, System.Windows.Media.Color newColor)
         {
             if (pModel == null)
                 return oldColor;
 
-            Color previousColor = Colors.Black;
+            System.Windows.Media.Color previousColor = System.Windows.Media.Colors.Black;
 
             MaterialGroup mg = (MaterialGroup)pModel.Material;
             if (mg.Children.Count > 0)
@@ -769,7 +823,7 @@ namespace WpfApp3D.View
             {
                 oldSelectedModel = (GeometryModel3D)pModel;
             }
-            oldColor = changeModelColor(oldSelectedModel, Color.FromRgb(255, 51, 51));
+            oldColor = changeModelColor(oldSelectedModel, System.Windows.Media.Color.FromRgb(255, 51, 51));
         }
 
         private void unselectModel()
@@ -822,7 +876,7 @@ namespace WpfApp3D.View
         {
             if (timer1.Enabled)
             {
-                button.Content = "Go to position";
+                //button.Content = "Go to position";
                 isAnimating = false;
                 timer1.Stop();
                 movements = 0;
@@ -834,7 +888,7 @@ namespace WpfApp3D.View
                 StopDefaultJ4J5SineMotion();
                 geom.Transform = new TranslateTransform3D(reachingPoint);
                 movements = 5000;
-                button.Content = "STOP";
+               // button.Content = "STOP";
                 isAnimating = true;
                 timer1.Start();
             }
@@ -844,16 +898,16 @@ namespace WpfApp3D.View
         {
             double[] angles = { joints[0].angle, joints[1].angle, joints[2].angle, joints[3].angle, joints[4].angle, joints[5].angle };
             angles = InverseKinematics(reachingPoint, angles);
-            joint1.Value = joints[0].angle = angles[0];
-            joint2.Value = joints[1].angle = angles[1];
-            joint3.Value = joints[2].angle = angles[2];
-            joint4.Value = joints[3].angle = angles[3];
-            joint5.Value = joints[4].angle = angles[4];
-            joint6.Value = joints[5].angle = angles[5];
+            joints[0].angle = angles[0];
+            joints[1].angle = angles[1];
+            joints[2].angle = angles[2];
+            joints[3].angle = angles[3];
+            joints[4].angle = angles[4];
+            joints[5].angle = angles[5];
 
             if ((--movements) <= 0)
             {
-                button.Content = "Go to position";
+               // button.Content = "Go to position";
                 isAnimating = false;
                 timer1.Stop();
             }
@@ -936,7 +990,7 @@ namespace WpfApp3D.View
             R = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(joints[0].rotAxisX, joints[0].rotAxisY, joints[0].rotAxisZ), angles[0]), new Point3D(joints[0].rotPointX, joints[0].rotPointY, joints[0].rotPointZ));
             F1.Children.Add(R);
 
-            //This moves the first joint attached to the base, it may translate and rotate. Since the joint are already in the right position (the .stl modelä¹Ÿ store the joints position
+            //This moves the first joint attached to the base, it may translate and rotate. Since the joint are already in the right position (the .stl modelÒ² store the joints position
             //in the virtual world when they were first created, so if you load all the .stl models of the joint they will be automatically positioned in the right locations)
             //so in all of these cases the first translation is always 0, I just left it for future purposes if something need to be moved
             //After that, the joint needs to rotate of a certain amount (given by the value in the slider), and the rotation must be executed on a specific point
@@ -990,15 +1044,10 @@ namespace WpfApp3D.View
             joints[2].model.Transform = F3; //third joint (the "knee" or "elbow")
             joints[3].model.Transform = F4; //the "forearm"
             joints[4].model.Transform = F5; //the tool plate
-            joints[5].model.Transform = F6; //the tool
+            joints[5].model.Transform = F6;
 
-            Tx.Content = joints[5].model.Bounds.Location.X;
-            Ty.Content = joints[5].model.Bounds.Location.Y;
-            Tz.Content = joints[5].model.Bounds.Location.Z;
-            Tx_Copy.Content = geom.Bounds.Location.X;
-            Ty_Copy.Content = geom.Bounds.Location.Y;
-            Tz_Copy.Content = geom.Bounds.Location.Z;
 
+            // Removed Tx, Ty, Tz updates as labels removed
 #if IRB6700
             joints[6].model.Transform = F1;
             joints[7].model.Transform = F1;
@@ -1032,30 +1081,27 @@ namespace WpfApp3D.View
             double dt = motorUpdateTimer.Interval.TotalSeconds; // 0.01 s
             motorTime += dt;
 
-            // åªæ¨¡æ‹Ÿj5ç”µæœº (joints[4])
+            // Ö»Ä£Äâj5µç»ú (joints[4])
             var joint = joints[4];
             if (joint.Motor != null)
             {
-                // ç”Ÿæˆæ³¢åŠ¨ç”µæµï¼šä¸‰è§’æ³¢ï¼Œå¹…åº¦0.1Aï¼Œå‘¨æœŸ2ç§’
+                // Éú³É²¨¶¯µçÁ÷£ºÈý½Ç²¨£¬·ù¶È0.1A£¬ÖÜÆÚ2Ãë
                 double phase = (motorTime % 2.0) / 2.0;
                 double triangle = phase < 0.5 ? 4 * phase - 1 : 3 - 4 * phase;
                 joint.Motor.I_ctrl = 0.1 * triangle;
-                joint.Motor.TL = 0.5;     // ç¤ºä¾‹è´Ÿè½½è½¬çŸ© 0.5Nm
-                joint.Motor.T_amb = 25.0; // çŽ¯å¢ƒæ¸©åº¦ 25Â°C
+                joint.Motor.TL = 0.5;     // Ê¾Àý¸ºÔØ×ª¾Ø 0.5Nm
+                joint.Motor.T_amb = 25.0; // »·¾³ÎÂ¶È 25¡ãC
 
-                // æ›´æ–°ç”µæœºçŠ¶æ€
+                // ¸üÐÂµç»ú×´Ì¬
                 joint.Motor.Update(dt);
 
-                // å°†ç”µæœºè§’åº¦åŒæ­¥åˆ°å…³èŠ‚è§’åº¦ï¼Œå¹¶é™å¹… -45Â° åˆ° +45Â°
+                // ½«µç»ú½Ç¶ÈÍ¬²½µ½¹Ø½Ú½Ç¶È£¬²¢ÏÞ·ù -45¡ã µ½ +45¡ã
                 joint.angle = Math.Max(-45, Math.Min(45, joint.Motor.Angle));
             }
 
-            // æ›´æ–°æ­£å‘è¿åŠ¨å­¦
+            // ¸üÐÂÕýÏòÔË¶¯Ñ§
             double[] angles = { joints[0].angle, joints[1].angle, joints[2].angle, joints[3].angle, joints[4].angle, joints[5].angle };
             ForwardKinematics(angles);
-
-            // æ›´æ–°UIæ˜¾ç¤ºç”µæµ (æ˜¾ç¤ºj5çš„)
-            currentDisplay.Text = joints[4].Motor.I_ctrl.ToString("F2") + " A";
         }
 
         private void OpenWaveformWindow(object sender, RoutedEventArgs e)
