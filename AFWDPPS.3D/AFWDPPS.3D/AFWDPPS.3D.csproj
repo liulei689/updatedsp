@@ -251,8 +251,12 @@
     <Compile Include="View\MonitorView.xaml.cs">
       <DependentUpon>MonitorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\MotorSimulator.cs" />
     <Compile Include="View\Plane3D.xaml.cs">
       <DependentUpon>Plane3D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\RobotArmWindow.xaml.cs">
+      <DependentUpon>RobotArmWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SixDrill.xaml.cs">
       <DependentUpon>SixDrill.xaml</DependentUpon>
@@ -317,6 +321,9 @@
     </Page>
     <Page Include="View\Plane3D.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RobotArmWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SixDrill.xaml">
@@ -419,10 +426,6 @@
     <ProjectReference Include="..\..\PDFSharp\PDFSharp\AFWDPPS.PDF.csproj">
       <Project>{38dcc404-48c6-4c16-bc64-fbf1f2546562}</Project>
       <Name>AFWDPPS.PDF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\RobotArmHelix-master\RobotArmHelix\RobotArmHelix.csproj">
-      <Project>{e14738ae-af61-4f59-841e-0a81b4d85893}</Project>
-      <Name>RobotArmHelix</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -791,7 +791,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            var win = new RobotArmHelix.MainWindow(); 
+            var win = new RobotArmWindow(); 
             win.Show();
         }
     }
