@@ -79,7 +79,6 @@ namespace WpfApp3D.View
         double j4SineAmplitudeDeg = 25;
         double j5SineAmplitudeDeg = 15;
         bool j4j5SineEnabled = true;
-        DispatcherTimer motorUpdateTimer;
         double motorTime = 0.25; // 电机模拟时间，从sin(π/2)开始
 
         // Waveform data
@@ -184,16 +183,6 @@ namespace WpfApp3D.View
 
             InitializePlots();
 
-            motorUpdateTimer = new DispatcherTimer();
-            motorUpdateTimer.Interval = TimeSpan.FromSeconds(0.01);
-            motorUpdateTimer.Tick += MotorUpdateTimer_Tick;
-            motorUpdateTimer.Start();
-
-            updateTimer = new DispatcherTimer();
-            updateTimer.Interval = TimeSpan.FromMilliseconds(100);
-            updateTimer.Tick += (s, e) => UpdateMotors();
-            updateTimer.Start();
-
             StartDefaultJ4J5SineMotionIfEnabled();
         }
 
@@ -226,9 +215,9 @@ namespace WpfApp3D.View
             gyroPlot.Refresh();
         }
 
-        private void UpdateMotors()
+        private void UpdateMotorsAndWaveforms(double dt)
         {
-            foreach (var joint in joints) joint.Motor.Update(0.1);
+            foreach (var joint in joints) joint.Motor.Update(dt);
             // Set joint angles based on motor simulation
             joints[3].Motor.TL = 0.0; // No load torque for j4
             joints[3].angle = Math.Max(joints[3].angleMin, Math.Min(joints[3].angleMax, joints[3].Motor.Angle));
@@ -252,10 +241,7 @@ namespace WpfApp3D.View
             anglePlot.Refresh();
             gyroPlot.Plot.Axes.AutoScale();
             gyroPlot.Refresh();
-            // Update 3D model
-            execute_fk();
         }
-
 
         private static string EnsureTrailingSeparator(string path)
         {
@@ -378,6 +364,9 @@ namespace WpfApp3D.View
             joints[4].Motor.I_ctrl = Math.Sin(w * t) * 1.0;
             joints[4].angle = j5Target;
             isAnimating = false;
+
+            // Update motors and waveforms synchronously
+            UpdateMotorsAndWaveforms(0.016); // dt = 16ms
 
             execute_fk();
         }
@@ -1074,34 +1063,6 @@ namespace WpfApp3D.View
 #endif
 
             return new Vector3D(joints[5].model.Bounds.Location.X, joints[5].model.Bounds.Location.Y, joints[5].model.Bounds.Location.Z);
-        }
-
-        private void MotorUpdateTimer_Tick(object sender, EventArgs e)
-        {
-            double dt = motorUpdateTimer.Interval.TotalSeconds; // 0.01 s
-            motorTime += dt;
-
-            // 只模拟j5电机 (joints[4])
-            var joint = joints[4];
-            if (joint.Motor != null)
-            {
-                // 生成波动电流：三角波，幅度0.1A，周期2秒
-                double phase = (motorTime % 2.0) / 2.0;
-                double triangle = phase < 0.5 ? 4 * phase - 1 : 3 - 4 * phase;
-                joint.Motor.I_ctrl = 0.1 * triangle;
-                joint.Motor.TL = 0.5;     // 示例负载转矩 0.5Nm
-                joint.Motor.T_amb = 25.0; // 环境温度 25°C
-
-                // 更新电机状态
-                joint.Motor.Update(dt);
-
-                // 将电机角度同步到关节角度，并限幅 -45° 到 +45°
-                joint.angle = Math.Max(-45, Math.Min(45, joint.Motor.Angle));
-            }
-
-            // 更新正向运动学
-            double[] angles = { joints[0].angle, joints[1].angle, joints[2].angle, joints[3].angle, joints[4].angle, joints[5].angle };
-            ForwardKinematics(angles);
         }
 
         private void OpenWaveformWindow(object sender, RoutedEventArgs e)
