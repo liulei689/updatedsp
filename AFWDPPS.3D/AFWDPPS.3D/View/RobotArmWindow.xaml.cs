@@ -210,6 +210,10 @@ namespace WpfApp3D.View
             currentPlot.Plot.Axes.Title.Label.Text = "Current";
             anglePlot.Plot.Axes.Title.Label.Text = "Angle";
             gyroPlot.Plot.Axes.Title.Label.Text = "Gyro Angular Velocity";
+            // Set fixed Y-axis limits
+            currentPlot.Plot.Axes.SetLimitsY(-10, 10);
+            anglePlot.Plot.Axes.SetLimitsY(-180, 180);
+            gyroPlot.Plot.Axes.SetLimitsY(-1, 1);
             // Refresh
             currentPlot.Refresh();
             anglePlot.Refresh();
@@ -237,49 +241,52 @@ namespace WpfApp3D.View
             gyroValue.Text = motor.GyroOmega.ToString("F2") + " rad/s";
             // Refresh plots
             // currentPlot.Plot.Axes.AutoScale();
-            currentPlot.Plot.Axes.AutoScale(); // Set current waveform amplitude limit to -10A to 10A
+            currentPlot.Plot.Axes.SetLimitsY(-10, 10);
+            anglePlot.Plot.Axes.SetLimitsY(-180, 180);
+            gyroPlot.Plot.Axes.SetLimitsY(-1, 1);
+            // Refresh
             currentPlot.Refresh();
-            anglePlot.Plot.Axes.AutoScale();
             anglePlot.Refresh();
-            gyroPlot.Plot.Axes.AutoScale();
             gyroPlot.Refresh();
         }
 
+        // UpdateWaveforms now accepts only current. Angle and gyro are produced by the motor simulator
         public void UpdateWaveforms(double current)
         {
             if (joints == null || joints.Count < 4) return; // Safety check
-            // Set motor control current
+
+            // Drive motor simulator for joint 3 with the incoming current
             joints[3].Motor.I_ctrl = current;
-            // Update motor simulation
-            joints[3].Motor.Update(0.016); // dt = 16ms
-            // Get simulated outputs
+            joints[3].Motor.Update(0.016); // simulate 16ms step
+
             var motor = joints[3].Motor;
             double angle = motor.Angle;
             double gyro = motor.GyroOmega;
-            // Update joint angle for j4
+
+            // Update joint angle for visualization
             joints[3].angle = Math.Max(joints[3].angleMin, Math.Min(joints[3].angleMax, angle));
-            // Update waveform data
+
+            // Shift and append waveform data
             Array.Copy(currentData, 1, currentData, 0, DataPoints - 1);
             currentData[DataPoints - 1] = motor.Ia;
             Array.Copy(angleData, 1, angleData, 0, DataPoints - 1);
             angleData[DataPoints - 1] = angle;
             Array.Copy(gyroData, 1, gyroData, 0, DataPoints - 1);
             gyroData[DataPoints - 1] = gyro;
+
             // Update UI on main thread
             Action updateUI = () =>
             {
                 currentValue.Text = motor.Ia.ToString("F2") + " A";
                 angleValue.Text = angle.ToString("F2") + " бу";
                 gyroValue.Text = gyro.ToString("F2") + " rad/s";
-                // Refresh plots
-                currentPlot.Plot.Axes.AutoScale();
+                // Plots use fixed Y-limits set in InitializePlots, simply refresh
                 currentPlot.Refresh();
-                anglePlot.Plot.Axes.AutoScale();
                 anglePlot.Refresh();
-                gyroPlot.Plot.Axes.AutoScale();
                 gyroPlot.Refresh();
             };
             Application.Current.Dispatcher.BeginInvoke(updateUI);
+
             // Update 3D model on main thread
             Action update3D = () => execute_fk();
             Application.Current.Dispatcher.BeginInvoke(update3D);

@@ -186,7 +186,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             timer12 = new DispatcherTimer();
             timer12.Interval = TimeSpan.FromMilliseconds(1);
             timer12.Tick += Timer12_Tick;
-            timer12.Stop();
+            timer12.Start();
             #region  串口信息稳定设备
             botelv1.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
 
@@ -312,15 +312,10 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 CurrentRoll = roll;
 
                                 // 直接用串口数据更新电机
-                                motor.ReceiveCommand(roll);
-                                motor.Update10ms(); // 假设每次接收数据时更新一次
+                         
+                              
 
-                                // 发送电机反馈数据：角度和陀螺仪角速度
-                                byte[] feedbackFrame = BuildFeedbackFrame(motor.Angle, motor.GyroOmega);
-                                sendData(feedbackFrame, feedbackFrame.Length);
-
-                                // 更新波形
-                                RobotArmWindow.Instance?.UpdateWaveforms(roll); // 电流为 roll，角度和陀螺从电机模拟得出
+                    
 
                                 G_btList_RecBuf.Clear();
                                 //切换协议解析状态
@@ -375,45 +370,18 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         public double roll = 0;
         static public double feedbackAngle = 0;
         static public double sendjiaodu = 0;
-        BrushlessMotorSim motor = new BrushlessMotorSim(initialAngle: 10);
+        MotorSimulator motor = new MotorSimulator();
         private void Timer12_Tick(object sender, EventArgs e)
         {
-            return;
-            if (CmbOption.SelectedIndex == 0)
-            {
-                if (Dome1.Dome1Instance.generator == null) return;
+            // 更新电机状态
+            motor.Update(0.01);
 
-                // 生成振动信号（正弦波）
-                double vibrationPitch = Dome1.Dome1Instance.generator.GenerateNextValue();
-                double vibrationYaw = Dome1.Dome1Instance.generator.GenerateNextValue(); // 假设俯
+            // 发送电机反馈数据：角度和陀螺仪角速度 (定时器驱动)
+            byte[] feedbackFrame = BuildFeedbackFrame(motor.Angle, motor.GyroOmega);
+            sendData(feedbackFrame, feedbackFrame.Length);
 
-                Dome1.Dome1Instance.pitch = vibrationYaw + Dome1.Dome1Instance.pitchdianji;
-                //double vibrationPitch = Dome1.Dome1Instance.pitch;
-                if (feedbackAngle > 12) feedbackAngle = 0;
-                sendjiaodu = vibrationYaw - feedbackAngle;
-                byte[] data = MoliDj.BuildFrame(sendjiaodu);
-
-
-                motor.CommandDelayMs = 50;   // 50ms 延迟
-                motor.MaxSpeed = 200;
-                motor.MaxAccel = 800;
-                motor.Damping = 0.95;
-
-
-                // 下位机每 10ms 都会发，现在模拟持续发送（即使值相同也会发）
-
-                motor.ReceiveCommand(roll);
-
-                // 上位机每 10ms 调用一次 Update（并把角度回传）
-                motor.Update10ms();
-
-                feedbackAngle = motor.Angle;
-                //SendFeedbackToController(feedbackAngle);
-
-                sendData(data, data.Length);
-            }
-
-
+            // 更新波形：只传入 current，RobotArmWindow 内部会由 motor 模拟计算 angle 与 gyro
+            RobotArmWindow.Instance?.UpdateWaveforms(CurrentRoll);
         }
         private void sendData(byte[] databuf, int datalength)
         {
@@ -859,147 +827,6 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
 
 
-
-    //////
-    //////
-    //////
-    public class BrushlessMotorSim
-    {
-        // ---- 状态 ----
-        private double _angle;           // 当前角度（0~360）
-        private double _velocity;        // 当前角速度（°/s）
-        private double _targetAngle;     // 实际目标角度（电机开始运动后要到达的角度）
-        private double _pendingAngle;    // 新命令的待应用角度（在延迟期间保存）
-        private bool _hasPending = false;
-
-        // 延迟计时器（ms）
-        private double _commandDelayTimerMs = 0;
-
-        // ---- 可配置参数 ----
-        public double CommandDelayMs { get; set; } = 30;    // 指令延迟（ms）
-        public double MaxSpeed { get; set; } = 250;         // 最大速度 °/s
-        public double MaxAccel { get; set; } = 1200;        // 最大加速度 °/s²
-        public double Damping { get; set; } = 0.92;         // 阻尼（0..1，越小衰减越强）
-        public double CommandEpsilon { get; set; } = 0.01;  // 判定命令变化的容差（度）
-
-        // 对外只读的角度（0..360）
-        public double Angle => _angle;
-
-        // 陀螺仪角速度（°/s）
-        public double GyroOmega => _velocity;
-
-        public BrushlessMotorSim(double initialAngle = 0)
-        {
-            _angle = Clamp360(initialAngle);
-            _targetAngle = _angle;
-            _pendingAngle = _angle;
-            _velocity = 0;
-            _hasPending = false;
-        }
-
-        /// <summary>
-        /// 下位机每 10ms 会调用这个方法传入当前的命令角度（0..360）
-        /// 若与上一次真正的命令不同（差值超过 CommandEpsilon），则设置延迟并保存为 pending。
-        /// 若命令与上一次相同，则不会重置延迟（避免一直等待）。
-        /// </summary>
-        public void ReceiveCommand(double angleCmd)
-        {
-            double normalized = Clamp360(angleCmd);
-
-            // 如果无 pending 且当前 pending==target 且 normalized==target => nothing changed
-            // 只在命令与上一次 pending（或已经生效的 target）不同时触发延迟
-            double compareBase = _hasPending ? _pendingAngle : _targetAngle;
-
-            // 计算最短差（带 wrap）
-            double diff = ShortestAngleDiff(compareBase, normalized);
-
-            if (Math.Abs(diff) > CommandEpsilon)
-            {
-                // 只有在“真正变化”时才设置 pending 并重置延迟
-                _pendingAngle = normalized;
-                _hasPending = true;
-                _commandDelayTimerMs = CommandDelayMs;
-            }
-            // else: 命令与上一条近似相同，忽略（不重置延迟）
-        }
-
-        /// <summary>
-        /// 上位机每 10ms 调用一次（固定频率），内部会拆成 1ms 子步保证平滑
-        /// </summary>
-        public void Update10ms()
-        {
-            // 拆成 10 个 1ms 步长
-            for (int i = 0; i < 10; i++)
-                Step1ms(0.001);
-        }
-
-        // 单步 1ms 仿真
-        private void Step1ms(double dt)
-        {
-            // 如果存在 pending 命令，处理延迟计时
-            if (_hasPending)
-            {
-                if (_commandDelayTimerMs > 0)
-                {
-                    _commandDelayTimerMs -= dt * 1000.0;
-                    if (_commandDelayTimerMs <= 0)
-                    {
-                        // 延迟到期：把 pending 生成为实际 target 开始运动
-                        _targetAngle = _pendingAngle;
-                        _hasPending = false;
-                        _commandDelayTimerMs = 0;
-                    }
-                    else
-                    {
-                        // 仍在延迟期间，电机不响应新命令，但仍可继续之前的运动（如果有）
-                        // 我们不 return；允许电机在延迟期间按已有速度继续运动（或你也可以选择 return;）
-                    }
-                }
-            }
-
-            // 计算最短角差（signed -180..180）
-            double diff = ShortestAngleDiff(_angle, _targetAngle);
-
-            // 如果到位足够近，停止并置角度为 target （避免振荡）
-            if (Math.Abs(diff) < 0.02)
-            {
-                _angle = _targetAngle;
-                _velocity = 0;
-                return;
-            }
-
-            // 计算期望加速度方向（朝向 target）
-            double accelSign = Math.Sign(diff);
-            double accel = accelSign * MaxAccel;
-
-            // 更新速度（v = v + a*dt）
-            _velocity += accel * dt;
-
-            // 限制速度
-            if (_velocity > MaxSpeed) _velocity = MaxSpeed;
-            if (_velocity < -MaxSpeed) _velocity = -MaxSpeed;
-
-            // 阻尼（简单乘因子）
-            _velocity *= Damping;
-
-            // 更新角度
-            _angle = Clamp360(_angle + _velocity * dt);
-        }
-
-        // ===== 辅助 =====
-        private double Clamp360(double a)
-        {
-            a %= 360;
-            return a < 0 ? a + 360 : a;
-        }
-
-        // 得到 current -> target 的最短带符号差（-180,180]
-        private double ShortestAngleDiff(double current, double target)
-        {
-            double diff = (target - current + 540.0) % 360.0 - 180.0;
-            return diff;
-        }
-    }
 
 
 }

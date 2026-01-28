@@ -28,7 +28,10 @@ namespace WpfApp3D.View
         public double Theta { get; private set; } // 位置 rad
         public double DeltaT { get; private set; } // 温升 °C
         public double Angle { get; private set; } // 角度 °
-        public double GyroOmega { get; private set; } // 陀螺仪角速度 rad/s
+        public double GyroOmega { get; private set; } // 陀螺仪角速度 rad/s (平台 + 电机)
+
+        // 平台角速度 (模拟平台运动)
+        public double PlatformGyroOmega { get; private set; } = 0.0; // 平台陀螺仪角速度 rad/s
 
         // 输入
         public double I_ctrl { get; set; } // 控制电流 A
@@ -43,6 +46,7 @@ namespace WpfApp3D.View
 
         // 随机数生成器，用于添加噪声
         private Random random = new Random();
+        private double _time = 0; // 模拟时间 for platform motion
 
         public MotorSimulator()
         {
@@ -65,6 +69,10 @@ namespace WpfApp3D.View
         /// <param name="dt">时间步长 s</param>
         public void Update(double dt)
         {
+            // 更新模拟时间和平台运动
+            _time += dt;
+            PlatformGyroOmega = Math.Sin(_time * 2 * Math.PI / 10) * 0.1; // 10秒周期的正弦波，幅度0.1 rad/s
+
             // 约束输入
             I_ctrl = Math.Max(-I_max, Math.Min(I_max, I_ctrl));
 
@@ -93,9 +101,9 @@ namespace WpfApp3D.View
             if (Angle > 180) Angle -= 360;
             if (Angle < -180) Angle += 360;
 
-            // 陀螺仪角速度 (添加小噪声模拟)
+            // 陀螺仪角速度 (平台 + 电机 + 噪声)
             double noise = (random.NextDouble() - 0.5) * 0.01; // ±0.005 rad/s噪声
-            GyroOmega = Omega + noise;
+            GyroOmega = PlatformGyroOmega + Omega + noise;
 
             // 计算损耗 (铜损为主)
             double P_loss = (Ia * Ia + Ib * Ib + Ic * Ic) * R;
@@ -119,6 +127,15 @@ namespace WpfApp3D.View
             DeltaT = 0.0;
             Angle = 0.0;
             GyroOmega = 0.0;
+        }
+
+        /// <summary>
+        /// 接收命令电流
+        /// </summary>
+        /// <param name="current">控制电流 A</param>
+        public void ReceiveCommand(double current)
+        {
+            I_ctrl = current;
         }
     }
 }
