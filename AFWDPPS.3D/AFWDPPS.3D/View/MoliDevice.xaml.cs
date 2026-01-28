@@ -94,8 +94,7 @@ namespace WpfApp3D.View
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public byte[] str_Serial_Num;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
             public byte[] str_hw_Type;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-            public byte[] str_Usb_Serial;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public byte[] str_Usb_Serial;
         }
 
         /*------------数据结构描述完成---------------------------------*/
@@ -175,6 +174,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(1) };   // 2 Hz
         private readonly DispatcherTimer timer12 =
 new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         public System.IO.Ports.SerialPort serialPort2;
+        public static double CurrentRoll = 0; // 静态变量存储电流值
         public MoliDevice()
         {
             InitializeComponent();
@@ -307,6 +307,21 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 //yaw *= 57.3;
                                 // UpdateYaw();
                                 //UpdatePitch();
+
+                                // 更新静态电流值
+                                CurrentRoll = roll;
+
+                                // 直接用串口数据更新电机
+                                motor.ReceiveCommand(roll);
+                                motor.Update10ms(); // 假设每次接收数据时更新一次
+
+                                // 发送电机反馈数据：角度和陀螺仪角速度
+                                byte[] feedbackFrame = BuildFeedbackFrame(motor.Angle, motor.GyroOmega);
+                                sendData(feedbackFrame, feedbackFrame.Length);
+
+                                // 更新波形
+                                RobotArmWindow.Instance?.UpdateWaveforms(roll); // 电流为 roll，角度和陀螺从电机模拟得出
+
                                 G_btList_RecBuf.Clear();
                                 //切换协议解析状态
                                 G_int_ComStatus = (int)enum_ComStatus.COM_STATUS_HEAD1;
@@ -363,6 +378,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         BrushlessMotorSim motor = new BrushlessMotorSim(initialAngle: 10);
         private void Timer12_Tick(object sender, EventArgs e)
         {
+            return;
             if (CmbOption.SelectedIndex == 0)
             {
                 if (Dome1.Dome1Instance.generator == null) return;
@@ -393,8 +409,6 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
                 feedbackAngle = motor.Angle;
                 //SendFeedbackToController(feedbackAngle);
-
-
 
                 sendData(data, data.Length);
             }
@@ -794,6 +808,50 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             var win = new RobotArmWindow(); 
             win.Show();
         }
+        private static byte _txCounter = 0;
+
+        // Build feedback frame using AA55 protocol with two floats: angle and gyro
+        public byte[] BuildFeedbackFrame(double angle, double gyro)
+        {
+            byte[] buf = new byte[31]; // Extended to include two floats (8 bytes) + checksum
+
+            /* 固定头 */
+            buf[0] = 0xAA;          // 包头1
+            buf[1] = 0x55;          // 包头2
+            buf[2] = _txCounter;    // 帧计数
+            buf[3] = 0x1E;          // 包长度 (30 bytes data + 1 checksum)
+
+            /* 载荷初值 */
+            buf[4] = 0x01;          // 机位号：俯仰电机
+            buf[5] = 0x00;          // 反馈帧计数
+            buf[6] = 0x00;          // 状态字：电机正常
+            buf[7] = 0x00;          // 速度（rpm×10）→ 0 rpm
+            buf[8] = 0x00;          // 力矩（N·m×10）→ 0 N·m
+
+            /* 3 路电压 0 V */
+            buf[9] = 0x00; buf[10] = 0x00;   // A线
+            buf[11] = 0x00; buf[12] = 0x00;   // B线
+            buf[13] = 0x00; buf[14] = 0x00;   // C线
+
+            /* 3 路电流 0 A */
+            buf[15] = 0x00; buf[16] = 0x00;   // A相
+            buf[17] = 0x00; buf[18] = 0x00;   // B相
+            buf[19] = 0x00; buf[20] = 0x00;   // C相
+
+            /* 角度原始值 0 */
+            buf[21] = 0x00; // Keeping as 0, since we're adding floats separately
+
+            /* 添加两个float: angle and gyro */
+            FloatStringToBytes(buf, angle.ToString(), 22); // 22-25: angle as float
+            FloatStringToBytes(buf, gyro.ToString(), 26);  // 26-29: gyro as float
+
+            /* 校验和：0~29 累加 → 取反+1 */
+            byte sum = 0;
+            for (int i = 0; i < 30; i++) sum += buf[i];
+            buf[30] = (byte)(((~sum) + 1) & 0xFF);
+            _txCounter++;   // 帧计数循环
+            return buf;
+        }
     }
 
 
@@ -826,6 +884,9 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
         // 对外只读的角度（0..360）
         public double Angle => _angle;
+
+        // 陀螺仪角速度（°/s）
+        public double GyroOmega => _velocity;
 
         public BrushlessMotorSim(double initialAngle = 0)
         {
@@ -899,7 +960,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             // 计算最短角差（signed -180..180）
             double diff = ShortestAngleDiff(_angle, _targetAngle);
 
-            // 如果到位足够近，停止并置角度为 target（避免振荡）
+            // 如果到位足够近，停止并置角度为 target （避免振荡）
             if (Math.Abs(diff) < 0.02)
             {
                 _angle = _targetAngle;

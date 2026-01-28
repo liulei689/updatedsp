@@ -38,6 +38,8 @@ namespace WpfApp3D.View
     /// </summary>
     public partial class RobotArmWindow : Window
     {
+        public static RobotArmWindow Instance;
+
         //provides functionality to 3d models
         Model3DGroup RA = new Model3DGroup(); //RoboticArm 3d group
         Model3D geom = null; //Debug sphere to check in which point the joint is rotatin
@@ -78,7 +80,7 @@ namespace WpfApp3D.View
         TimeSpan j4j5SinePeriod = TimeSpan.FromSeconds(4);
         double j4SineAmplitudeDeg = 25;
         double j5SineAmplitudeDeg = 15;
-        bool j4j5SineEnabled = true;
+        bool j4j5SineEnabled = false;
         double motorTime = 0.25; // 电机模拟时间，从sin(π/2)开始
 
         // Waveform data
@@ -136,6 +138,7 @@ namespace WpfApp3D.View
         public RobotArmWindow(string modelsBasePath)
         {
             InitializeComponent();
+            Instance = this;
             basePath = ResolveModelsBasePath(modelsBasePath);
             List<string> modelsNames = new List<string>();
             modelsNames.Add(MODEL_PATH1);
@@ -182,8 +185,6 @@ namespace WpfApp3D.View
             ForwardKinematics(angles);
 
             InitializePlots();
-
-            StartDefaultJ4J5SineMotionIfEnabled();
         }
 
         private void InitializePlots()
@@ -235,12 +236,53 @@ namespace WpfApp3D.View
             angleValue.Text = motor.Angle.ToString("F2") + " °";
             gyroValue.Text = motor.GyroOmega.ToString("F2") + " rad/s";
             // Refresh plots
-            currentPlot.Plot.Axes.AutoScale();
+            // currentPlot.Plot.Axes.AutoScale();
+            currentPlot.Plot.Axes.AutoScale(); // Set current waveform amplitude limit to -10A to 10A
             currentPlot.Refresh();
             anglePlot.Plot.Axes.AutoScale();
             anglePlot.Refresh();
             gyroPlot.Plot.Axes.AutoScale();
             gyroPlot.Refresh();
+        }
+
+        public void UpdateWaveforms(double current)
+        {
+            if (joints == null || joints.Count < 4) return; // Safety check
+            // Set motor control current
+            joints[3].Motor.I_ctrl = current;
+            // Update motor simulation
+            joints[3].Motor.Update(0.016); // dt = 16ms
+            // Get simulated outputs
+            var motor = joints[3].Motor;
+            double angle = motor.Angle;
+            double gyro = motor.GyroOmega;
+            // Update joint angle for j4
+            joints[3].angle = Math.Max(joints[3].angleMin, Math.Min(joints[3].angleMax, angle));
+            // Update waveform data
+            Array.Copy(currentData, 1, currentData, 0, DataPoints - 1);
+            currentData[DataPoints - 1] = motor.Ia;
+            Array.Copy(angleData, 1, angleData, 0, DataPoints - 1);
+            angleData[DataPoints - 1] = angle;
+            Array.Copy(gyroData, 1, gyroData, 0, DataPoints - 1);
+            gyroData[DataPoints - 1] = gyro;
+            // Update UI on main thread
+            Action updateUI = () =>
+            {
+                currentValue.Text = motor.Ia.ToString("F2") + " A";
+                angleValue.Text = angle.ToString("F2") + " °";
+                gyroValue.Text = gyro.ToString("F2") + " rad/s";
+                // Refresh plots
+                currentPlot.Plot.Axes.AutoScale();
+                currentPlot.Refresh();
+                anglePlot.Plot.Axes.AutoScale();
+                anglePlot.Refresh();
+                gyroPlot.Plot.Axes.AutoScale();
+                gyroPlot.Refresh();
+            };
+            Application.Current.Dispatcher.BeginInvoke(updateUI);
+            // Update 3D model on main thread
+            Action update3D = () => execute_fk();
+            Application.Current.Dispatcher.BeginInvoke(update3D);
         }
 
         private static string EnsureTrailingSeparator(string path)
@@ -352,17 +394,13 @@ namespace WpfApp3D.View
             double w = 2.0 * Math.PI / Math.Max(0.001, j4j5SinePeriod.TotalSeconds);
 
             double j4Target = j4SineBaseAngle + (j4SineAmplitudeDeg * Math.Sin(w * t));
-            double j5Target = j5SineBaseAngle + (j5SineAmplitudeDeg * Math.Sin(w * t));
 
             // Respect joint limits.
             j4Target = Clamp(j4Target, joints[3].angleMin, joints[3].angleMax);
-            j5Target = Clamp(j5Target, joints[4].angleMin, joints[4].angleMax);
 
             // Update sliders without triggering joint_ValueChanged.
             isAnimating = true;
-            joints[3].Motor.I_ctrl = Math.Sin(w * t) * 1.0;
-            joints[4].Motor.I_ctrl = Math.Sin(w * t) * 1.0;
-            joints[4].angle = j5Target;
+            joints[3].Motor.I_ctrl = MoliDevice.CurrentRoll;
             isAnimating = false;
 
             // Update motors and waveforms synchronously
