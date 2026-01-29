@@ -12,7 +12,7 @@ using ScottPlot;
 
 namespace WpfApp3D.View
 {
-    class Joint
+  public class Joint
     {
         public Model3D model = null;
         public double angle = 0;
@@ -44,7 +44,7 @@ namespace WpfApp3D.View
         Model3DGroup RA = new Model3DGroup(); //RoboticArm 3d group
         Model3D geom = null; //Debug sphere to check in which point the joint is rotatin
 
-        List<Joint> joints = null;
+        public List<Joint> joints = null;
 
         bool switchingJoint = false;
         bool isAnimating = false;

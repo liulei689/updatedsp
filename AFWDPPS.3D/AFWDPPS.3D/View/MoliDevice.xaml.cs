@@ -190,7 +190,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
             #region  串口信息稳定设备
             botelv1.ItemsSource = new string[] { "4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600" };
 
-            botelv1.SelectedIndex = 5;
+            botelv1.SelectedIndex = 8;
             var ports = SerialPort.GetPortNames();
             if (comlist1.ItemsSource == null || !ports.SequenceEqual(comlist1.ItemsSource as IList<string>))
             {
@@ -370,14 +370,14 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         public double roll = 0;
         static public double feedbackAngle = 0;
         static public double sendjiaodu = 0;
-        MotorSimulator motor = new MotorSimulator();
         private void Timer12_Tick(object sender, EventArgs e)
         {
+            if (RobotArmWindow.Instance == null) return;
             // 更新电机状态
-            motor.Update(0.01);
+            RobotArmWindow.Instance.joints[3].Motor.Update(0.01);
 
             // 发送电机反馈数据：角度和陀螺仪角速度 (定时器驱动)
-            byte[] feedbackFrame = BuildFeedbackFrame(motor.Angle, motor.GyroOmega);
+            byte[] feedbackFrame = BuildFeedbackFrame(RobotArmWindow.Instance.joints[3].angle, RobotArmWindow.Instance.joints[3].Motor.GyroOmega);
             sendData(feedbackFrame, feedbackFrame.Length);
 
             // 更新波形：只传入 current，RobotArmWindow 内部会由 motor 模拟计算 angle 与 gyro
