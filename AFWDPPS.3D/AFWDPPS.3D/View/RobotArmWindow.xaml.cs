@@ -277,9 +277,9 @@ namespace WpfApp3D.View
             // Update UI on main thread
             Action updateUI = () =>
             {
-                currentValue.Text = MoliDevice.CurrentRoll.ToString("F2") + " A";
-                angleValue.Text = angle.ToString("F2") + " бу";
-                gyroValue.Text = gyro.ToString("F2") + " rad/s";
+                currentValue.Text = MoliDevice.CurrentRoll.ToString("F4") + " A";
+                angleValue.Text = angle.ToString("F4") + " бу";
+                gyroValue.Text = gyro.ToString("F4") + " rad/s";
                 // Plots use fixed Y-limits set in InitializePlots, simply refresh
                 currentPlot.Plot.Axes.AutoScale();
                 anglePlot.Plot.Axes.AutoScale();

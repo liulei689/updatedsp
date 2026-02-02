@@ -69,9 +69,10 @@ namespace WpfApp3D.View
         /// <param name="dt">时间步长 s</param>
         public void Update(double dt)
         {
-            // 更新模拟时间和平台运动
+            // 更新模拟时间（保留时间推进，便于后续扩展）
             _time += dt;
-            PlatformGyroOmega = Math.Sin(_time * 2 * Math.PI / 10) * 0.1; // 10秒周期的正弦波，幅度0.1 rad/s
+            // 让陀螺输出与电机强绑定：默认不叠加平台正弦项
+            PlatformGyroOmega = 0.0;
 
             // 约束输入
             I_ctrl = Math.Max(-I_max, Math.Min(I_max, I_ctrl));
@@ -101,9 +102,9 @@ namespace WpfApp3D.View
             if (Angle > 180) Angle -= 360;
             if (Angle < -180) Angle += 360;
 
-            // 陀螺仪角速度 (平台 + 电机 + 噪声)
+            // 陀螺仪角速度 (电机 + 噪声)
             double noise = (random.NextDouble() - 0.5) * 0.01; // ±0.005 rad/s噪声
-            GyroOmega = PlatformGyroOmega + Omega + noise;
+            GyroOmega = Omega + noise;
 
             // 计算损耗 (铜损为主)
             double P_loss = (Ia * Ia + Ib * Ib + Ic * Ic) * R;

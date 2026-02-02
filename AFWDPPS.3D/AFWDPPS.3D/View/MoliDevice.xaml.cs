@@ -174,7 +174,8 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(1) };   // 2 Hz
         private readonly DispatcherTimer timer12 =
 new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         public System.IO.Ports.SerialPort serialPort2;
-        public static double CurrentRoll = 0; // 静态变量存储电流值
+        // 约定：roll 就是下位机传上来的“电机控制电流(A)”
+        public static double CurrentRoll = 0;
         public MoliDevice()
         {
             InitializeComponent();
@@ -308,7 +309,7 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
                                 // UpdateYaw();
                                 //UpdatePitch();
 
-                                // 更新静态电流值
+                                // 约定：roll字段就是电机控制电流输入(A)
                                 CurrentRoll = roll;
 
                                 // 直接用串口数据更新电机
@@ -373,15 +374,18 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
         private void Timer12_Tick(object sender, EventArgs e)
         {
             if (RobotArmWindow.Instance == null) return;
-            // 更新电机状态
-            RobotArmWindow.Instance.joints[3].Motor.Update(0.01);
+            // 只保留一处“电机更新”：交给 RobotArmWindow.UpdateWaveforms 统一做
+            // 这里传入电流(CurrentRoll)，由其内部驱动 joints[3].Motor.Update
+            RobotArmWindow.Instance.UpdateWaveforms(CurrentRoll);
 
-            // 发送电机反馈数据：角度和陀螺仪角速度 (定时器驱动)
-            byte[] feedbackFrame = BuildFeedbackFrame(RobotArmWindow.Instance.joints[3].angle, RobotArmWindow.Instance.joints[3].Motor.GyroOmega);
+            // 同步关节角度(用于3D显示)
+            RobotArmWindow.Instance.joints[3].angle = RobotArmWindow.Instance.joints[3].Motor.Angle;
+
+            // 反馈帧从同一个MotorSimulator实例取角度/角速度，确保强关联
+            byte[] feedbackFrame = BuildFeedbackFrame(
+                RobotArmWindow.Instance.joints[3].Motor.Angle,
+                RobotArmWindow.Instance.joints[3].Motor.GyroOmega);
             sendData(feedbackFrame, feedbackFrame.Length);
-
-            // 更新波形：只传入 current，RobotArmWindow 内部会由 motor 模拟计算 angle 与 gyro
-            RobotArmWindow.Instance?.UpdateWaveforms(CurrentRoll);
         }
         private void sendData(byte[] databuf, int datalength)
         {
