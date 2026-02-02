@@ -40,6 +40,8 @@ namespace WpfApp3D.View
     {
         public static RobotArmWindow Instance;
 
+        private bool _motorInitialized;
+
         //provides functionality to 3d models
         Model3DGroup RA = new Model3DGroup(); //RoboticArm 3d group
         Model3D geom = null; //Debug sphere to check in which point the joint is rotatin
@@ -255,13 +257,21 @@ namespace WpfApp3D.View
         {
             if (joints == null || joints.Count < 4) return; // Safety check
 
+            // Ensure a deterministic start state so the first shown angle is 0.
+            if (!_motorInitialized)
+            {
+                joints[3].Motor.Reset();
+                _motorInitialized = true;
+            }
+
             // Drive motor simulator for joint 3 with the incoming current
             joints[3].Motor.I_ctrl = current;
             joints[3].Motor.Update(0.016); // simulate 16ms step
 
             var motor = joints[3].Motor;
             double angle = motor.Angle;
-            double gyro = motor.GyroOmega;
+            // Motor.Angle is displayed in degrees. Export gyro in deg/s to match the "angle moves" intuition.
+            double gyro = motor.GyroOmega * (180.0 / Math.PI);
 
             // Update joint angle for visualization
             joints[3].angle = Math.Max(joints[3].angleMin, Math.Min(joints[3].angleMax, angle));
