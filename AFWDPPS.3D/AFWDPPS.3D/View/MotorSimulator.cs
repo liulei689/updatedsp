@@ -18,7 +18,7 @@ namespace WpfApp3D.View
         private const double H = 0.1;     // 冷却系数 W/°C
 
         // 约束
-        private const double I_max = 1.0; // 最大电流 A
+        private const double I_max = 1.35; // 最大电流 A
         private const double Te_max = 0.5; // 最大转矩 Nm
         private const double Omega_max = 100.0; // 最大转速 rad/s
         private const double DeltaT_max = 100.0; // 最大温升 °C

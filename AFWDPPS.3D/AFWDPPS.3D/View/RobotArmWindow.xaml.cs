@@ -41,6 +41,8 @@ namespace WpfApp3D.View
         public static RobotArmWindow Instance;
 
         private bool _motorInitialized;
+        private double? _prevAngleDeg;
+        private DateTime _prevAngleTime;
 
         //provides functionality to 3d models
         Model3DGroup RA = new Model3DGroup(); //RoboticArm 3d group
@@ -206,16 +208,16 @@ namespace WpfApp3D.View
             angleSignal.LegendText = "Angle (бу)";
             angleSignal.Color = ScottPlot.Color.FromHex("#00FF00");
             gyroSignal = gyroPlot.Plot.Add.Signal(gyroData);
-            gyroSignal.LegendText = "Gyro ж╕ (rad/s)";
+            gyroSignal.LegendText = "Gyro ж╕ (бу/s)";
             gyroSignal.Color = ScottPlot.Color.FromHex("#FF0000");
             // Set axis labels
             currentPlot.Plot.Axes.Title.Label.Text = "Current";
             anglePlot.Plot.Axes.Title.Label.Text = "Angle";
             gyroPlot.Plot.Axes.Title.Label.Text = "Gyro Angular Velocity";
             // Set fixed Y-axis limits
-            currentPlot.Plot.Axes.SetLimitsY(-10, 10);
+            currentPlot.Plot.Axes.SetLimitsY(-1.5, 1.5);
             anglePlot.Plot.Axes.SetLimitsY(-180, 180);
-            gyroPlot.Plot.Axes.SetLimitsY(-1, 1);
+            gyroPlot.Plot.Axes.SetLimitsY(-500, 500);
             // Refresh
             currentPlot.Refresh();
             anglePlot.Refresh();
@@ -270,39 +272,51 @@ namespace WpfApp3D.View
 
             var motor = joints[3].Motor;
             double angle = motor.Angle;
-            // Motor.Angle is displayed in degrees. Export gyro in deg/s to match the "angle moves" intuition.
-            double gyro = motor.GyroOmega * (180.0 / Math.PI);
+            // Derive gyro directly from angle delta so that integrating gyro reproduces angle.
+            // This keeps the angle/gyro waveforms strongly linked even when angle wraps at [-180, 180].
+            double gyro;
+            var now = DateTime.UtcNow;
+            if (!_prevAngleDeg.HasValue)
+            {
+                _prevAngleDeg = angle;
+                _prevAngleTime = now;
+                gyro = 0;
+            }
+            else
+            {
+                double dt = (now - _prevAngleTime).TotalSeconds;
+                if (dt <= 1e-6) dt = 0.016;
+
+                double dAngle = angle - _prevAngleDeg.Value;
+                // unwrap across -180/180 boundary
+                if (dAngle > 180) dAngle -= 360;
+                else if (dAngle < -180) dAngle += 360;
+
+                gyro = dAngle / dt; // deg/s
+                _prevAngleDeg = angle;
+                _prevAngleTime = now;
+            }
 
             // Update joint angle for visualization
             joints[3].angle = Math.Max(joints[3].angleMin, Math.Min(joints[3].angleMax, angle));
 
             // Shift and append waveform data
             Array.Copy(currentData, 1, currentData, 0, DataPoints - 1);
-            currentData[DataPoints - 1] = motor.Ia;
+            currentData[DataPoints - 1] = motor.I_ctrl;
             Array.Copy(angleData, 1, angleData, 0, DataPoints - 1);
             angleData[DataPoints - 1] = angle;
             Array.Copy(gyroData, 1, gyroData, 0, DataPoints - 1);
             gyroData[DataPoints - 1] = gyro;
 
-            // Update UI on main thread
-            Action updateUI = () =>
-            {
-                currentValue.Text = MoliDevice.CurrentRoll.ToString("F4") + " A";
-                angleValue.Text = angle.ToString("F4") + " бу";
-                gyroValue.Text = gyro.ToString("F4") + " rad/s";
-                // Plots use fixed Y-limits set in InitializePlots, simply refresh
-                currentPlot.Plot.Axes.AutoScale();
-                anglePlot.Plot.Axes.AutoScale();
-                gyroPlot.Plot.Axes.AutoScale();
-                currentPlot.Refresh();
-                anglePlot.Refresh();
-                gyroPlot.Refresh();
-            };
-            Application.Current.Dispatcher.BeginInvoke(updateUI);
+            currentValue.Text = motor.I_ctrl.ToString("F4") + " A";
+            angleValue.Text = angle.ToString("F4") + " бу";
+            gyroValue.Text = gyro.ToString("F4") + " бу/s";
 
-            // Update 3D model on main thread
-            Action update3D = () => execute_fk();
-            Application.Current.Dispatcher.BeginInvoke(update3D);
+            currentPlot.Refresh();
+            anglePlot.Refresh();
+            gyroPlot.Refresh();
+
+            execute_fk();
         }
 
         private static string EnsureTrailingSeparator(string path)
