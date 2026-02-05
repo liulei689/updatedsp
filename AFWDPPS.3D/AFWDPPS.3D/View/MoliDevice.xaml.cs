@@ -380,11 +380,10 @@ new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(10) };   // 2 Hz
 
             // 同步关节角度(用于3D显示)
             RobotArmWindow.Instance.joints[3].angle = RobotArmWindow.Instance.joints[3].Motor.Angle;
-
             // 反馈帧从同一个MotorSimulator实例取角度/角速度，确保强关联
             byte[] feedbackFrame = BuildFeedbackFrame(
                 RobotArmWindow.Instance.joints[3].Motor.Angle,
-                RobotArmWindow.Instance.joints[3].Motor.GyroOmega);
+                RobotArmWindow.Instance.gyro);
             sendData(feedbackFrame, feedbackFrame.Length);
         }
         private void sendData(byte[] databuf, int datalength)

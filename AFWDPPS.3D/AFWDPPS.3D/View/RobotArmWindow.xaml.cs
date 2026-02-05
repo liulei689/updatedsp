@@ -253,7 +253,7 @@ namespace WpfApp3D.View
             anglePlot.Refresh();
             gyroPlot.Refresh();
         }
-
+        public double gyro;
         // UpdateWaveforms now accepts only current. Angle and gyro are produced by the motor simulator
         public void UpdateWaveforms(double current)
         {
@@ -274,7 +274,7 @@ namespace WpfApp3D.View
             double angle = motor.Angle;
             // Derive gyro directly from angle delta so that integrating gyro reproduces angle.
             // This keeps the angle/gyro waveforms strongly linked even when angle wraps at [-180, 180].
-            double gyro;
+        
             var now = DateTime.UtcNow;
             if (!_prevAngleDeg.HasValue)
             {
@@ -311,7 +311,7 @@ namespace WpfApp3D.View
             currentValue.Text = motor.I_ctrl.ToString("F4") + " A";
             angleValue.Text = angle.ToString("F4") + " бу";
             gyroValue.Text = gyro.ToString("F4") + " бу/s";
-
+            
             currentPlot.Refresh();
             anglePlot.Refresh();
             gyroPlot.Refresh();
