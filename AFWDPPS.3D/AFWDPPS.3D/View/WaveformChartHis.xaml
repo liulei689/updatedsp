@@ -80,12 +80,13 @@
 
                     <TextBlock Text="显示点数：" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <ComboBox x:Name="PointCountCombo" Width="90" SelectionChanged="PointCountCombo_SelectionChanged">
-                        <ComboBoxItem Content="1000" />
-                        <ComboBoxItem Content="2000" />
-                        <ComboBoxItem Content="5000" />
                         <ComboBoxItem Content="10000" />
                         <ComboBoxItem Content="20000" />
-                        <ComboBoxItem Content="50000" IsSelected="True" />
+                        <ComboBoxItem Content="50000" />
+                        <ComboBoxItem Content="100000" />
+                        <ComboBoxItem Content="200000" />
+                        <ComboBoxItem Content="500000" IsSelected="True" />
+                        <ComboBoxItem Content="5000000" />
                     </ComboBox>
 
                     <TextBlock x:Name="StatusText" VerticalAlignment="Center" Margin="16,0,0,0" Foreground="Gray"/>

@@ -17,7 +17,7 @@ namespace WpfApp3D.View
     {
         private readonly int channelCount = 12;
         private int displayPointCount = 50000;
-        private int maxRows = 200000;
+        private int maxRows = 5000000;
         private double[][] datas;
         private DateTime[] times;
         private ScottPlot.Plottables.Signal[] signals;
