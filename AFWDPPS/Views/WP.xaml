@@ -135,7 +135,7 @@
                         <rubyer:DescriptionItem Name="F7"   Width="200"      Description="横摇电流" />
                         <rubyer:DescriptionItem Name="F8"  MinWidth="220"      Description="俯仰电流" />
                         <rubyer:DescriptionItem Name="U9"  Width="200"       Description="预留" />
-                        <rubyer:DescriptionItem Name="s3"    Width="200"     Description="状态" />
+                        <rubyer:DescriptionItem Name="s3"        Description="状态" />
                     </rubyer:Description>
                     <rubyer:Description Style="{StaticResource BorderDescription}" Margin="1" Columns="1">
                             <rubyer:DescriptionItem Name="U9D" Description="预留位解析" />
