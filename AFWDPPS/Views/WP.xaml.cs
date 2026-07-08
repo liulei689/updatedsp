@@ -1,4 +1,4 @@
-﻿using AFWDPP.Common;
+using AFWDPP.Common;
 using HandyControl.Data;
 using LL2024.Algorithms.UpdateDSP;
 using Rubyer;
@@ -149,6 +149,11 @@ namespace AFWDPP.Views
 
         }
         byte[] SendCacheToZhangPengFeiBtest = new byte[35];
+
+        /// <summary>
+        /// 测试函数（35 字节复杂帧）：保留原逻辑独立发送到 SendCacheToZhangPengFeiBtest。
+        /// 注：本函数未被定时器使用，仅作独立测试入口。
+        /// </summary>
         private void TestMiniSends()
         {
             SendCacheToZhangPengFeiBtest[0] = 0xA5;
@@ -190,65 +195,118 @@ namespace AFWDPP.Views
             sendData(SendCacheToZhangPengFeiBtest, 35);
         }
 
-        byte[] SendCacheToZhangPengFeiB = new byte[7];
+        byte[] SendCacheToZhangPengFeiB = new byte[11]; // 协议扩 7→11：加 4 字节船姿 H3L3 H4L4
         byte[] SendCacheToZhangPengFeiC = new byte[56]; //模拟MU数据
 
         byte da = 0;
+
+        /// <summary>
+        /// 定时器 80ms 触发，WP 模块唯一的串口 A 发送点。
+        /// 按优先级决定本帧发什么：自检 > 按住 sendermodel > 舵机滑动 > 按钮队列 > 静止透传。
+        /// MU 无数据且无主动发送源时直接 return，不发任何东西。
+        /// </summary>
         private void timerhandshake_Tick(object sender, EventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(() =>
+            // 串口未开不发送
+            if (serialPort2 == null || !serialPort2.IsOpen) return;
+
+            // ★ 自检开关：开启时 Senbit 算当前角度，写 SelfCheckX/Y
+            if (istartbit)
             {
-                //TestMiniSends(); return;
-                //#region 模拟MU数据发送
-                //SendCacheToZhangPengFeiC[0] = 0x7F;
-                //SendCacheToZhangPengFeiC[1] = 0x80;
-                //SendCacheToZhangPengFeiC[2] = 0;
-                //SendCacheToZhangPengFeiC[3] = 0xC1;
-                //if (da > 255) da = 0;
-                //SendCacheToZhangPengFeiC[53] = da++;
-                //sendData(SendCacheToZhangPengFeiC, 56);
+                Application.Current.Dispatcher.BeginInvoke(() => Senbit());
+            }
 
-                //#endregion
-                if (istartbit)
-                    Senbit();
-                if (sendermodel.IsChecked == true)
-                {
-                    SendCacheToZhangPengFeiB[0] = 0xA5;
+            // ★ 步骤1：检查 MU 是否在线（3 秒超时）
+            if (BusState.LastMuTime != DateTime.MinValue &&
+                (DateTime.Now - BusState.LastMuTime).TotalSeconds >= BusState.MU_TIMEOUT_SECONDS)
+            {
+                BusState.MuAlive = false;
+            }
+            else if (BusState.LastMuTime != DateTime.MinValue)
+            {
+                BusState.MuAlive = true;
+            }
 
-                    SendCacheToZhangPengFeiB[1] = 0x02;
+            // ★ 步骤2：检查是否有主动发送源
+            bool hasActive = BusState.SelfCheckEnabled
+                          || BusState.ButtonCmds.Count > 0
+                          || (sendermodel != null && sendermodel.IsChecked == true)
+                          || (searchtime != null && searchtime.SelectedIndex == 3 && slider != null && slider.IsEnabled);
 
-                    // Step 1: Multiply by 1000 and cast to short.
-                    short angleValue = (short)(x1.Value * 1000);
+            // ★ 步骤3：MU 离线 且 没主动源 → 不发
+            if (!BusState.MuAlive && !hasActive) return;
 
-                    // Step 2: Extract high and low bytes.
-                    SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
-                    SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
+            // ★ 步骤4：按优先级拼帧 + 发送
+            var b = SendCacheToZhangPengFeiB;
+            b[0] = 0xA5;  // 帧头固定
 
-                    short angleValue1 = (short)(y1.Value * 1000);
+            if (BusState.SelfCheckEnabled)
+            {
+                // 优先级1：自检（Senbit 算好当前角度写到 SelfCheckX/Y）
+                b[1] = BusState.SelfCheckStatus;
+                b[2] = (byte)(BusState.SelfCheckX >> 8); b[3] = (byte)BusState.SelfCheckX;
+                b[4] = (byte)(BusState.SelfCheckY >> 8); b[5] = (byte)BusState.SelfCheckY;
+            }
+            else if (sendermodel.IsChecked == true)
+            {
+                // 优先级2：按住 sendermodel，按住期间持续发当前 x1/y1 角度
+                b[1] = 0x02;
+                short xc = (short)(x1.Value * 1000);
+                short yc = (short)(y1.Value * 1000);
+                b[2] = (byte)(xc >> 8); b[3] = (byte)xc;
+                b[4] = (byte)(yc >> 8); b[5] = (byte)yc;
+            }
+            else if (searchtime.SelectedIndex == 3 && slider.IsEnabled)
+            {
+                // 优先级3：舵机滑动（前置声呐控制 slider）
+                b[1] = 0x03;
+                short xc = (short)(slider.Value * 1000);
+                b[2] = (byte)(xc >> 8); b[3] = (byte)xc;
+                b[4] = 0; b[5] = 0;
+            }
+            else if (BusState.ButtonCmds.Count > 0)
+            {
+                // 优先级4：按钮队列（出队一帧，TimesLeft--，扣到 0 丢弃）
+                var cmd = BusState.ButtonCmds.Dequeue();
+                b[1] = cmd.Status;
+                b[2] = (byte)(cmd.X >> 8); b[3] = (byte)cmd.X;
+                b[4] = (byte)(cmd.Y >> 8); b[5] = (byte)cmd.Y;
+                cmd.TimesLeft--;
+                if (cmd.TimesLeft > 0) BusState.ButtonCmds.Enqueue(cmd);  // 还要发，重新入队
+            }
+            else
+            {
+                // 优先级5：静止透传帧（要求 MuAlive=true）
+                b[1] = 0x00;
+                b[2] = 0; b[3] = 0;
+                b[4] = 0; b[5] = 0;
+            }
 
-                    // Step 2: Extract high and low bytes.
-                    SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
-                    SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
-                    SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-                    sendData(SendCacheToZhangPengFeiB, 7);
-                }
+            // ★ [6-9] 船姿：MuAlive=true 用 BusState 最新值，否则按 OfflineFillZero 开关决定
+            if (BusState.MuAlive)
+            {
+                // MU 在线：用最新船姿
+                b[6] = BusState.ShipAttitude[0]; b[7] = BusState.ShipAttitude[1];
+                b[8] = BusState.ShipAttitude[2]; b[9] = BusState.ShipAttitude[3];
+            }
+            else if (BusState.OfflineFillZero)
+            {
+                // MU 离线 + 开关=填零：船姿字段清 0
+                b[6] = 0; b[7] = 0;
+                b[8] = 0; b[9] = 0;
+            }
+            else
+            {
+                // MU 离线 + 开关=保持：仍用 ShipAttitude（最后收到的值）
+                b[6] = BusState.ShipAttitude[0]; b[7] = BusState.ShipAttitude[1];
+                b[8] = BusState.ShipAttitude[2]; b[9] = BusState.ShipAttitude[3];
+            }
 
-                if (searchtime.SelectedIndex == 3 && slider.IsEnabled)
-                {
-                    SendCacheToZhangPengFeiB[0] = 0xA5;
-                    SendCacheToZhangPengFeiB[1] = 0x03;
+            // 校验和
+            b[10] = GetSum(b);
 
-                    short angleValue = (short)(slider.Value * 1000);
-
-                    // Step 2: Extract high and low bytes.
-                    SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
-                    SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
-                    SendCacheToZhangPengFeiB[4] = 0; // High byte
-                    SendCacheToZhangPengFeiB[5] = 0; // Low byte
-                    SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-                    sendData(SendCacheToZhangPengFeiB, 7);
-                }
-            });
+            // ★ 调用 sendData 走标准发送流程（带 txlog 日志 + 文件日志）
+            sendData(b, 11);
         }
 
         public byte GetSum(byte[] data)
@@ -1005,43 +1063,25 @@ namespace AFWDPP.Views
             SendCache[6 + len] = data.报尾.ToByte();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// searchtime 模式下点"发送指令"按钮：不直接发，入队让定时器发。
+        /// 统一发 10 帧（DEFAULT_CMD_TIMES）。
+        /// </summary>
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            SendCacheToZhangPengFeiB[0] = 0xA5;
-            if (searchtime.SelectedIndex == 0)
-                SendCacheToZhangPengFeiB[1] = 0x02;
-            else if (searchtime.SelectedIndex == 1)
-                SendCacheToZhangPengFeiB[1] = 0x01;
-            else if (searchtime.SelectedIndex == 2)
-                SendCacheToZhangPengFeiB[1] = 0x04;
-            else if (searchtime.SelectedIndex == 3)
-                SendCacheToZhangPengFeiB[1] = 0x03;
-            // Step 1: Multiply by 1000 and cast to short.
-            short angleValue = (short)(x1.Value * 1000);
+            // 状态位映射
+            byte status = 0x02;
+            if (searchtime.SelectedIndex == 0) status = 0x02;
+            else if (searchtime.SelectedIndex == 1) status = 0x01;
+            else if (searchtime.SelectedIndex == 2) status = 0x04;
+            else if (searchtime.SelectedIndex == 3) status = 0x03;
 
-            // Step 2: Extract high and low bytes.
-            SendCacheToZhangPengFeiB[2] = (byte)((angleValue >> 8) & 0xFF); // High byte
-            SendCacheToZhangPengFeiB[3] = (byte)(angleValue & 0xFF); // Low byte
+            // 当前 x1/y1 角度
+            short xc = (short)(x1.Value * 1000);
+            short yc = (short)(y1.Value * 1000);
 
-            short angleValue1 = (short)(y1.Value * 1000);
-
-            // Step 2: Extract high and low bytes.
-            SendCacheToZhangPengFeiB[4] = (byte)((angleValue1 >> 8) & 0xFF); // High byte
-            SendCacheToZhangPengFeiB[5] = (byte)(angleValue1 & 0xFF); // Low byte
-
-
-
-            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-            if (SendCacheToZhangPengFeiB[1] == 0x04)
-                sendData(SendCacheToZhangPengFeiB, 7);
-            else
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    sendData(SendCacheToZhangPengFeiB, 7);
-                    await Task.Delay(80);
-                }
-            }
+            // 入队（统一发 10 帧）
+            BusState.ButtonCmds.Enqueue(new CmdItem(status, xc, yc, BusState.DEFAULT_CMD_TIMES));
         }
 
         private void ShowNotify()
@@ -1274,16 +1314,14 @@ namespace AFWDPP.Views
             }
         }
 
+        /// <summary>
+        /// 舵机控制指令：不直接发，入队让定时器按 80ms 节奏发出去。
+        /// 统一发 10 帧（DEFAULT_CMD_TIMES）。
+        /// </summary>
         private void sendduoji(byte type)
         {
-            SendCacheToZhangPengFeiB[0] = 0xA5;
-            SendCacheToZhangPengFeiB[1] = 0x03;
-            SendCacheToZhangPengFeiB[2] = type; // High  if(type==0)
-            SendCacheToZhangPengFeiB[3] = 0; // Low byte
-            SendCacheToZhangPengFeiB[4] = 0; // High byte
-            SendCacheToZhangPengFeiB[5] = 0; // Low byte
-            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-            sendData(SendCacheToZhangPengFeiB, 7);
+            // 状态位 0x03，type 放到 H2L2（按你原逻辑）
+            BusState.ButtonCmds.Enqueue(new CmdItem(0x03, 0, type, BusState.DEFAULT_CMD_TIMES));
         }
 
         private bool istartbit = false;
@@ -1293,8 +1331,14 @@ namespace AFWDPP.Views
         private void l7_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             currentIndex = 0;
+            timeouts = 0;
             if (l7.Content.ToString() == "开始自检")
             {
+                // ★ 自检启动：保持原 Senbit 逻辑
+                // 定时器 80ms 调用 Senbit → 算角度 → 每 5 帧跳下一个
+                // 走完整个列表（21*2=42 个角度 × 5 帧）自动停
+                BusState.SelfCheckEnabled = true;  // ★ 启用自检标志
+
                 istartbit = true;
                 l7.Content = "停止自检";
                 l7.Foreground = new SolidColorBrush(Colors.Red);
@@ -1302,7 +1346,11 @@ namespace AFWDPP.Views
             }
             else
             {
+                // ★ 停止：清所有自检状态，恢复其他指令下发
+                BusState.SelfCheckEnabled = false;
                 istartbit = false;
+                currentIndex = 0;
+                timeouts = 0;
                 l7.Content = "开始自检";
                 l7.Foreground = new SolidColorBrush(Colors.Blue);
             }
@@ -1310,17 +1358,35 @@ namespace AFWDPP.Views
         int[] temperatures = { 0, 3, 6, 9, 12, 15, 12, 9, 6, 3, 0, -3, -6, -9, -12, -15, -12, -9, -6, -3, 0 };
         string logFileNamebit = $"自检信息_{DateTime.Now:yyyyMMddHHmmss}.txt";
 
+        /// <summary>
+        /// 自检函数（被 timerhandshake 80ms 调用）。
+        /// 每 80ms 算下一个温度对应的角度，写入 BusState.SelfCheckX/Y。
+        /// 原 timeouts > 50 跳下一角度的逻辑完全保留。
+        /// 新增：走完一整圈自动停止（清 SelfCheckEnabled，恢复透传状态）。
+        /// </summary>
         private void Senbit()
         {
-
             SendCacheToZhangPengFeiB[0] = 0xA5;
 
             SendCacheToZhangPengFeiB[1] = 0x01;
+
+            // ★ 走完一圈就停（修复 bug：之前走完会无限循环）
             if (currentIndex == 2 * temperatures.Length)
             {
                 currentIndex = 0;
-                return;
+                timeouts = 0;
+                BusState.SelfCheckEnabled = false;
+                istartbit = false;
+                status.Content = "【自检完成】";
+                // 按钮文字复位（切回 UI 线程）
+                l7.Dispatcher.BeginInvoke(() =>
+                {
+                    l7.Content = "开始自检";
+                    l7.Foreground = new SolidColorBrush(Colors.Blue);
+                });
+                return;  // 不发任何帧，让定时器走透传分支（状态位变 0x00）
             }
+
             short jiaodu = 0;
             if (currentIndex >= temperatures.Length) //第二次了
             {
@@ -1389,9 +1455,11 @@ namespace AFWDPP.Views
                 timeouts = 0;
                 currentIndex++;
             }
-            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
 
-            sendData(SendCacheToZhangPengFeiB, 7);
+            // ★ 关键修复：把算好的角度写到 BusState，让定时器读出来发
+            BusState.SelfCheckStatus = 0x01;
+            BusState.SelfCheckX = (short)((SendCacheToZhangPengFeiB[2] << 8) | SendCacheToZhangPengFeiB[3]);
+            BusState.SelfCheckY = (short)((SendCacheToZhangPengFeiB[4] << 8) | SendCacheToZhangPengFeiB[5]);
         }
 
         private void l5_PreviewMouseLeftButtonUp_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -1428,59 +1496,24 @@ namespace AFWDPP.Views
             if (btn != null)
                 SetTlLp(btn.Name);
         }
-        private async void SetTlLp(string cmdm)
+        /// <summary>
+        /// t1~t5 命令按钮（陀螺校零等）：不直接发，入队让定时器发。
+        /// </summary>
+        private void SetTlLp(string cmdm)
         {
+            // 状态位
+            byte status = (cmdm == "t1") ? (byte)0x05 : (byte)0x06;
 
-            SendCacheToZhangPengFeiB[0] = 0xA5;
-            if (cmdm == "t1")
-                SendCacheToZhangPengFeiB[1] = 0x05;
-            else
-                SendCacheToZhangPengFeiB[1] = 0x06;
-            // Step 1: Multiply by 1000 and cast to short.
-            if (cmdm == "t1")
-            {
-                SendCacheToZhangPengFeiB[2] = 0; // High byte
-                SendCacheToZhangPengFeiB[3] = 0; // Low byte
-                SendCacheToZhangPengFeiB[4] = 0; // High byte
-                SendCacheToZhangPengFeiB[5] = 0; // Low byte
-            }
-            else if (cmdm == "t2")
-            {
-                SendCacheToZhangPengFeiB[2] = 0x10; // High byte
-                SendCacheToZhangPengFeiB[3] = 0; // Low byte
-                SendCacheToZhangPengFeiB[4] = 0; // High byte
-                SendCacheToZhangPengFeiB[5] = 0; // Low byte
-            }
-            else if (cmdm == "t3")
-            {
-                SendCacheToZhangPengFeiB[2] = 0x00; // High byte
-                SendCacheToZhangPengFeiB[3] = 0x01; // Low byte
-                SendCacheToZhangPengFeiB[4] = 0; // High byte
-                SendCacheToZhangPengFeiB[5] = 0; // Low byte
-            }
-            else if (cmdm == "t4")
-            {
-                SendCacheToZhangPengFeiB[2] = 0x00; // High byte
-                SendCacheToZhangPengFeiB[3] = 0x00; // Low byte
-                SendCacheToZhangPengFeiB[4] = 0x10; // High byte
-                SendCacheToZhangPengFeiB[5] = 0; // Low byte
-            }
-            else if (cmdm == "t5")
-            {
-                SendCacheToZhangPengFeiB[2] = 0x00; // High byte
-                SendCacheToZhangPengFeiB[3] = 0x00; // Low byte
-                SendCacheToZhangPengFeiB[4] = 0; // High byte
-                SendCacheToZhangPengFeiB[5] = 0x01; // Low byte
-            }
+            // H1L1 / H2L2 高字节（按原 switch 逻辑保持，只填 High 字节，低字节 0）
+            short x = 0, y = 0;
+            if (cmdm == "t2")      x = (short)(0x10 << 8);  // 0x1000
+            else if (cmdm == "t3") x = (short)(0x01 << 8);  // 0x0100
+            else if (cmdm == "t4") y = (short)(0x10 << 8);
+            else if (cmdm == "t5") y = (short)(0x01 << 8);
+            // t1 全 0，不动
 
-            SendCacheToZhangPengFeiB[6] = GetSum(SendCacheToZhangPengFeiB);
-
-            for (int i = 0; i < 5; i++)
-            {
-                sendData(SendCacheToZhangPengFeiB, 7);
-                await Task.Delay(80);
-            }
-
+            // 入队发 10 次（统一）
+            BusState.ButtonCmds.Enqueue(new CmdItem(status, x, y, BusState.DEFAULT_CMD_TIMES));
         }
     }
 
