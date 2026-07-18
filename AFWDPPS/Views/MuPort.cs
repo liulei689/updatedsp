@@ -187,7 +187,7 @@ namespace AFWDPP.Views
             {
                 // 提取两个 float（弧度，小端）
                 float pitch = BitConverter.ToSingle(f, 19);
-                float yaw = BitConverter.ToSingle(f, 23);
+                float yaw = -BitConverter.ToSingle(f, 23);  // 俯仰取反
 
                 // 弧度 → 度
                 pitch *= 57.3f;

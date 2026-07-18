@@ -112,11 +112,21 @@ namespace AFWDPP.Views
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
             timer.Start();
-            //握手定时器
+            // ★ 发送周期下拉框（10~100ms，默认最后一项 = 100ms）
+            // 用 _initGuard 屏蔽掉初始化赋值触发的 SelectionChanged
+            _initGuard = true;
+            sendInterval.ItemsSource = new int[] { 1,2,3,4,5,6,7,8,9,10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
+            sendInterval.SelectedIndex = sendInterval.Items.Count - 10;
+            _initGuard = false;
+
+            // 握手定时器（初值从下拉框读取，避免硬编码两份）
             timerhandshake = new DispatcherTimer();
-            timerhandshake.Interval = TimeSpan.FromMilliseconds(80);
+            timerhandshake.Interval = TimeSpan.FromMilliseconds((int)sendInterval.SelectedItem);
             timerhandshake.IsEnabled = true;
             timerhandshake.Tick += timerhandshake_Tick;
+
+            // 发送周期下拉框变化 → 实时修改定时器间隔
+            sendInterval.SelectionChanged += sendInterval_SelectionChanged;
             var ports = Common.Common.SearchPort();
             if (comlist.ItemsSource == null || !ports.SequenceEqual(comlist.ItemsSource as IList<string>))
             {
@@ -885,6 +895,30 @@ namespace AFWDPP.Views
 
         private int isfirst = 0;
         private bool disposedValue;
+
+        // 初始化阶段屏蔽 sendInterval.SelectedIndex 触发的 SelectionChanged
+        private bool _initGuard;
+
+        /// <summary>
+        /// 发送周期下拉框变化：实时修改 timerhandshake 的间隔（10~100ms）。
+        /// 不重启定时器，直接改 Interval 即可生效（DispatcherTimer 支持热改）。
+        /// </summary>
+        #region 发送周期下拉框（10~100ms，初始化见构造函数）
+
+        /// <summary>
+        /// 发送周期下拉框变化：实时修改 timerhandshake 的间隔（10~100ms）。
+        /// 不重启定时器，直接改 Interval 即可生效（DispatcherTimer 支持热改）。
+        /// </summary>
+        private void sendInterval_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // 初始化期间的 SelectedIndex 赋值不算用户操作，忽略
+            if (_initGuard) return;
+            if (sendInterval.SelectedItem == null || timerhandshake == null) return;
+            int ms = (int)sendInterval.SelectedItem;
+            timerhandshake.Interval = TimeSpan.FromMilliseconds(ms);
+        }
+
+        #endregion
 
         private void comlist_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
